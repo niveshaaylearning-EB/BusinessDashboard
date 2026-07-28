@@ -1,0 +1,16 @@
+node_modules
+dist
+.env
+backend.log
+src_backup_*/
+backend/venv/
+backend/__pycache__/
+**/__pycache__/
+*.pyc
+backend/backups/
+
+# Databases — contain real customer PII, never commit
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
