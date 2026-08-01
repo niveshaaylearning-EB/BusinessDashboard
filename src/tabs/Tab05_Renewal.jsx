@@ -10,7 +10,7 @@ import { YAxisTick } from '../components/YAxisTick';
 import SortableKPIGrid from '../components/SortableKPIGrid';
 import InsightsPanel from '../components/InsightsPanel';
 import DrilldownModal, { useDrilldown } from '../components/DrilldownModal';
-import { formatNumber, parseExcelDate, isActive, normalizeData } from '../dataEngine';
+import { formatNumber, parseExcelDate, isActive, getMonthlyMovement } from '../dataEngine';
 import TabDateFilter from '../components/TabDateFilter';
 
 const TENURE_BUCKETS = [
@@ -78,17 +78,26 @@ function FunnelChart({ data, onRowClick }) {
 function RenewalContent({ renewalFunnel, renewalByProduct, currentMaster, insights, filters, setFilters, rawData, filteredRaw }) {
   const { drilldown, open: openDrilldown, close: closeDrilldown } = useDrilldown();
 
-  // Period renewal rate: of all subscription events in the selected date range,
-  // what % were renewals (Cycle >= 2) vs first-time (Cycle = 1)?
+  // Period renewal rate: same cohort-conversion definition as the Movement table's
+  // "Renewal %" column — of subscriptions whose cycle ENDED in the selected period,
+  // what % renewed (within the grace window) vs truly churned. Computed from the full,
+  // unfiltered dataset (not date-range-filtered raw rows) because filtering by date range
+  // only keeps rows whose cycle *started* in range — it would drop cycles that started
+  // earlier but ended within the selected window, which is exactly the population this
+  // metric needs. Months are then summed across whatever range is currently selected.
+  const allMonthly = useMemo(() => getMonthlyMovement(rawData || []), [rawData]);
   const periodRenewalRate = useMemo(() => {
-    const rows = normalizeData((filteredRaw?.length ? filteredRaw : rawData) || []);
-    if (!rows.length) return null;
-    const activeRows = rows.filter(r => String(r['Cycle Level Status'] || '').trim().toUpperCase() !== 'UNSUBSCRIBED');
-    if (!activeRows.length) return null;
-    const renewals  = activeRows.filter(r => (Number(r['Cycle Number']) || 0) >= 2).length;
-    const total     = activeRows.length;
-    return total > 0 ? Math.round(renewals / total * 100) : null;
-  }, [filteredRaw, rawData]);
+    if (!allMonthly?.length) return null;
+    const from = filters?.dateFrom ? new Date(filters.dateFrom).getTime() : null;
+    const to   = filters?.dateTo   ? new Date(filters.dateTo).getTime()   : null;
+    const inRange = allMonthly.filter(m => {
+      const t = m.monthDate.getTime();
+      return (!from || t >= from) && (!to || t <= to);
+    });
+    const totalEligible = inRange.reduce((s, m) => s + (m.eligible || 0), 0);
+    const totalRenewed  = inRange.reduce((s, m) => s + (m.renewedEligible || 0), 0);
+    return totalEligible > 0 ? Math.round(totalRenewed / totalEligible * 100) : null;
+  }, [allMonthly, filters?.dateFrom, filters?.dateTo]);
 
   const hasPeriod = !!(filters?.dateFrom || filters?.dateTo);
 

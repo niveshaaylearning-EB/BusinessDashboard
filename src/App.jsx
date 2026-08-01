@@ -864,6 +864,20 @@ export default function App() {
   }, [backendSynced, rawData]);
 
   const handleDataLoaded = useCallback(async (rows, name) => {
+    // Automatic backup: before the old dataset gets replaced, download a full
+    // backup of what's about to be overwritten. This needs no extra click —
+    // it happens as a side effect of the upload action the user is already
+    // taking — and it protects data independent of anything server-side.
+    if (rawData?.length) {
+      try {
+        const ws = XLSX.utils.json_to_sheet(rawData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'FlatFee');
+        const dateStr = new Date().toISOString().slice(0, 10);
+        XLSX.writeFile(wb, `NIA_AutoBackup_${dateStr}.xlsx`);
+      } catch { /* best-effort — never block the actual upload on this */ }
+    }
+
     setRawData(rows);
     setFileName(name);
     setSavedAt(new Date().toISOString());
@@ -881,7 +895,7 @@ export default function App() {
     } catch {
       // Backend offline — data is local only; banner will prompt user to sync
     }
-  }, []);
+  }, [rawData]);
 
   const handleLogout = useCallback(async () => {
     // Remove auth token only — do NOT wipe local IDB cache.
@@ -1263,6 +1277,19 @@ function Dashboard({ rawData, fileName, savedAt, currentUser, activeTab, setActi
     XLSX.writeFile(wb, `NIA_Subscribers_${dateStr}.xlsx`);
   }, [derived.filteredMaster]);
 
+  // Full raw-data backup — every row exactly as uploaded, unfiltered and
+  // unprocessed. Unlike "Export" above (which is a filtered/deduplicated
+  // view), this file can be re-uploaded to fully restore the dataset if the
+  // server ever loses it, independent of any server/hosting issue.
+  const handleExportRawBackup = useCallback(() => {
+    if (!rawData?.length) return;
+    const ws = XLSX.utils.json_to_sheet(rawData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'FlatFee');
+    const dateStr = new Date().toISOString().slice(0, 10);
+    XLSX.writeFile(wb, `NIA_Backup_${dateStr}.xlsx`);
+  }, [rawData]);
+
   const tabProps = useMemo(() => ({
     currentMaster: derived.filteredMaster, rawData,
     kpis: derived.kpis, prevKpis: derived.prevKpis,
@@ -1350,6 +1377,10 @@ function Dashboard({ rawData, fileName, savedAt, currentUser, activeTab, setActi
           <button className="btn-icon" style={{ color: '#34d399', borderColor: '#34d399' }}
             onClick={handleExport} title="Export filtered subscriber data as Excel">
             ⬇️ Export
+          </button>
+          <button className="btn-icon" style={{ color: '#fbbf24', borderColor: '#fbbf24' }}
+            onClick={handleExportRawBackup} title="Download a full backup of the raw uploaded data — keep this safe; re-uploading it fully restores the dataset">
+            💾 Backup
           </button>
           <button className="btn-icon" onClick={onLogout}
             title={`${currentUser?.full_name || currentUser?.username} · ${currentUser?.role} · Click to logout`}

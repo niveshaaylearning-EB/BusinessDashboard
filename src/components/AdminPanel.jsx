@@ -28,12 +28,11 @@ export default function AdminPanel({ currentUser, onClose }) {
   const [busy, setBusy] = useState({});
   const [showCreate, setShowCreate] = useState(false);
 
-  // Create user form state
-  const [newUsername, setNewUsername]   = useState('');
+  // Create user form state — just email; username is auto-derived and a login
+  // password is generated server-side, since sign-in is OTP-only.
   const [newEmail, setNewEmail]         = useState('');
   const [newFullName, setNewFullName]   = useState('');
   const [newRole, setNewRole]           = useState('viewer');
-  const [newPassword, setNewPassword]   = useState('');
   const [createErr, setCreateErr]       = useState('');
   const [createBusy, setCreateBusy]     = useState(false);
   const [createSuccess, setCreateSuccess] = useState('');
@@ -68,14 +67,12 @@ export default function AdminPanel({ currentUser, onClose }) {
     setCreateErr(''); setCreateSuccess(''); setCreateBusy(true);
     try {
       const u = await api.createUser({
-        username:  newUsername.trim(),
-        email:     newEmail.trim().toLowerCase() || undefined,
+        email:     newEmail.trim().toLowerCase(),
         full_name: newFullName.trim() || undefined,
         role:      newRole,
-        password:  newPassword,
       });
-      setCreateSuccess(`User "${u.username}" created successfully.`);
-      setNewUsername(''); setNewEmail(''); setNewFullName(''); setNewRole('viewer'); setNewPassword('');
+      setCreateSuccess(`${u.email} can now sign in with an OTP.`);
+      setNewEmail(''); setNewFullName(''); setNewRole('viewer');
       await load();
     } catch (e) { setCreateErr(e.message); }
     finally { setCreateBusy(false); }
@@ -193,13 +190,16 @@ export default function AdminPanel({ currentUser, onClose }) {
         {/* Create User Form */}
         {showCreate && (
           <div style={{ padding: '1rem 1.5rem', borderBottom: '1px solid var(--border-default)', background: 'rgba(34,211,238,0.03)', flexShrink: 0 }}>
-            <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 12, color: 'var(--accent-cyan)' }}>Add New User</div>
+            <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 4, color: 'var(--accent-cyan)' }}>Add New User</div>
+            <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 12 }}>
+              Just enter an email — they'll sign in with a one-time code sent to it. No password needed.
+            </div>
             <form onSubmit={handleCreate}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 8, marginBottom: 8 }}>
                 <div>
-                  <label style={{ fontSize: 11, color: 'var(--text-muted)', display: 'block', marginBottom: 3 }}>Username *</label>
-                  <input style={s.input} value={newUsername} required
-                    onChange={e => setNewUsername(e.target.value)} placeholder="e.g. jchaudhari" />
+                  <label style={{ fontSize: 11, color: 'var(--text-muted)', display: 'block', marginBottom: 3 }}>Email *</label>
+                  <input style={s.input} type="email" value={newEmail} required autoFocus
+                    onChange={e => setNewEmail(e.target.value)} placeholder="user@niveshaay.com" />
                 </div>
                 <div>
                   <label style={{ fontSize: 11, color: 'var(--text-muted)', display: 'block', marginBottom: 3 }}>Full Name</label>
@@ -207,26 +207,16 @@ export default function AdminPanel({ currentUser, onClose }) {
                     onChange={e => setNewFullName(e.target.value)} placeholder="Jay Chaudhari" />
                 </div>
                 <div>
-                  <label style={{ fontSize: 11, color: 'var(--text-muted)', display: 'block', marginBottom: 3 }}>Email</label>
-                  <input style={s.input} type="email" value={newEmail}
-                    onChange={e => setNewEmail(e.target.value)} placeholder="user@niveshaay.com" />
-                </div>
-                <div>
                   <label style={{ fontSize: 11, color: 'var(--text-muted)', display: 'block', marginBottom: 3 }}>Role</label>
                   <select style={{ ...s.input, padding: '9px 8px' }} value={newRole} onChange={e => setNewRole(e.target.value)}>
                     {ROLE_OPTIONS.map(r => <option key={r} value={r}>{r}</option>)}
                   </select>
                 </div>
-                <div>
-                  <label style={{ fontSize: 11, color: 'var(--text-muted)', display: 'block', marginBottom: 3 }}>Password *</label>
-                  <input style={s.input} type="password" value={newPassword} required
-                    onChange={e => setNewPassword(e.target.value)} placeholder="Min 8 · uppercase · digit · special" />
-                </div>
               </div>
               {createErr     && <div style={{ color: '#f87171', fontSize: 12, marginBottom: 8 }}>⚠️ {createErr}</div>}
               {createSuccess && <div style={{ color: '#34d399', fontSize: 12, marginBottom: 8 }}>✓ {createSuccess}</div>}
               <button type="submit" style={s.btnPrimary} disabled={createBusy}>
-                {createBusy ? <><Spinner /> Creating...</> : '+ Create User'}
+                {createBusy ? <><Spinner /> Adding...</> : '+ Add User'}
               </button>
             </form>
           </div>

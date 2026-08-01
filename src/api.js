@@ -1,8 +1,15 @@
-// If accessed via a network IP (colleague on same WiFi), backend is on same IP port 8000.
-// If accessed via localhost, backend is on localhost:8000.
 const BASE = import.meta.env.VITE_API_URL || (() => {
-  const h = window.location.hostname;
-  return (h === 'localhost' || h === '127.0.0.1') ? 'http://localhost:8000' : `http://${h}:8000`;
+  // Vite's dev server always runs on 5173 (vite.config.js) — in that mode there's
+  // no nginx in front of anything, so talk to the local/LAN backend on :8000 directly.
+  if (window.location.port === '5173') {
+    const h = window.location.hostname;
+    const isLocal = h === 'localhost' || h === '127.0.0.1';
+    return isLocal ? 'http://localhost:8000' : `${window.location.protocol}//${h}:8000`;
+  }
+  // Production build (served by the nginx container from this repo's Dockerfile):
+  // nginx.conf reverse-proxies /api/* to the backend container over Docker's
+  // internal network — same origin, no separate backend domain or CORS needed.
+  return '/api';
 })();
 
 async function request(method, path, body, timeoutMs = 5000, { skipReloadOn401 = false } = {}) {

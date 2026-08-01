@@ -17,7 +17,7 @@ from dotenv import load_dotenv
 load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
 
 from app.database import engine, Base, SessionLocal
-from app.models import User
+from app.models import User, UploadSession
 from app.auth import get_password_hash
 from app.config import settings
 
@@ -32,9 +32,29 @@ def main():
 
     db = SessionLocal()
     try:
+        user_count = db.query(User).count()
+        upload_count = db.query(UploadSession).count()
+        if user_count == 0 and settings.database_url.startswith("sqlite"):
+            # This script runs on every container start. Zero users on a SQLite
+            # DB almost always means the volume/mount didn't persist across a
+            # restart or redeploy — a real first-time setup is the only other
+            # case, and this noise is harmless there. Loud on purpose: this is
+            # the one place data loss can be caught immediately, in the logs,
+            # instead of being discovered later as "why do I have to re-upload".
+            print("\n" + "!" * 70)
+            print("!  WARNING: 0 users found in a SQLite database on startup.")
+            print("!  If this is NOT the very first deploy, your data was just")
+            print("!  wiped — the SQLite file at DATABASE_URL is not on a")
+            print("!  persistent volume. Check your host's volume/mount config")
+            print(f"!  for the path in DATABASE_URL={settings.database_url}")
+            print("!  Consider switching to a managed Postgres database instead —")
+            print("!  it doesn't depend on the app container's volume config at all.")
+            print("!" * 70 + "\n")
+
         existing = db.query(User).filter(User.username == settings.admin_username).first()
         if existing:
             print(f"\n  Admin user '{settings.admin_username}' already exists — skipping creation.")
+            print(f"  ({user_count} user(s), {upload_count} upload session(s) found)")
             print("  Setup complete.")
             return
 

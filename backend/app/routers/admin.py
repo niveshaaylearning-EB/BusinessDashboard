@@ -1,3 +1,4 @@
+import secrets
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 from app.database import get_db
@@ -8,6 +9,17 @@ from app.auth import get_password_hash, require_role
 router = APIRouter()
 
 VALID_ROLES = {"admin", "operations", "editor", "viewer"}
+
+
+def _derive_username(email: str, db: Session) -> str:
+    """Auto-generate a username from the email prefix, appending a number if taken."""
+    base = email.split("@")[0]
+    username = base
+    suffix = 1
+    while db.query(User).filter(User.username == username).first():
+        username = f"{base}{suffix}"
+        suffix += 1
+    return username
 
 
 @router.get("/users")
@@ -28,23 +40,34 @@ async def create_user(
 ):
     if body.role not in VALID_ROLES:
         raise HTTPException(400, f"Invalid role. Valid roles: {', '.join(sorted(VALID_ROLES))}")
-    if len(body.password) < 8:
-        raise HTTPException(400, "Password must be at least 8 characters")
-    if db.query(User).filter(User.username == body.username).first():
-        raise HTTPException(400, "Username already exists")
+
+    email = body.email.strip().lower()
+    if db.query(User).filter(User.email == email).first():
+        raise HTTPException(400, "A user with this email already exists")
+
+    if body.username:
+        if db.query(User).filter(User.username == body.username).first():
+            raise HTTPException(400, "Username already exists")
+        username = body.username
+    else:
+        username = _derive_username(email, db)
+
+    # Login is OTP-only — password is never checked at sign-in, so generate one
+    # server-side when omitted. It just needs to satisfy the model's NOT NULL column.
+    password = body.password or secrets.token_urlsafe(24)
 
     user = User(
-        username=body.username,
+        username=username,
         full_name=body.full_name,
-        email=body.email,
-        hashed_password=get_password_hash(body.password),
+        email=email,
+        hashed_password=get_password_hash(password),
         role=body.role,
     )
     db.add(user)
     db.add(AuditLog(
         user_id=current_user.id,
         action="user_created",
-        details={"username": body.username, "role": body.role},
+        details={"username": username, "email": email, "role": body.role},
         ip_address=request.client.host if request.client else None,
     ))
     db.commit()

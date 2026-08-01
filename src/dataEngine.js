@@ -381,12 +381,13 @@ export function getSummaryKPIs(currentMaster, rawData) {
   const totalProducts = new Set(currentMaster.map(r => r['Smallcase Name']).filter(Boolean)).size;
 
   // AUM: if a dedicated AUM column exists, sum per-product (each product row has its own AUM).
-  // If absent, fall back to Networth — but Networth is a per-investor total, not per-product,
-  // so deduplicate by PAN first to avoid counting the same investor's portfolio multiple times.
+  // If absent, fall back to Networth — Networth varies per product/basket, not one portfolio-wide
+  // figure, so sum it the same way across every active row (no per-PAN dedup — that would keep
+  // only one product's Networth for investors holding multiple baskets).
   const aumArr = activeSubs.map(r => Number(r['AUM']) || 0).filter(n => n > 0);
   const totalAUM = aumArr.length > 0
     ? aumArr.reduce((a, b) => a + b, 0)
-    : deduplicateByPAN(activeSubs).reduce((s, r) => s + (Number(r['Networth']) || 0), 0);
+    : activeSubs.reduce((s, r) => s + (Number(r['Networth']) || 0), 0);
 
   // Historical cycle counts — deduplicated by Email+Scid+Cycle (same logic as master but per-cycle)
   // Removes the ~1,592 plan-duration duplicate rows before counting
@@ -1782,16 +1783,15 @@ export function getAUMSummaryTimeline(rawData) {
         if (row.pan) activePANs.add(row.pan);
       }
     } else {
-      // Networth is per-investor — deduplicate by PAN (keep max) to avoid counting
-      // the same investor's total portfolio once per product they hold.
-      const networthByPAN = new Map();
+      // Networth varies per product/basket, not one portfolio-wide figure per investor —
+      // sum across each investor's distinct active holdings (activeMap is already deduped
+      // one-row-per-basket, so this doesn't double-count any single holding).
       for (const row of activeMap.values()) {
         if (row.pan) {
-          networthByPAN.set(row.pan, Math.max(networthByPAN.get(row.pan) || 0, row.aum));
+          totalAUM += row.aum;
           activePANs.add(row.pan);
         }
       }
-      for (const nw of networthByPAN.values()) totalAUM += nw;
     }
 
     const mk = `${mStart.getFullYear()}-${mStart.getMonth()}`;

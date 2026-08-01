@@ -1,0 +1,27 @@
+services:
+  backend:
+    build: ./backend
+    # No published port here on purpose: nginx (the "frontend" service) reaches
+    # this container over Docker's internal network at http://backend:8000 and
+    # reverse-proxies /api/* to it (see nginx.conf). That means only ONE public
+    # URL is needed for the whole app — no second domain, no VITE_API_URL, no
+    # CORS config. Uncomment below only if you need to hit the backend directly
+    # (e.g. its /docs page) from outside Docker while debugging.
+    # ports:
+    #   - "8000:8000"
+    # Real secrets live ONLY in this local file — never committed, never
+    # copied into the image. Create it by copying backend/.env.example to
+    # backend/.env and pasting in your actual values.
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./backend/data:/data
+    restart: unless-stopped
+
+  frontend:
+    build: .
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped

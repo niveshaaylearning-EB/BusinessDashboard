@@ -55,15 +55,20 @@ class DataResponse(BaseModel):
 
 
 class CreateUserRequest(BaseModel):
-    username:  str           = Field(..., min_length=3, max_length=50)
-    password:  str
+    # Only email is required — username is auto-derived from it and a random
+    # password is generated server-side when omitted, since login is OTP-only
+    # and the password field is never used to authenticate.
+    email:     str           = Field(..., max_length=255)
+    username:  Optional[str] = Field(None, min_length=3, max_length=50)
+    password:  Optional[str] = None
     full_name: Optional[str] = Field(None, max_length=255)
-    email:     Optional[str] = Field(None, max_length=255)
     role:      str           = "viewer"
 
     @field_validator("password")
     @classmethod
     def password_complexity(cls, v):
+        if v is None:
+            return v
         return _validate_password(v)
 
 
