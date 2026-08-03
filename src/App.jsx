@@ -775,6 +775,8 @@ export default function App() {
   const [filtersOpen, setFiltersOpen] = useState(true);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [theme, setTheme] = useState(() => localStorage.getItem('nia_theme') || 'dark');
+  const [restoreError, setRestoreError] = useState(null);
+  const [retrying, setRetrying] = useState(false);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -783,6 +785,7 @@ export default function App() {
 
   // Restore dataset: backend first, local IDB as fallback
   const restoreFromBackend = useCallback(async () => {
+    setRestoreError(null);
     // 1. PostgreSQL — primary source of truth
     try {
       const latest = await api.getLatestData();
@@ -794,7 +797,12 @@ export default function App() {
         try { await saveToStorage(latest.rows, latest.file_name || ''); } catch {}
         return true;
       }
-    } catch {}
+    } catch (err) {
+      // Backend was reachable but the request failed (e.g. the response was too
+      // large to parse) — remember this so the UI can show "couldn't load your
+      // data, retry?" instead of the misleading "you have no data yet" prompt.
+      setRestoreError(err.message);
+    }
     // 2. Backend offline or has no data — fall back to local IDB cache
     try {
       const cached = await loadFromLocalCache();
@@ -934,6 +942,33 @@ export default function App() {
       setAuthed(true);
       await restoreFromBackend();
     }} />;
+  }
+
+  if (!rawData && restoreError) {
+    // The backend has data but this browser failed to load it (e.g. the response
+    // was too large to parse) — show that plainly instead of the upload prompt,
+    // which would wrongly suggest there's no data at all.
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: 'var(--bg-void)', padding: '2rem' }}>
+        <div style={{ maxWidth: 480, textAlign: 'center' }}>
+          <div style={{ fontSize: '2rem', marginBottom: 12 }}>⚠️</div>
+          <div style={{ fontWeight: 700, fontSize: '1.1rem', color: 'var(--text-primary)', marginBottom: 8 }}>
+            Couldn't load your existing data
+          </div>
+          <div style={{ color: 'var(--text-muted)', fontSize: 13, marginBottom: 20 }}>{restoreError}</div>
+          <div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
+            <button className="btn-icon" style={{ color: 'var(--accent-cyan)', borderColor: 'var(--accent-cyan)' }}
+              disabled={retrying}
+              onClick={async () => { setRetrying(true); await restoreFromBackend(); setRetrying(false); }}>
+              {retrying ? 'Retrying...' : '↻ Retry'}
+            </button>
+            <button className="btn-icon" onClick={() => setRestoreError(null)}>
+              Upload a file instead
+            </button>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (!rawData) {

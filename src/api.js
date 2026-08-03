@@ -41,21 +41,30 @@ async function request(method, path, body, timeoutMs = 5000, { skipReloadOn401 =
     throw new Error('Session expired — please log in again.');
   }
 
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) {
-    let msg = `Request failed (${res.status})`;
-    if (data.detail) {
-      if (typeof data.detail === 'string') {
-        msg = data.detail;
-      } else if (Array.isArray(data.detail) && data.detail.length > 0) {
-        // Pydantic 422 validation errors — extract the first meaningful message
-        const first = data.detail[0];
-        msg = (first.msg || '').replace(/^Value error,\s*/i, '') || msg;
-      }
+  if (res.ok) {
+    // A successful response that fails to parse is a real problem (e.g. the body
+    // was too large for the browser to handle) — never silently treat it as "{}",
+    // since callers checking things like `data.rows.length` would then see an
+    // empty result indistinguishable from "there's genuinely no data yet".
+    try {
+      return await res.json();
+    } catch (err) {
+      throw new Error(`Server responded but the response could not be read (${err.message}). This usually means the dataset is too large for the browser to load in one request.`);
     }
-    throw new Error(msg);
   }
-  return data;
+
+  const data = await res.json().catch(() => ({}));
+  let msg = `Request failed (${res.status})`;
+  if (data.detail) {
+    if (typeof data.detail === 'string') {
+      msg = data.detail;
+    } else if (Array.isArray(data.detail) && data.detail.length > 0) {
+      // Pydantic 422 validation errors — extract the first meaningful message
+      const first = data.detail[0];
+      msg = (first.msg || '').replace(/^Value error,\s*/i, '') || msg;
+    }
+  }
+  throw new Error(msg);
 }
 
 export const api = {
@@ -75,7 +84,12 @@ export const api = {
 
   // ── Data ──────────────────────────────────────────────────────────────────
   uploadData:       (rows, fileName)        => request('POST', '/data/upload',             { rows, file_name: fileName }, 30000),
-  getLatestData:    ()                      => request('GET',  '/data/latest'),
+  // Large datasets take a while server-side (gzip-compressing a 200MB+ JSON
+  // response is CPU-bound and can take 10+ seconds on its own, well before any
+  // bytes reach the browser) — the default 5s timeout was aborting this before
+  // the response could ever complete, which surfaced as a misleading "cannot
+  // reach the backend" error even though the backend was working fine.
+  getLatestData:    ()                      => request('GET',  '/data/latest', undefined, 60000),
 
   // ── Audit ─────────────────────────────────────────────────────────────────
   getAuditLogs:     (page = 1, limit = 100, action) =>
