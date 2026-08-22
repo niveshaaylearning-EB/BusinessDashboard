@@ -256,21 +256,22 @@ function matchesDimensionFilters(row, filters) {
   );
 }
 
-// A row counts for a period if its subscription was active at any point that
-// overlaps [from, to] — started on/before the period ends, AND (still ongoing,
-// or ended on/after the period starts). This is deliberately NOT "started
-// within the period": someone who started in January and is still active in
-// August must still show up when filtering to August.
-function overlapsPeriod(row, from, to) {
-  const start = parseExcelDate(row['Subscription Start Date']);
-  if (!start) return false;
-  if (to && start > toEndOfDay(to)) return false;
+// Scope a row to the selected period only — not "still relevant today":
+// - Still-active rows count by when their current cycle STARTED.
+// - Exited (UNSUBSCRIBED) rows count by when they EXITED (Cycle End Date),
+//   same logic already used for the Movement table's month-by-month Eligible/
+//   Renewed cohort. A long-tenured investor who neither started nor exited
+//   within the window will correctly NOT appear — that's the point: picking
+//   a period means "data for that period only," period.
+function matchesPeriod(row, from, to) {
+  const toAdj = to ? toEndOfDay(to) : null;
   const isUnsub = String(row['Cycle Level Status'] || '').trim().toUpperCase() === 'UNSUBSCRIBED';
   if (isUnsub) {
     const end = parseExcelDate(row['Cycle End Date'] || row['Exit Date']);
-    if (from && end && end < from) return false;
+    return inRange(end, from, toAdj);
   }
-  return true;
+  const start = parseExcelDate(row['Subscription Start Date']);
+  return inRange(start, from, toAdj);
 }
 
 export function filterRawByDate(rawData, filters) {
@@ -281,7 +282,7 @@ export function filterRawByDate(rawData, filters) {
   return normalized.filter(row => {
     if (!matchesDimensionFilters(row, filters)) return false;
     if (!from && !to) return true;
-    return overlapsPeriod(row, from, to);
+    return matchesPeriod(row, from, to);
   });
 }
 
@@ -299,16 +300,13 @@ export function filterRawByExitDate(rawData, filters) {
 }
 
 // ─── APPLY FILTERS ────────────────────────────────────────────────────────────
-// Same semantics as filterRawByDate: a row matches a date period if its
-// subscription was active at any point overlapping it, not just if it started
-// within the window — otherwise picking a period would wrongly drop everyone
-// who joined earlier but is still active through it.
+// Same semantics as filterRawByDate — see matchesPeriod above.
 export function applyFilters(data, filters) {
   if (!filters) return data;
   return data.filter(row => {
     if (!matchesDimensionFilters(row, filters)) return false;
     if (!filters.dateFrom && !filters.dateTo) return true;
-    return overlapsPeriod(row, filters.dateFrom || null, filters.dateTo || null);
+    return matchesPeriod(row, filters.dateFrom || null, filters.dateTo || null);
   });
 }
 
