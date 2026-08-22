@@ -1230,22 +1230,15 @@ function Dashboard({ rawData, fileName, savedAt, currentUser, activeTab, setActi
   const baseData = useMemo(() => {
     const master = buildCurrentSubscriptionMaster(rawData);
     const filterOptions = getFilterOptions(master);
-    const cohorts = buildCohortData(rawData);
-    const migrationData = getMigrationData(rawData);
-    const aumTimeline = getAUMSummaryTimeline(rawData);
-    // These three are filter-independent — compute once per file upload, not per filter change
-    const unsubData = getUnsubscriberAnalysis(rawData);
-    const ltvData = getLTVData(rawData, master);
-    const reactivationPipeline = getReactivationPipeline(rawData);
     // Always-unfiltered AUM total — a stable headline number that never changes
     // with the period/basket filters, shown alongside the filtered AUM figure.
     const totalAUMAllTime = getSummaryKPIs(master, rawData).totalAUM;
-    return { master, filterOptions, cohorts, migrationData, aumTimeline, unsubData, ltvData, reactivationPipeline, totalAUMAllTime };
+    return { master, filterOptions, totalAUMAllTime };
   }, [rawData]);
 
   // Filter-dependent computations — recomputes whenever filters changes
   const derived = useMemo(() => {
-    const { master, cohorts, migrationData } = baseData;
+    const { master } = baseData;
 
     // Filtered master: EVERY filter applies here — dimensions (smallcase, state,
     // broker, etc.) AND the date period. "1M" means "active at some point during
@@ -1257,6 +1250,20 @@ function Dashboard({ rawData, fileName, savedAt, currentUser, activeTab, setActi
     const filteredRaw = filterRawByDate(rawData, filters);
     const monthly = getMonthlyMovement(filteredRaw);
     const cancellationMetrics = getCancellationMetrics(filteredRaw);
+
+    // These used to be computed once per file upload (filter-independent) —
+    // that meant picking a period/basket filter had zero effect on them, while
+    // every other tab honored it. Each of these internally needs full history
+    // to classify events correctly (e.g. telling a real exit apart from a
+    // cycle renewal), so they still run against full rawData/master — the
+    // filters are applied INSIDE each function to whatever can be safely
+    // scoped (the output rows/months/cohorts) without corrupting that history.
+    const cohorts = buildCohortData(rawData, filters);
+    const migrationData = getMigrationData(rawData, filters);
+    const aumTimeline = getAUMSummaryTimeline(rawData, filters);
+    const unsubData = getUnsubscriberAnalysis(rawData, filters);
+    const ltvData = getLTVData(rawData, filtered);
+    const reactivationPipeline = getReactivationPipeline(rawData, filters);
 
     const kpis = getSummaryKPIs(filtered, filteredRaw);
     const retentionMetrics = getRetentionMetrics(monthly);
@@ -1287,10 +1294,13 @@ function Dashboard({ rawData, fileName, savedAt, currentUser, activeTab, setActi
     }
 
     const mrrMetrics          = getMRRMetrics(filtered, filteredRaw);
-    const revenueAtRisk       = getRevenueAtRisk(filtered);
-    const churnRisk           = getChurnRiskScores(filtered);
+    // Forward-looking (next 90 days) — deliberately NOT period-filtered, only
+    // dimension-filtered (product/broker/state/etc.), so a past-dated period
+    // selection never hides a subscription that's genuinely expiring soon.
+    const revenueAtRisk       = getRevenueAtRisk(master, filters);
+    const churnRisk           = getChurnRiskScores(master, filters);
     const rmPerformance       = getRMPerformance(filtered, filteredRaw);
-    const renewalCalendar     = getRenewalCalendar(filtered);
+    const renewalCalendar     = getRenewalCalendar(master, filters);
     const offerCodeROI        = getOfferCodeROI(filtered, filteredRaw);
 
     return {
@@ -1301,6 +1311,7 @@ function Dashboard({ rawData, fileName, savedAt, currentUser, activeTab, setActi
       insights, monthly, cohorts, migrationData, prevKpis,
       mrrMetrics, revenueAtRisk, churnRisk,
       rmPerformance, renewalCalendar, offerCodeROI,
+      aumTimeline, unsubData, ltvData, reactivationPipeline,
     };
   }, [baseData, filters]);
 
@@ -1340,13 +1351,13 @@ function Dashboard({ rawData, fileName, savedAt, currentUser, activeTab, setActi
     brokerMetrics: derived.brokerMetrics, attributionMetrics: derived.attributionMetrics,
     geoMetrics: derived.geoMetrics, cancellationMetrics: derived.cancellationMetrics,
     migrationData: derived.migrationData, insights: derived.insights,
-    summaryData: baseData.aumTimeline,
-    unsubData: baseData.unsubData,
+    summaryData: derived.aumTimeline,
+    unsubData: derived.unsubData,
     mrrMetrics: derived.mrrMetrics,
     revenueAtRisk: derived.revenueAtRisk,
-    ltvData: baseData.ltvData,
+    ltvData: derived.ltvData,
     churnRisk: derived.churnRisk,
-    reactivationPipeline: baseData.reactivationPipeline,
+    reactivationPipeline: derived.reactivationPipeline,
     rmPerformance: derived.rmPerformance,
     renewalCalendar: derived.renewalCalendar,
     offerCodeROI: derived.offerCodeROI,

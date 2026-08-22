@@ -701,8 +701,13 @@ export function getProductMetrics(currentMaster, rawData) {
 }
 
 // ─── COHORT ANALYSIS (O(n) via pre-indexed PAN map, excl. private SC) ─────────
-export function buildCohortData(rawData) {
-  const data = filterNonPrivate(normalizeData(rawData));
+export function buildCohortData(rawData, filters) {
+  let data = filterNonPrivate(normalizeData(rawData));
+  // Dimension filters are safe to apply up front (e.g. a smallcase filter turns
+  // this into "cohorts by first subscription to that product"). The period
+  // filter is NOT applied here — retention-at-interval needs full history —
+  // instead it trims which cohort ROWS are returned, at the bottom.
+  if (hasDimensionFilters(filters)) data = data.filter(row => matchesDimensionFilters(row, filters));
   const INTERVALS = [0, 1, 3, 6, 12, 24];
   const now = new Date();
   const panIndex = new Map();
@@ -725,10 +730,10 @@ export function buildCohortData(rawData) {
     if (!cohortMap.has(ck)) cohortMap.set(ck, new Set());
     cohortMap.get(ck).add(pan);
   }
-  return Array.from(cohortMap.entries()).sort(([a], [b]) => a.localeCompare(b)).map(([cohort, pans]) => {
+  const cohorts = Array.from(cohortMap.entries()).sort(([a], [b]) => a.localeCompare(b)).map(([cohort, pans]) => {
     const cohortStart = new Date(`${cohort}-01`);
     const size = pans.size;
-    const row = { cohort, size };
+    const row = { cohort, size, cohortStart };
     for (const interval of INTERVALS) {
       const checkDate = new Date(cohortStart.getFullYear(), cohortStart.getMonth() + interval + 1, 0, 23, 59, 59);
       if (checkDate > now) { row[`m${interval}`] = null; continue; }
@@ -743,6 +748,13 @@ export function buildCohortData(rawData) {
     }
     return row;
   });
+
+  if (filters?.dateFrom || filters?.dateTo) {
+    const from = filters.dateFrom || null;
+    const to   = filters.dateTo ? toEndOfDay(filters.dateTo) : null;
+    return cohorts.filter(c => inRange(c.cohortStart, from, to)).map(({ cohortStart, ...rest }) => rest);
+  }
+  return cohorts.map(({ cohortStart, ...rest }) => rest);
 }
 
 // ─── RENEWAL FUNNEL ───────────────────────────────────────────────────────────
@@ -1074,7 +1086,7 @@ export function getCancellationMetrics(rawData) {
 }
 
 // ─── PRODUCT MIGRATION (excl. private SC) ─────────────────────────────────────
-export function getMigrationData(rawData) {
+export function getMigrationData(rawData, filters) {
   const data = filterNonPrivate(normalizeData(rawData));
   const userMap = new Map();
   for (const row of data) {
@@ -1083,6 +1095,15 @@ export function getMigrationData(rawData) {
     if (!userMap.has(pan)) userMap.set(pan, []);
     userMap.get(pan).push(row);
   }
+  // Migrations need each user's FULL product history to correctly identify
+  // their first vs. last product — that can't be computed from a pre-scoped
+  // (period-filtered) row set. Instead, the period filter is applied below by
+  // keeping only migrations whose move (the last product's start date) falls
+  // in the selected window.
+  const periodFrom = filters?.dateFrom || null;
+  const periodTo   = filters?.dateTo ? toEndOfDay(filters.dateTo) : null;
+  const hasPeriod  = !!(periodFrom || periodTo);
+
   const flowMap = new Map();
   let multiProduct = 0;
   const allProducts = new Set();
@@ -1094,8 +1115,13 @@ export function getMigrationData(rawData) {
     const sorted = rows.filter(r => r['Smallcase Name'])
       .sort((a, b) => (parseExcelDate(a['Subscription Start Date']) || new Date(0)) - (parseExcelDate(b['Subscription Start Date']) || new Date(0)));
     const firstProd = sorted[0]['Smallcase Name'];
-    const lastProd = sorted[sorted.length - 1]['Smallcase Name'];
+    const lastRow = sorted[sorted.length - 1];
+    const lastProd = lastRow['Smallcase Name'];
     if (firstProd === lastProd) continue;
+    if (hasPeriod) {
+      const migrationDate = parseExcelDate(lastRow['Subscription Start Date']);
+      if (!inRange(migrationDate, periodFrom, periodTo)) continue;
+    }
     const key = `${firstProd}|||${lastProd}`;
     flowMap.set(key, (flowMap.get(key) || 0) + 1);
   }
@@ -1291,7 +1317,7 @@ export function generateInsights(currentMaster, monthlyMovement, productMetrics,
 // All UNSUBSCRIBED cycles, deduplicated by Email+Scid+Cycle (same logic as
 // completedCycles in getSummaryKPIs). Covers full exit history including
 // investors who later came back (win-backs).
-export function getUnsubscriberAnalysis(rawData) {
+export function getUnsubscriberAnalysis(rawData, filters) {
   const data = filterNonPrivate(normalizeData(rawData));
 
   // Detect P&L column name — exit rows often have blank P&L so we scan all rows
@@ -1420,7 +1446,19 @@ export function getUnsubscriberAnalysis(rawData) {
 
     return true;
   });
-  const n = exits.length;
+
+  // Period + dimension filters apply here, to the final exit list — NOT to the
+  // raw rows above, which need full cross-cycle history to correctly tell a
+  // real exit apart from a cycle transition (e.g. C1 -> C2 renewal).
+  const scopedExits = (filters?.dateFrom || filters?.dateTo || hasDimensionFilters(filters))
+    ? exits.filter(r => {
+        if (!matchesDimensionFilters(r, filters)) return false;
+        if (!filters.dateFrom && !filters.dateTo) return true;
+        const exitD = parseExcelDate(r['Cycle End Date'] || r['Exit Date']);
+        return inRange(exitD, filters.dateFrom || null, filters.dateTo ? toEndOfDay(filters.dateTo) : null);
+      })
+    : exits;
+  const n = scopedExits.length;
 
   // latestExitByKey = exitMap (already one row per baseKey, already the highest cycle)
   const latestExitByKey = exitMap;
@@ -1486,7 +1524,7 @@ export function getUnsubscriberAnalysis(rawData) {
 
   // How many exit cycles belong to short-return PANs (for exclusive total)
   let shortReturnExitCycles = 0;
-  for (const r of exits) {
+  for (const r of scopedExits) {
     const p = String(r['PAN'] || '').trim().toUpperCase();
     if (shortReturnPANs.has(p)) shortReturnExitCycles++;
   }
@@ -1506,7 +1544,7 @@ export function getUnsubscriberAnalysis(rawData) {
   let positivePL = 0, negativePL = 0, zeroPL = 0;
   let positivePLSum = 0, negativePLSum = 0;
 
-  for (const r of exits) {
+  for (const r of scopedExits) {
     const pan    = String(r['PAN']            || '').trim().toUpperCase();
     const prod   = String(r['Smallcase Name'] || 'Unknown').trim();
     const broker = String(r['Broker Name']    || 'Unknown').trim() || 'Unknown';
@@ -1572,7 +1610,7 @@ export function getUnsubscriberAnalysis(rawData) {
   // ── Unique-client P&L: one entry per PAN, summing P&L across all their exits ──
   // A person who exited 3 products gets one row with totalPL = sum of all three.
   const panPLMap = new Map();
-  for (const r of exits) {
+  for (const r of scopedExits) {
     const pan  = String(r['PAN'] || '').trim().toUpperCase();
     if (!pan) continue;
     const prod    = String(r['Smallcase Name'] || '').trim();
@@ -1613,7 +1651,7 @@ export function getUnsubscriberAnalysis(rawData) {
   const ucAvgPL = ucTotal > 0 ? Math.round(uniqueClients.reduce((a, c) => a + c.totalPL, 0) / ucTotal) : 0;
 
   return {
-    exits,
+    exits: scopedExits,
     kpis: {
       totalExits: n,
       uniqueInvestors: exitedPANs.size,
@@ -1688,8 +1726,14 @@ export function getUnsubscriberAnalysis(rawData) {
 // ─── AUM & SUMMARY TIMELINE (monthly snapshots derived from raw subscription data) ─
 // For each calendar month: computes active subscribers (Email+Scid deduped), unique
 // investors (PAN), AUM sum, new starts, new signups, and cumulative totals.
-export function getAUMSummaryTimeline(rawData) {
-  const data = filterNonPrivate(normalizeData(rawData));
+export function getAUMSummaryTimeline(rawData, filters) {
+  let data = filterNonPrivate(normalizeData(rawData));
+  // Dimension filters (product/state/broker/etc.) are safe to apply per-row up
+  // front. The date-period filter is NOT applied here — the running/cumulative
+  // totals (totalSignups, totalSubscriptionCycles, AUM) need full history to be
+  // correct; instead the period is applied afterwards by trimming which months
+  // are returned (see bottom of this function).
+  if (hasDimensionFilters(filters)) data = data.filter(row => matchesDimensionFilters(row, filters));
 
   // Pre-process rows (one pass)
   const rows = [];
@@ -1769,7 +1813,7 @@ export function getAUMSummaryTimeline(rawData) {
   const cumCycles     = new Set();
   const cumCompleted  = new Set();
 
-  return months.map(mStart => {
+  const timeline = months.map(mStart => {
     const mEnd  = new Date(mStart.getFullYear(), mStart.getMonth() + 1, 0, 23, 59, 59);
     const mEndT = mEnd.getTime();
 
@@ -1832,6 +1876,15 @@ export function getAUMSummaryTimeline(rawData) {
       completedCycles:          cumCompleted.size,
     };
   });
+
+  // Apply the period filter LAST, by trimming which months are shown — the
+  // cumulative math above needs every month up to "now" to be correct.
+  if (filters?.dateFrom || filters?.dateTo) {
+    const from = filters.dateFrom || null;
+    const to   = filters.dateTo ? toEndOfDay(filters.dateTo) : null;
+    return timeline.filter(m => inRange(m.date, from, to));
+  }
+  return timeline;
 }
 
 // ─── HELPER: normalise plan amount to monthly ─────────────────────────────────
@@ -1925,13 +1978,20 @@ export function getMRRMetrics(currentMaster, rawData) {
 }
 
 // ─── REVENUE AT RISK ──────────────────────────────────────────────────────────
-export function getRevenueAtRisk(currentMaster) {
+// currentMaster here should be the DIMENSION-filtered master, not period-filtered —
+// this is a forward-looking (next 90 days from today) forecast, so a past-dated
+// period filter ("6M", a custom range, etc.) must never hide a subscription
+// that's actually expiring soon just because it started outside that window.
+export function getRevenueAtRisk(currentMaster, filters) {
   const now = new Date();
   const d30 = new Date(now); d30.setDate(d30.getDate() + 30);
   const d60 = new Date(now); d60.setDate(d60.getDate() + 60);
   const d90 = new Date(now); d90.setDate(d90.getDate() + 90);
 
-  const activeSubs = deduplicateByPAN(currentMaster.filter(isActive));
+  const dimFiltered = hasDimensionFilters(filters)
+    ? currentMaster.filter(row => matchesDimensionFilters(row, filters))
+    : currentMaster;
+  const activeSubs = deduplicateByPAN(dimFiltered.filter(isActive));
   const buckets = { '0-30': [], '31-60': [], '61-90': [], '90+': [] };
 
   for (const r of activeSubs) {
@@ -1976,6 +2036,14 @@ export function getRevenueAtRisk(currentMaster) {
 export function getLTVData(rawData, currentMaster) {
   const normalized = filterNonPrivate(normalizeData(rawData));
 
+  // Which PANs are in scope for the currently selected filters (dimension +
+  // period). LTV totals themselves stay lifetime figures — that's the point
+  // of "Lifetime Value" — but WHICH investors show up respects the filter,
+  // same as every other tab.
+  const scopedPANs = currentMaster
+    ? new Set(currentMaster.map(r => String(r['PAN'] || '').trim().toUpperCase()).filter(Boolean))
+    : null;
+
   // Deduplicate by PAN+Smallcase+Cycle before accumulating spend so plan-duration
   // variant rows (same subscription, different plan options) don't inflate LTV.
   const ltvDedup = new Map();
@@ -2013,12 +2081,14 @@ export function getLTVData(rawData, currentMaster) {
     if (d) { if (!e.firstSub || d < e.firstSub) e.firstSub = d; if (!e.lastSub || d > e.lastSub) e.lastSub = d; }
   }
 
-  const investors = [...panMap.values()].map(e => ({
-    ...e, products: e.products.size, productList: [...e.products].join(', '),
-    tenureMonths: e.firstSub && e.lastSub
-      ? Math.max(1, Math.round((e.lastSub - e.firstSub) / (30.44 * 86400000)))
-      : 1,
-  })).sort((a, b) => b.totalSpend - a.totalSpend);
+  const investors = [...panMap.values()]
+    .filter(e => !scopedPANs || scopedPANs.has(e.pan))
+    .map(e => ({
+      ...e, products: e.products.size, productList: [...e.products].join(', '),
+      tenureMonths: e.firstSub && e.lastSub
+        ? Math.max(1, Math.round((e.lastSub - e.firstSub) / (30.44 * 86400000)))
+        : 1,
+    })).sort((a, b) => b.totalSpend - a.totalSpend);
 
   const totalLTV = investors.reduce((s, i) => s + i.totalSpend, 0);
   const avgLTV = investors.length ? Math.round(totalLTV / investors.length) : 0;
@@ -2116,8 +2186,15 @@ export function searchInvestor(rawData, query) {
 }
 
 // ─── CHURN RISK SCORES ────────────────────────────────────────────────────────
-export function getChurnRiskScores(currentMaster) {
-  const activeSubs = deduplicateByPAN(currentMaster.filter(isActive));
+// currentMaster here should be the DIMENSION-filtered master, not period-filtered
+// — this scores CURRENTLY active subscriptions by risk of churning soon, so a
+// past-dated period filter must not exclude a long-tenured active subscriber
+// just because they started outside that window.
+export function getChurnRiskScores(currentMaster, filters) {
+  const dimFiltered = hasDimensionFilters(filters)
+    ? currentMaster.filter(row => matchesDimensionFilters(row, filters))
+    : currentMaster;
+  const activeSubs = deduplicateByPAN(dimFiltered.filter(isActive));
   const now = new Date();
 
   const scored = activeSubs.map(r => {
@@ -2173,12 +2250,18 @@ export function getChurnRiskScores(currentMaster) {
 }
 
 // ─── REACTIVATION PIPELINE ────────────────────────────────────────────────────
-export function getReactivationPipeline(rawData) {
+export function getReactivationPipeline(rawData, filters) {
   const normalized = filterNonPrivate(normalizeData(rawData));
   const now = new Date();
   const cutoff = new Date(now); cutoff.setDate(cutoff.getDate() - 180);
+  // A selected period filter overrides the default "last 180 days" window —
+  // consistent with the rest of the dashboard, an explicit period means
+  // "reactivation candidates who exited in that window," not always-180-days.
+  const periodFrom = filters?.dateFrom || null;
+  const periodTo   = filters?.dateTo ? toEndOfDay(filters.dateTo) : null;
 
-  // One exit per unique investor-product
+  // One exit per unique investor-product (full history — needed to find each
+  // base key's LAST exit cycle correctly regardless of the period filter)
   const exitMap = new Map();
   for (const r of normalized) {
     const cs = String(r['Cycle Level Status'] || '').trim().toUpperCase();
@@ -2193,10 +2276,12 @@ export function getReactivationPipeline(rawData) {
     if (!ex || cycle > (Number(ex['Cycle Number']) || 0)) exitMap.set(base, r);
   }
 
-  // Filter to recent exits
+  // Filter to recent exits (or the selected period, if one is set) + dimension filters
   const recent = [...exitMap.values()].filter(r => {
+    if (!matchesDimensionFilters(r, filters)) return false;
     const d = parseExcelDate(r['Exit Date']) || parseExcelDate(r['Cycle End Date']);
-    return d && d >= cutoff;
+    if (!d) return false;
+    return (periodFrom || periodTo) ? inRange(d, periodFrom, periodTo) : d >= cutoff;
   });
 
   // Score reactivation potential
@@ -2296,9 +2381,16 @@ export function getRMPerformance(currentMaster, rawData) {
 }
 
 // ─── RENEWAL CALENDAR ─────────────────────────────────────────────────────────
-export function getRenewalCalendar(currentMaster) {
+// currentMaster here should be the DIMENSION-filtered master, not period-filtered
+// — this is a forward-looking calendar of upcoming expiries, so a past-dated
+// period filter must not hide a subscription expiring soon just because it
+// started outside that window.
+export function getRenewalCalendar(currentMaster, filters) {
   const now = new Date();
-  const activeSubs = deduplicateByPAN(currentMaster.filter(isActive));
+  const dimFiltered = hasDimensionFilters(filters)
+    ? currentMaster.filter(row => matchesDimensionFilters(row, filters))
+    : currentMaster;
+  const activeSubs = deduplicateByPAN(dimFiltered.filter(isActive));
   const calMap = new Map();
 
   for (const r of activeSubs) {
