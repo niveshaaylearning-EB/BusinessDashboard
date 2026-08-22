@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, useRef, useEffect, lazy, Suspense, useTransition, useDeferredValue } from 'react';
+import React, { useState, useMemo, useCallback, useRef, useEffect, lazy, Suspense, useTransition } from 'react';
 import * as XLSX from 'xlsx';
 import { api } from './api';
 import AdminPanel from './components/AdminPanel';
@@ -1219,9 +1219,12 @@ function Dashboard({ rawData, fileName, savedAt, currentUser, activeTab, setActi
   const [goal, setGoal] = useState(() => Number(localStorage.getItem('nia_goal')) || 0);
   useEffect(() => { localStorage.setItem('nia_goal', String(goal)); }, [goal]);
 
-  // Defer filter-driven recomputes so the filter UI stays snappy
-  const deferredFilters = useDeferredValue(filters);
-  const isFilterPending = deferredFilters !== filters;
+  // NOTE: this used to run derived computations off useDeferredValue(filters)
+  // to keep the filter UI responsive. Removed — it was a source of stale/stuck
+  // KPI values (recomputation could lag behind or never catch up with the
+  // latest filter state). Correctness matters more here than that micro-
+  // optimization; the underlying computations are fast enough without it.
+  const isFilterPending = false;
 
   // Heavy computations that only re-run when the file changes
   const baseData = useMemo(() => {
@@ -1240,19 +1243,18 @@ function Dashboard({ rawData, fileName, savedAt, currentUser, activeTab, setActi
     return { master, filterOptions, cohorts, migrationData, aumTimeline, unsubData, ltvData, reactivationPipeline, totalAUMAllTime };
   }, [rawData]);
 
-  // Filter-dependent computations — keyed on deferredFilters so the UI
-  // stays interactive while recomputing (React 18 concurrent mode)
+  // Filter-dependent computations — recomputes whenever filters changes
   const derived = useMemo(() => {
     const { master, cohorts, migrationData } = baseData;
 
     // Filtered master: EVERY filter applies here — dimensions (smallcase, state,
     // broker, etc.) AND the date period. "1M" means "active at some point during
     // the last month," not "started in the last month" (see overlapsPeriod).
-    const filtered = applyFilters(master, deferredFilters);
+    const filtered = applyFilters(master, filters);
 
     // Time-series + dimension-aware: rows matching all filters, keyed by whether
     // the subscription overlapped the selected period.
-    const filteredRaw = filterRawByDate(rawData, deferredFilters);
+    const filteredRaw = filterRawByDate(rawData, filters);
     const monthly = getMonthlyMovement(filteredRaw);
     const cancellationMetrics = getCancellationMetrics(filteredRaw);
 
@@ -1274,11 +1276,11 @@ function Dashboard({ rawData, fileName, savedAt, currentUser, activeTab, setActi
 
     // Period-over-period: compare the immediately preceding window of the same length
     let prevKpis = null;
-    if (deferredFilters.dateFrom && deferredFilters.dateTo) {
-      const periodMs = deferredFilters.dateTo.getTime() - deferredFilters.dateFrom.getTime();
-      const prevTo   = new Date(deferredFilters.dateFrom.getTime() - 1);
+    if (filters.dateFrom && filters.dateTo) {
+      const periodMs = filters.dateTo.getTime() - filters.dateFrom.getTime();
+      const prevTo   = new Date(filters.dateFrom.getTime() - 1);
       const prevFrom = new Date(prevTo.getTime() - periodMs);
-      const prevFilters = { ...deferredFilters, dateFrom: prevFrom, dateTo: prevTo };
+      const prevFilters = { ...filters, dateFrom: prevFrom, dateTo: prevTo };
       const prevRaw      = filterRawByDate(rawData, prevFilters);
       const prevFiltered = applyFilters(master, prevFilters);
       prevKpis = getSummaryKPIs(prevFiltered, prevRaw);
@@ -1300,7 +1302,7 @@ function Dashboard({ rawData, fileName, savedAt, currentUser, activeTab, setActi
       mrrMetrics, revenueAtRisk, churnRisk,
       rmPerformance, renewalCalendar, offerCodeROI,
     };
-  }, [baseData, deferredFilters]);
+  }, [baseData, filters]);
 
   const handleExport = useCallback(() => {
     if (!derived.filteredMaster?.length) return;
