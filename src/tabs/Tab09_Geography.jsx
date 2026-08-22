@@ -171,15 +171,20 @@ export default memo(function Tab09Geography({ geoMetrics, insights, filters, set
 
       {/* KPIs */}
       <SortableKPIGrid storageKey="geo" cols="175px" cards={[
-        { id: 'top_state_vol',   label: 'Top State (Volume)', value: topState?.state,    small: true, accent: 'var(--accent-cyan)',  icon: '📍', sub: `${topState?.total} subs (${topState?.networthShare}% NW)` },
-        { id: 'top_state_nw',    label: 'Top State (NW)',     value: topNWState?.state,  small: true, accent: 'var(--accent-gold)',  icon: '💰', sub: `Avg NW: ${formatCurrency(topNWState?.avgNetworth, true)}` },
-        { id: 'states_covered',  label: 'States Covered',     value: geoMetrics.length,              accent: 'var(--accent-teal)',  icon: '🗺️' },
-        { id: 'top5_share',      label: 'Top 5 States Share', value: `${Math.round(top10.slice(0,5).reduce((a,s)=>a+s.total,0)/totalSubs*100)}%`, accent: 'var(--accent-purple)', icon: '📊', sub: 'of all subscribers' },
+        { id: 'top_state_vol',   label: 'Top State (Volume)', value: topState?.state,    small: true, accent: 'var(--accent-cyan)',  icon: '📍', sub: `${topState?.total} subs (${topState?.networthShare}% NW)`,
+          tooltip: 'State with the most total subscriptions ever recorded (active + exited, deduplicated per investor). The "% NW" in the sub-label is this state\'s share of the nation\'s total active-subscriber net worth, not its share of subscriber count.' },
+        { id: 'top_state_nw',    label: 'Top State (NW)',     value: topNWState?.state,  small: true, accent: 'var(--accent-gold)',  icon: '💰', sub: `Avg NW: ${formatCurrency(topNWState?.avgNetworth, true)}`,
+          tooltip: 'State whose active subscribers have the highest average declared net worth per investor — distinct from networth share, which measures aggregate ₹ concentration rather than the per-person average.' },
+        { id: 'states_covered',  label: 'States Covered',     value: geoMetrics.length,              accent: 'var(--accent-teal)',  icon: '🗺️',
+          tooltip: 'Number of distinct states with at least one recorded subscriber, active or exited.' },
+        { id: 'top5_share',      label: 'Top 5 States Share', value: `${Math.round(top10.slice(0,5).reduce((a,s)=>a+s.total,0)/totalSubs*100)}%`, accent: 'var(--accent-purple)', icon: '📊', sub: 'of all subscribers',
+          tooltip: '% of all subscriptions (active + exited) concentrated in the 5 states with the highest subscriber volume — a geographic concentration indicator.' },
       ]} />
 
       {/* Volume Charts */}
       <div className="charts-grid charts-grid-2" style={{ marginBottom: '1rem' }}>
-        <ChartCard title="Top 10 States — Subscriber Count" subtitle="States ranked by total subscription count">
+        <ChartCard title="Top 10 States — Subscriber Count" subtitle="States ranked by total subscription count"
+          tooltip="Top 10 states by total subscriptions ever recorded, broken down into currently active vs. exited.">
           <ResponsiveContainer width="100%" height={260}>
             <BarChart
               data={top10}
@@ -205,7 +210,8 @@ export default memo(function Tab09Geography({ geoMetrics, insights, filters, set
           <div className="chart-clickable-hint">Click a bar to see subscribers for that state</div>
         </ChartCard>
 
-        <ChartCard title="Top 10 States — Avg Networth" subtitle="Wealthiest investor bases by state">
+        <ChartCard title="Top 10 States — Avg Networth" subtitle="Wealthiest investor bases by state"
+          tooltip="States ranked by the average declared net worth of their currently active subscribers — the wealthiest per-investor base, not the largest total headcount.">
           <ResponsiveContainer width="100%" height={260}>
             <BarChart
               data={topByNW}
@@ -234,7 +240,8 @@ export default memo(function Tab09Geography({ geoMetrics, insights, filters, set
 
       {/* Renewal & NW Share */}
       <div className="charts-grid charts-grid-2" style={{ marginBottom: '1rem' }}>
-        <ChartCard title="Renewal Rate by State" subtitle="Subscriber loyalty by geography">
+        <ChartCard title="Renewal Rate by State" subtitle="Subscriber loyalty by geography"
+          tooltip="States ranked by % of active subscribers on cycle 2+ (renewed at least once); only states with 3+ total subscribers are included to avoid small-sample distortion.">
           <ResponsiveContainer width="100%" height={240}>
             <BarChart
               data={topByRenewal}
@@ -260,7 +267,8 @@ export default memo(function Tab09Geography({ geoMetrics, insights, filters, set
           <div className="chart-clickable-hint">Click a bar to see subscribers for that state</div>
         </ChartCard>
 
-        <ChartCard title="Networth Concentration by State" subtitle="% of total subscriber networth contributed by each state">
+        <ChartCard title="Networth Concentration by State" subtitle="% of total subscriber networth contributed by each state"
+          tooltip="% of the total net worth held by all active subscribers nationwide that is concentrated in each state — a measure of where the wealth is located, not where the headcount is.">
           <ResponsiveContainer width="100%" height={240}>
             <BarChart
               data={[...geoMetrics].sort((a, b) => b.networthShare - a.networthShare).slice(0, 10)}
@@ -286,7 +294,8 @@ export default memo(function Tab09Geography({ geoMetrics, insights, filters, set
       </div>
 
       {/* Full State Table */}
-      <ChartCard title="State Intelligence Table" subtitle="Complete metrics for all states — click headers to sort">
+      <ChartCard title="State Intelligence Table" subtitle="Complete metrics for all states — click headers to sort"
+        tooltip="Complete per-state metrics: total/active/exited subscriptions, renewal rate and average P&L/net worth of active subscribers, and each state's share of nationwide active-subscriber net worth.">
         <div className="data-table-wrap" style={{ maxHeight: 420, overflowY: 'auto' }}>
           <table className="data-table">
             <thead>

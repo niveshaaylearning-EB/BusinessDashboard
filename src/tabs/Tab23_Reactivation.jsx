@@ -2,10 +2,14 @@
 import { formatNumber } from '../dataEngine';
 
 const PRIORITY_META = {
-  Hot:      { color: '#f87171', bg: 'rgba(248,113,113,0.15)', icon: '🔥', desc: 'High networth + positive P&L + recent exit — contact now' },
-  Warm:     { color: '#fb923c', bg: 'rgba(251,146,60,0.15)',  icon: '♨️',  desc: 'Good potential — personalized outreach recommended' },
-  Possible: { color: '#fbbf24', bg: 'rgba(251,191,36,0.15)', icon: '💡', desc: 'Worth a targeted campaign or offer' },
-  Cold:     { color: '#94a3b8', bg: 'rgba(148,163,184,0.1)',  icon: '❄️',  desc: 'Low reactivation likelihood — low priority' },
+  Hot:      { color: '#f87171', bg: 'rgba(248,113,113,0.15)', icon: '🔥', desc: 'High networth + positive P&L + recent exit — contact now',
+    tooltip: 'Score of 6+ combining exit P&L (profitable exits score higher), net worth (bigger accounts score higher), a pricing-related exit reason, loyalty (cycles completed), and recency of exit — the best win-back bets.' },
+  Warm:     { color: '#fb923c', bg: 'rgba(251,146,60,0.15)',  icon: '♨️',  desc: 'Good potential — personalized outreach recommended',
+    tooltip: 'Score of 4-5 on the same formula (exit P&L, net worth, exit reason, cycles completed, days since exit) — good potential, worth a personalized outreach.' },
+  Possible: { color: '#fbbf24', bg: 'rgba(251,191,36,0.15)', icon: '💡', desc: 'Worth a targeted campaign or offer',
+    tooltip: 'Score of 2-3 — some positive signals but a weaker case for reactivation; worth including in a broader win-back campaign.' },
+  Cold:     { color: '#94a3b8', bg: 'rgba(148,163,184,0.1)',  icon: '❄️',  desc: 'Low reactivation likelihood — low priority',
+    tooltip: 'Score below 2, often from an exit tied to poor performance or losses — least likely to return, low priority for outreach.' },
 };
 
 export default memo(function Tab23Reactivation({ reactivationPipeline }) {
@@ -36,18 +40,18 @@ export default memo(function Tab23Reactivation({ reactivationPipeline }) {
 
       {/* Summary KPIs */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 10 }}>
-        <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-bright)', borderRadius: 12, padding: '1rem' }}>
+        <div title="Unique investor-product exits (Cycle Level Status = UNSUBSCRIBED, most recent cycle only) whose exit or cycle-end date falls within the last 180 days — the pool considered for win-back campaigns." style={{ background: 'var(--bg-card)', border: '1px solid var(--border-bright)', borderRadius: 12, padding: '1rem' }}>
           <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>Eligible for Reactivation</div>
           <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--accent-cyan)' }}>{d.total || 0}</div>
           <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>Exits in last 6 months</div>
         </div>
-        <div style={{ background: 'var(--bg-card)', border: '1px solid #22c55e40', borderRadius: 12, padding: '1rem' }}>
+        <div title="Sum of each eligible investor's last Plan Amount — the subscription revenue that could be recovered if every one of them reactivated." style={{ background: 'var(--bg-card)', border: '1px solid #22c55e40', borderRadius: 12, padding: '1rem' }}>
           <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>Revenue Potential</div>
           <div style={{ fontSize: '1.6rem', fontWeight: 700, color: '#22c55e' }}>₹{formatNumber(d.totalRevenuePotential || 0)}</div>
           <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>Based on last plan amounts</div>
         </div>
         {Object.entries(PRIORITY_META).map(([k, meta]) => (
-          <div key={k} style={{ background: meta.bg, border: `1px solid ${meta.color}40`, borderRadius: 12, padding: '1rem', cursor: 'pointer', outline: filter === k ? `2px solid ${meta.color}` : 'none' }}
+          <div key={k} title={meta.tooltip} style={{ background: meta.bg, border: `1px solid ${meta.color}40`, borderRadius: 12, padding: '1rem', cursor: 'pointer', outline: filter === k ? `2px solid ${meta.color}` : 'none' }}
             onClick={() => setFilter(filter === k ? 'All' : k)}>
             <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>{meta.icon} {k}</div>
             <div style={{ fontSize: '1.8rem', fontWeight: 700, color: meta.color }}>{byPriority[k] || 0}</div>

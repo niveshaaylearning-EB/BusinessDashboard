@@ -44,20 +44,20 @@ export default memo(function Tab26OfferROI({ offerCodeROI }) {
 
       {/* KPI Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12 }}>
-        <div style={{ background: 'var(--bg-card)', border: '1px solid var(--accent-cyan)40', borderRadius: 12, padding: '1rem' }}>
+        <div title="Count of distinct offer codes used at first subscription (excluding 'No Code'), based on each PAN's earliest cycle-1 record." style={{ background: 'var(--bg-card)', border: '1px solid var(--accent-cyan)40', borderRadius: 12, padding: '1rem' }}>
           <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>Unique Offer Codes</div>
           <div style={{ fontSize: '1.6rem', fontWeight: 700, color: '#00d4ff' }}>{withCode.length}</div>
         </div>
-        <div style={{ background: 'var(--bg-card)', border: '1px solid #f8717140', borderRadius: 12, padding: '1rem' }}>
+        <div title="Sum of Offer Discount given to every investor who signed up using a code — the total ₹ spent acquiring investors through discounts." style={{ background: 'var(--bg-card)', border: '1px solid #f8717140', borderRadius: 12, padding: '1rem' }}>
           <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>Total Discount Cost</div>
           <div style={{ fontSize: '1.6rem', fontWeight: 700, color: '#f87171' }}>₹{formatNumber(totalDiscountCost)}</div>
         </div>
-        <div style={{ background: 'var(--bg-card)', border: '1px solid #22c55e40', borderRadius: 12, padding: '1rem' }}>
+        <div title="Share of all first-time subscribers (coded and non-coded) who reached cycle 2 or beyond — the blended renewal rate across every acquisition channel." style={{ background: 'var(--bg-card)', border: '1px solid #22c55e40', borderRadius: 12, padding: '1rem' }}>
           <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>Overall Renewal (All)</div>
           <div style={{ fontSize: '1.6rem', fontWeight: 700, color: '#22c55e' }}>{totalAcquired > 0 ? (totalRenewed / totalAcquired * 100).toFixed(1) : 0}%</div>
         </div>
         {noCode && (
-          <div style={{ background: 'var(--bg-card)', border: '1px solid #fbbf2440', borderRadius: 12, padding: '1rem' }}>
+          <div title="Renewal rate of investors who subscribed without any offer code — the benchmark used to judge whether each code's renewal rate over- or under-performs." style={{ background: 'var(--bg-card)', border: '1px solid #fbbf2440', borderRadius: 12, padding: '1rem' }}>
             <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>Baseline (No Code)</div>
             <div style={{ fontSize: '1.6rem', fontWeight: 700, color: '#fbbf24' }}>{baselineRenewal}%</div>
             <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>{noCode.acquired} investors</div>
@@ -66,7 +66,8 @@ export default memo(function Tab26OfferROI({ offerCodeROI }) {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-        <ChartCard title="Renewal Rate by Offer Code">
+        <ChartCard title="Renewal Rate by Offer Code"
+          tooltip="Renewal rate = share of that code's first-time subscribers who reached cycle 2 or later. Green bars beat the no-code baseline, red bars fall short — a low bar means that code is buying acquisitions that don't stick.">
           <ResponsiveContainer width="100%" height={240}>
             <BarChart data={top8}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border-default)" />
@@ -93,7 +94,8 @@ export default memo(function Tab26OfferROI({ offerCodeROI }) {
           )}
         </ChartCard>
 
-        <ChartCard title="Acquisition Volume by Code">
+        <ChartCard title="Acquisition Volume by Code"
+          tooltip="Acquired = investors whose first subscription used that code; Renewed = how many of those went on to a 2nd cycle or later — compare the two bars to see which codes convert volume into loyalty.">
           <ResponsiveContainer width="100%" height={240}>
             <BarChart data={top8}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border-default)" />

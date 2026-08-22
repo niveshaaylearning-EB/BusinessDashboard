@@ -202,18 +202,30 @@ export default memo(function Tab17SubscriberFlow({ monthly, currentMaster, filte
   const pageRows = tableData.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   const kpiCards = [
-    { id:'totalNew',        label:'Total New Subscribers',  icon:'🆕', accent:'#22c55e',               value: fmt(kpis.totalNew),         sub:'First-time (Cycle 1) entries'    },
-    { id:'totalRenewals',   label:'Total Renewals',         icon:'🔄', accent:'var(--accent-cyan)',     value: fmt(kpis.totalRenewals),    sub:'Cycle 2+ re-subscriptions'       },
-    { id:'totalIn',         label:'Total Subscriptions In', icon:'📥', accent:'#a78bfa',               value: fmt(kpis.totalIn),          sub:'New + Renewals combined'         },
-    { id:'totalExits',      label:'Total Exits',            icon:'🚪', accent:'var(--accent-red)',      value: fmt(kpis.totalExits),       sub:'Unsubscriptions (all cycles)'    },
-    { id:'netFlow',         label:'Net Flow',               icon:'⚖️', accent: kpis.netFlow>=0?'#22c55e':'#f87171', value: sign(kpis.netFlow), sub:'Total In minus Total Exits' },
-    { id:'renewalRate',     label:'Renewal Rate',           icon:'♻️', accent:'#22d3ee',               value: fmtPct(kpis.renewalRate),   sub:'Renewals ÷ Total Inflows'        },
-    { id:'exitRate',        label:'Exit Rate',              icon:'📉', accent:'#fbbf24',               value: fmtPct(kpis.exitRate),      sub:'Exits ÷ Total Inflows'           },
-    { id:'latestActive',    label:'Active Subscribers',     icon:'✅', accent:'var(--accent-green)',    value: fmt(kpis.latestActive),     sub:'At end of selected period'       },
-    { id:'avgNew',          label:'Avg Monthly New',        icon:'📊', accent:'#34d399',               value: fmt(kpis.avgMonthlyNew),    sub:'New subscribers per month'       },
-    { id:'avgRenewals',     label:'Avg Monthly Renewals',   icon:'🔁', accent:'#67e8f9',               value: fmt(kpis.avgMonthlyRenewals),sub:'Renewals per month'             },
-    { id:'avgExits',        label:'Avg Monthly Exits',      icon:'⚠️', accent:'#fb923c',               value: fmt(kpis.avgMonthlyExits),  sub:'Exits per month'                 },
-    { id:'avgNet',          label:'Avg Monthly Net',        icon:'📈', accent: kpis.avgMonthlyNet>=0?'#22c55e':'#f87171', value: sign(kpis.avgMonthlyNet), sub:'Avg net subscribers per month' },
+    { id:'totalNew',        label:'Total New Subscribers',  icon:'🆕', accent:'#22c55e',               value: fmt(kpis.totalNew),         sub:'First-time (Cycle 1) entries',
+      tooltip: 'Count of first-time subscriptions (Cycle Number 1) that started within the selected period — genuinely new investors, not renewals of an existing subscription.' },
+    { id:'totalRenewals',   label:'Total Renewals',         icon:'🔄', accent:'var(--accent-cyan)',     value: fmt(kpis.totalRenewals),    sub:'Cycle 2+ re-subscriptions',
+      tooltip: 'Count of Cycle 2+ re-subscriptions within the period — existing investors renewing their plan rather than first-time signups.' },
+    { id:'totalIn',         label:'Total Subscriptions In', icon:'📥', accent:'#a78bfa',               value: fmt(kpis.totalIn),          sub:'New + Renewals combined',
+      tooltip: 'Every subscription event that added a paying cycle in this period — Total New plus Total Renewals combined, regardless of whether the investor was new or returning.' },
+    { id:'totalExits',      label:'Total Exits',            icon:'🚪', accent:'var(--accent-red)',      value: fmt(kpis.totalExits),       sub:'Unsubscriptions (all cycles)',
+      tooltip: 'Total unsubscriptions recorded in the period, across all cycles — both first-time cancellations and investors who chose not to renew.' },
+    { id:'netFlow',         label:'Net Flow',               icon:'⚖️', accent: kpis.netFlow>=0?'#22c55e':'#f87171', value: sign(kpis.netFlow), sub:'Total In minus Total Exits',
+      tooltip: 'Total Subscriptions In minus Total Exits for the period. Positive means the subscriber base grew over this window; negative means more people left than joined.' },
+    { id:'renewalRate',     label:'Renewal Rate',           icon:'♻️', accent:'#22d3ee',               value: fmtPct(kpis.renewalRate),   sub:'Renewals ÷ Total Inflows',
+      tooltip: 'Renewals as a share of total inflows (New + Renewals). A higher rate means more of your growth is coming from existing investors renewing rather than fresh acquisition.' },
+    { id:'exitRate',        label:'Exit Rate',              icon:'📉', accent:'#fbbf24',               value: fmtPct(kpis.exitRate),      sub:'Exits ÷ Total Inflows',
+      tooltip: 'Exits as a share of total inflows for the period — a rough churn-pressure gauge relative to how many subscriptions came in over the same window.' },
+    { id:'latestActive',    label:'Active Subscribers',     icon:'✅', accent:'var(--accent-green)',    value: fmt(kpis.latestActive),     sub:'At end of selected period',
+      tooltip: 'Active subscriber count (closing balance) at the end of the last month in the selected period.' },
+    { id:'avgNew',          label:'Avg Monthly New',        icon:'📊', accent:'#34d399',               value: fmt(kpis.avgMonthlyNew),    sub:'New subscribers per month',
+      tooltip: 'Total New Subscribers in the period divided by the number of months covered — the average pace of first-time acquisition per month.' },
+    { id:'avgRenewals',     label:'Avg Monthly Renewals',   icon:'🔁', accent:'#67e8f9',               value: fmt(kpis.avgMonthlyRenewals),sub:'Renewals per month',
+      tooltip: 'Total Renewals divided by the number of months in the period — the average pace of renewal activity per month.' },
+    { id:'avgExits',        label:'Avg Monthly Exits',      icon:'⚠️', accent:'#fb923c',               value: fmt(kpis.avgMonthlyExits),  sub:'Exits per month',
+      tooltip: 'Total Exits divided by the number of months in the period — the average monthly cancellation volume.' },
+    { id:'avgNet',          label:'Avg Monthly Net',        icon:'📈', accent: kpis.avgMonthlyNet>=0?'#22c55e':'#f87171', value: sign(kpis.avgMonthlyNet), sub:'Avg net subscribers per month',
+      tooltip: 'Average of (Inflows − Exits) across the months in the period — the typical net subscriber gain or loss in a given month.' },
   ];
 
   if (!monthly?.length) return (
@@ -243,7 +255,8 @@ export default memo(function Tab17SubscriberFlow({ monthly, currentMaster, filte
 
       {/* Chart Row 1: Monthly Inflow vs Exits */}
       <div className="charts-grid charts-grid-2" style={{ marginBottom:'1rem' }}>
-        <ChartCard title="Monthly Inflow vs Exits" subtitle="New subscribers + renewals vs exits per month" badge="Flow">
+        <ChartCard title="Monthly Inflow vs Exits" subtitle="New subscribers + renewals vs exits per month" badge="Flow"
+          tooltip="Stacked green/cyan bars show new (Cycle 1) and renewal subscriptions coming in each month against the red exits bar — compare bar heights to see whether growth is outpacing cancellations.">
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={last24}
               style={{ cursor: 'pointer' }}
@@ -271,7 +284,8 @@ export default memo(function Tab17SubscriberFlow({ monthly, currentMaster, filte
           <div className="chart-clickable-hint">💡 Click any bar/point to see details</div>
         </ChartCard>
 
-        <ChartCard title="Net Monthly Flow" subtitle="Net subscribers added or lost each month" badge="Net">
+        <ChartCard title="Net Monthly Flow" subtitle="Net subscribers added or lost each month" badge="Net"
+          tooltip="Net subscribers gained (green, above zero) or lost (red, below zero) in each month — Total In minus Exits for that specific month.">
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={last24}
               style={{ cursor: 'pointer' }}
@@ -303,7 +317,8 @@ export default memo(function Tab17SubscriberFlow({ monthly, currentMaster, filte
 
       {/* Chart Row 2: Cumulative + Renewal Composition */}
       <div className="charts-grid charts-grid-2" style={{ marginBottom:'1rem' }}>
-        <ChartCard title="Cumulative Flow" subtitle="Running total of new, renewals, exits, and net subscribers" badge="Cumulative">
+        <ChartCard title="Cumulative Flow" subtitle="Running total of new, renewals, exits, and net subscribers" badge="Cumulative"
+          tooltip="Running totals since the start of the selected period — cumulative inflow, cumulative exits, and the resulting net subscriber count over time. A widening gap between the lines shows sustained growth or decline.">
           <ResponsiveContainer width="100%" height={220}>
             <LineChart data={cumulativeData.slice(-24)}
               style={{ cursor: 'pointer' }}
@@ -330,7 +345,8 @@ export default memo(function Tab17SubscriberFlow({ monthly, currentMaster, filte
           <div className="chart-clickable-hint">💡 Click any bar/point to see details</div>
         </ChartCard>
 
-        <ChartCard title="Inflow Composition" subtitle="New vs Renewal split each month (%)" badge="Mix">
+        <ChartCard title="Inflow Composition" subtitle="New vs Renewal split each month (%)" badge="Mix"
+          tooltip="Each month's inflow split into the percentage that came from new (Cycle 1) signups vs renewals — shows whether growth relies more on fresh acquisition or repeat business.">
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={compositionData}
               style={{ cursor: 'pointer' }}

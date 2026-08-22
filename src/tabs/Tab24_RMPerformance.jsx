@@ -39,10 +39,14 @@ export default memo(function Tab24RMPerformance({ rmPerformance }) {
 
   const top5 = sorted.slice(0, 8);
   const kpiRows = [
-    { label: 'Total RMs', value: data.length, color: '#00d4ff' },
-    { label: 'Total Managed', value: formatNumber(data.reduce((s, r) => s + r.total, 0)), color: '#fbbf24' },
-    { label: 'Best Renewal Rate', value: data.length ? `${Math.max(...data.map(r => r.renewalRate))}%` : '—', color: '#22c55e' },
-    { label: 'Total Revenue', value: `₹${formatNumber(data.reduce((s, r) => s + r.totalRevenue, 0))}`, color: '#a78bfa' },
+    { label: 'Total RMs', value: data.length, color: '#00d4ff',
+      tooltip: 'Count of distinct RM Email values with at least one assigned investor, deduplicated by PAN.' },
+    { label: 'Total Managed', value: formatNumber(data.reduce((s, r) => s + r.total, 0)), color: '#fbbf24',
+      tooltip: 'Sum of every investor (active and exited, deduplicated by PAN) across all RMs.' },
+    { label: 'Best Renewal Rate', value: data.length ? `${Math.max(...data.map(r => r.renewalRate))}%` : '—', color: '#22c55e',
+      tooltip: 'The highest renewal rate among all RMs — the share of that RM\'s active investors who are on cycle 2 or later.' },
+    { label: 'Total Revenue', value: `₹${formatNumber(data.reduce((s, r) => s + r.totalRevenue, 0))}`, color: '#a78bfa',
+      tooltip: 'Sum of Plan Amount across every investor (active and exited) ever assigned to an RM.' },
   ];
 
   return (
@@ -57,7 +61,7 @@ export default memo(function Tab24RMPerformance({ rmPerformance }) {
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12 }}>
         {kpiRows.map(k => (
-          <div key={k.label} style={{ background: 'var(--bg-card)', border: `1px solid ${k.color}40`, borderRadius: 12, padding: '1rem' }}>
+          <div key={k.label} title={k.tooltip} style={{ background: 'var(--bg-card)', border: `1px solid ${k.color}40`, borderRadius: 12, padding: '1rem' }}>
             <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>{k.label}</div>
             <div style={{ fontSize: '1.4rem', fontWeight: 700, color: k.color }}>{k.value}</div>
           </div>
@@ -65,7 +69,8 @@ export default memo(function Tab24RMPerformance({ rmPerformance }) {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-        <ChartCard title="Active Investors by RM (Top 8)">
+        <ChartCard title="Active Investors by RM (Top 8)"
+          tooltip="Currently active (Subscribed, Grace, or Cancelled-but-active) investors per RM, deduplicated by PAN — the 8 RMs with the largest active books.">
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={top5} layout="vertical">
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border-default)" />
@@ -77,7 +82,8 @@ export default memo(function Tab24RMPerformance({ rmPerformance }) {
           </ResponsiveContainer>
         </ChartCard>
 
-        <ChartCard title="Renewal Rate by RM (Top 8)">
+        <ChartCard title="Renewal Rate by RM (Top 8)"
+          tooltip="Share of each RM's active investors currently on their 2nd cycle or later — a proxy for how well that RM retains clients past the first subscription.">
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={top5} layout="vertical">
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border-default)" />

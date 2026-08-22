@@ -2,10 +2,14 @@
 import { formatNumber } from '../dataEngine';
 
 const BUCKET_META = {
-  critical: { label: '0 – 30 Days', color: '#f87171', bg: 'rgba(248,113,113,0.08)', icon: '🔴' },
-  warning:  { label: '31 – 60 Days', color: '#fbbf24', bg: 'rgba(251,191,36,0.08)',   icon: '🟡' },
-  watch:    { label: '61 – 90 Days', color: '#fb923c', bg: 'rgba(251,146,60,0.08)',    icon: '🟠' },
-  safe:     { label: '90+ Days',     color: '#22c55e', bg: 'rgba(34,197,94,0.08)',      icon: '🟢' },
+  critical: { label: '0 – 30 Days', color: '#f87171', bg: 'rgba(248,113,113,0.08)', icon: '🔴',
+    tooltip: 'Active subscriptions whose current cycle ends within the next 30 days — the highest-urgency renewal outreach window (High churn risk). The ₹ figure is the full plan amount at stake, not a monthly-equivalent.' },
+  warning:  { label: '31 – 60 Days', color: '#fbbf24', bg: 'rgba(251,191,36,0.08)',   icon: '🟡',
+    tooltip: 'Active subscriptions renewing in 31–60 days (Medium churn risk) — a second-priority outreach window before they lapse.' },
+  watch:    { label: '61 – 90 Days', color: '#fb923c', bg: 'rgba(251,146,60,0.08)',    icon: '🟠',
+    tooltip: 'Active subscriptions renewing in 61–90 days (Low churn risk by the model, but worth an early heads-up) — a planning window to line up renewal outreach ahead of time.' },
+  safe:     { label: '90+ Days',     color: '#22c55e', bg: 'rgba(34,197,94,0.08)',      icon: '🟢',
+    tooltip: 'Active subscriptions with more than 90 days left on their current cycle — not yet due for renewal outreach.' },
 };
 
 export default memo(function Tab19RevenueRisk({ revenueAtRisk }) {
@@ -36,14 +40,20 @@ export default memo(function Tab19RevenueRisk({ revenueAtRisk }) {
       {/* Summary KPIs */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
         <div style={{ background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.3)', borderRadius: 12, padding: '1.2rem' }}>
-          <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 6 }}>Revenue at Risk (90 days)</div>
+          <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 5 }}>
+            Revenue at Risk (90 days)
+            <span title="Sum of full plan amounts (not monthly-equivalent) for active subscriptions whose current cycle ends within the next 90 days — the renewal revenue that could be lost if these accounts don't renew. Subscriptions expiring beyond 90 days are excluded." style={{ cursor: 'help', color: 'var(--text-muted)' }}>ⓘ</span>
+          </div>
           <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#f87171' }}>₹{formatNumber(totalAtRisk)}</div>
           <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>{countAtRisk} unique investors</div>
         </div>
         {Object.entries(BUCKET_META).map(([key, meta]) => (
           <div key={key} style={{ background: meta.bg, border: `1px solid ${meta.color}40`, borderRadius: 12, padding: '1.2rem', cursor: 'pointer', outline: bucket === key ? `2px solid ${meta.color}` : 'none' }}
             onClick={() => setBucket(key)}>
-            <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>{meta.icon} {meta.label}</div>
+            <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 5 }}>
+              {meta.icon} {meta.label}
+              {meta.tooltip && <span title={meta.tooltip} style={{ cursor: 'help', color: 'var(--text-muted)' }}>ⓘ</span>}
+            </div>
             <div style={{ fontSize: '1.4rem', fontWeight: 700, color: meta.color }}>{formatNumber(buckets[key]?.count || 0)}</div>
             <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>₹{formatNumber(buckets[key]?.revenue || 0)} at stake</div>
           </div>

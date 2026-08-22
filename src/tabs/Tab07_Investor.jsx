@@ -291,15 +291,20 @@ function InvestorContent({ investorSegments, currentMaster, insights, filters, s
 
       {/* KPIs */}
       <SortableKPIGrid storageKey="investor" cols="175px" cards={[
-        { id: 'hni_count',    label: 'HNI Investors (>25L)',  value: formatNumber(hniCount),  accent: 'var(--accent-gold)',  icon: '💎', sub: `${hniPct}% of base` },
-        { id: 'profitable',   label: 'Profitable Investors',  value: `${profitPct}%`,          accent: 'var(--accent-green)', icon: '📈', sub: formatNumber(profitableCount) + ' investors' },
-        { id: 'hni_avg_plan', label: 'HNI Avg Plan',          value: formatCurrency(networthData.find(b => b.label === '> ₹1Cr')?.avgPlanAmount || 0, true), accent: 'var(--accent-gold)', icon: '🏷️' },
-        { id: 'hni_renewal',  label: 'HNI Renewal Rate',      value: `${networthData.find(b => b.label === '> ₹1Cr')?.renewalRate || 0}%`, accent: 'var(--accent-teal)', icon: '🔄' },
+        { id: 'hni_count',    label: 'HNI Investors (>25L)',  value: formatNumber(hniCount),  accent: 'var(--accent-gold)',  icon: '💎', sub: `${hniPct}% of base`,
+          tooltip: 'Count of currently active, unique investors with declared Networth above ₹25 lakh — combines the ₹25L-₹1Cr and >₹1Cr networth buckets.' },
+        { id: 'profitable',   label: 'Profitable Investors',  value: `${profitPct}%`,          accent: 'var(--accent-green)', icon: '📈', sub: formatNumber(profitableCount) + ' investors',
+          tooltip: '% of active investors whose portfolio return (P&L ÷ Networth, or ÷ Plan Amount if Networth is unavailable) exceeds +5% — combines the "Profitable" (5-25%) and "High Performers" (>25%) tiers.' },
+        { id: 'hni_avg_plan', label: 'HNI Avg Plan',          value: formatCurrency(networthData.find(b => b.label === '> ₹1Cr')?.avgPlanAmount || 0, true), accent: 'var(--accent-gold)', icon: '🏷️',
+          tooltip: 'Average subscription plan amount paid by investors in the top ">₹1Cr" networth tier only — narrower than the "HNI Investors" count above, which also includes the ₹25L-₹1Cr tier.' },
+        { id: 'hni_renewal',  label: 'HNI Renewal Rate',      value: `${networthData.find(b => b.label === '> ₹1Cr')?.renewalRate || 0}%`, accent: 'var(--accent-teal)', icon: '🔄',
+          tooltip: '% of investors in the ">₹1Cr" networth tier who are on cycle 2 or later, i.e. have renewed at least once — scoped to only the ultra-HNI tier, not the broader >25L HNI group above.' },
       ]} />
 
       {/* Networth Distribution */}
       <div className="charts-grid charts-grid-2" style={{ marginBottom: '1rem' }}>
-        <ChartCard title="Networth Bucket Distribution" subtitle="Click a bar to drill into subscribers — Subscriber count across networth tiers">
+        <ChartCard title="Networth Bucket Distribution" subtitle="Click a bar to drill into subscribers — Subscriber count across networth tiers"
+          tooltip="Number of unique active investors falling into each networth bracket, based on their declared Networth value.">
           <ResponsiveContainer width="100%" height={250}>
             <BarChart data={networthData} onClick={handleNWClick} style={{ cursor: 'pointer' }}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border-dim)" />
@@ -313,7 +318,8 @@ function InvestorContent({ investorSegments, currentMaster, insights, filters, s
           </ResponsiveContainer>
         </ChartCard>
 
-        <ChartCard title="Networth Segment Share (Pie)" subtitle="Distribution of investors by networth bucket">
+        <ChartCard title="Networth Segment Share (Pie)" subtitle="Distribution of investors by networth bucket"
+          tooltip="The same networth-tier investor counts shown as a % share of the total active investor base.">
           <ResponsiveContainer width="100%" height={250}>
             <PieChart>
               <Pie data={networthData} cx="50%" cy="50%" outerRadius={100} dataKey="count" nameKey="label" labelLine={false} label={<PieLabel />}>
@@ -328,7 +334,8 @@ function InvestorContent({ investorSegments, currentMaster, insights, filters, s
 
       {/* Avg Plan by Networth */}
       <div className="charts-grid charts-grid-2" style={{ marginBottom: '1rem' }}>
-        <ChartCard title="Avg Plan Amount by Networth Tier" subtitle="Click a bar to drill into subscribers — Higher networth → higher plan value correlation">
+        <ChartCard title="Avg Plan Amount by Networth Tier" subtitle="Click a bar to drill into subscribers — Higher networth → higher plan value correlation"
+          tooltip="Average subscription plan value paid by investors in each networth tier — shows whether wealthier investors also buy higher-value plans.">
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={networthData} onClick={handleNWClick} style={{ cursor: 'pointer' }}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border-dim)" />
@@ -342,7 +349,8 @@ function InvestorContent({ investorSegments, currentMaster, insights, filters, s
           </ResponsiveContainer>
         </ChartCard>
 
-        <ChartCard title="Renewal Rate by Networth Tier" subtitle="Click a bar to drill into subscribers — Do higher-networth investors renew more?">
+        <ChartCard title="Renewal Rate by Networth Tier" subtitle="Click a bar to drill into subscribers — Do higher-networth investors renew more?"
+          tooltip="% of investors in each networth tier who are on cycle 2 or later, i.e. have renewed their subscription at least once.">
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={networthData} onClick={handleNWClick} style={{ cursor: 'pointer' }}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border-dim)" />
@@ -359,7 +367,8 @@ function InvestorContent({ investorSegments, currentMaster, insights, filters, s
 
       {/* PnL Distribution */}
       <div className="charts-grid charts-grid-2" style={{ marginBottom: '1rem' }}>
-        <ChartCard title="PnL Bucket Distribution" subtitle="Click a bar to drill into subscribers — % return on networth · Profitable = P&L > 5%">
+        <ChartCard title="PnL Bucket Distribution" subtitle="Click a bar to drill into subscribers — % return on networth · Profitable = P&L > 5%"
+          tooltip="Number of active investors by portfolio-return bracket: Loss Making (below -5%), Break Even (-5% to 5%), Profitable (5-25%), and High Performers (above 25%) — return is P&L as a % of Networth, or Plan Amount if Networth is missing.">
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={pnlData} onClick={handlePLClick} style={{ cursor: 'pointer' }}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border-dim)" />
@@ -373,7 +382,8 @@ function InvestorContent({ investorSegments, currentMaster, insights, filters, s
           </ResponsiveContainer>
         </ChartCard>
 
-        <ChartCard title="PnL Segment — Avg Networth" subtitle="Click a bar to drill into subscribers — Networth profile of each PnL tier">
+        <ChartCard title="PnL Segment — Avg Networth" subtitle="Click a bar to drill into subscribers — Networth profile of each PnL tier"
+          tooltip="Average declared net worth of investors within each portfolio-performance bracket — reveals whether wealthier investors tend to perform better or worse.">
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={pnlData} onClick={handlePLClick} style={{ cursor: 'pointer' }}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border-dim)" />
@@ -387,7 +397,8 @@ function InvestorContent({ investorSegments, currentMaster, insights, filters, s
       </div>
 
       {/* Networth Summary Table */}
-      <ChartCard title="Investor Segment Comparison" subtitle="Full metrics matrix across all networth tiers">
+      <ChartCard title="Investor Segment Comparison" subtitle="Full metrics matrix across all networth tiers"
+        tooltip="Side-by-side comparison of every networth tier's investor count, average plan value, renewal rate (% on cycle 2+), and average absolute P&L in ₹ (not %).">
         <div className="data-table-wrap">
           <table className="data-table">
             <thead><tr>

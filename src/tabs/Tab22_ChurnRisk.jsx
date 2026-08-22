@@ -4,10 +4,14 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import ChartCard from '../components/ChartCard';
 
 const RISK_META = {
-  Critical: { color: '#f87171', bg: 'rgba(248,113,113,0.15)', icon: '🔴' },
-  High:     { color: '#fb923c', bg: 'rgba(251,146,60,0.15)',  icon: '🟠' },
-  Medium:   { color: '#fbbf24', bg: 'rgba(251,191,36,0.15)', icon: '🟡' },
-  Low:      { color: '#22c55e', bg: 'rgba(34,197,94,0.15)',   icon: '🟢' },
+  Critical: { color: '#f87171', bg: 'rgba(248,113,113,0.15)', icon: '🔴',
+    tooltip: 'Score of 7+ on the churn formula (first-cycle subscriber +3, P&L below -20% +4, ≤15 days left in cycle +3, heavy discount dependency +2, new subscriber +1, gains above +10% subtract 2) — most likely to churn, needs immediate outreach.' },
+  High:     { color: '#fb923c', bg: 'rgba(251,146,60,0.15)',  icon: '🟠',
+    tooltip: 'Score of 5-6 on the same weighted formula (cycle stage, P&L, days left in cycle, discount dependency, tenure) — elevated churn risk, prioritize right after Critical.' },
+  Medium:   { color: '#fbbf24', bg: 'rgba(251,191,36,0.15)', icon: '🟡',
+    tooltip: 'Score of 3-4 on the same formula — some risk factors present but not urgent; worth proactive monitoring.' },
+  Low:      { color: '#22c55e', bg: 'rgba(34,197,94,0.15)',   icon: '🟢',
+    tooltip: 'Score below 3 (can go negative for profitable, loyal investors) — least likely to churn based on current cycle stage, P&L, and days remaining.' },
 };
 
 function ChurnContent({ churnRisk }) {
@@ -43,14 +47,14 @@ function ChurnContent({ churnRisk }) {
       {/* Summary Tiles */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 10 }}>
         {Object.entries(RISK_META).map(([level, meta]) => (
-          <div key={level} style={{ background: meta.bg, border: `1px solid ${meta.color}40`, borderRadius: 12, padding: '1rem', cursor: 'pointer', outline: filter === level ? `2px solid ${meta.color}` : 'none' }}
+          <div key={level} title={meta.tooltip} style={{ background: meta.bg, border: `1px solid ${meta.color}40`, borderRadius: 12, padding: '1rem', cursor: 'pointer', outline: filter === level ? `2px solid ${meta.color}` : 'none' }}
             onClick={() => setFilter(filter === level ? 'All' : level)}>
             <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>{meta.icon} {level} Risk</div>
             <div style={{ fontSize: '1.8rem', fontWeight: 700, color: meta.color }}>{byLevel[level] || 0}</div>
             <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>investors</div>
           </div>
         ))}
-        <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-default)', borderRadius: 12, padding: '1rem', cursor: 'pointer', outline: filter === 'All' ? '2px solid var(--accent-cyan)' : 'none' }}
+        <div title="Every currently active investor (Subscribed, Grace Period, or Cancelled-but-active), deduplicated by PAN, that has been run through the churn-risk formula." style={{ background: 'var(--bg-card)', border: '1px solid var(--border-default)', borderRadius: 12, padding: '1rem', cursor: 'pointer', outline: filter === 'All' ? '2px solid var(--accent-cyan)' : 'none' }}
           onClick={() => setFilter('All')}>
           <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>⚡ All Active</div>
           <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--accent-cyan)' }}>{d.total || 0}</div>
@@ -58,7 +62,8 @@ function ChurnContent({ churnRisk }) {
         </div>
       </div>
 
-      <ChartCard title="Risk Distribution">
+      <ChartCard title="Risk Distribution"
+        tooltip="Count of active investors in each risk band, based on the weighted score combining cycle stage, P&L performance, renewal urgency (days left in cycle), and discount dependency — taller Critical/High bars mean more investors need retention attention now.">
         <ResponsiveContainer width="100%" height={180}>
           <BarChart data={barData}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--border-default)" />

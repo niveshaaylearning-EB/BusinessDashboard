@@ -205,10 +205,14 @@ export default memo(function Tab02Movement({ monthly, insights, filters, setFilt
   const displayMonths = showAll ? monthly : monthly.slice(-24);
 
   const summaryKpis = [
-    { id: 'best_growth', label: 'Best Growth Month', value: topGrowthMonth?.month, sub: `+${topGrowthMonth?.new?.toLocaleString()} new`, accent: '#22c55e', icon: '📈' },
-    { id: 'highest_exit', label: 'Highest Exit Month', value: topExitMonth?.month, sub: `${topExitMonth?.exited?.toLocaleString()} exited`, accent: '#f87171', icon: '📉' },
-    { id: 'best_net', label: 'Best Net Month', value: bestNetMonth?.month, sub: `Net +${bestNetMonth?.net?.toLocaleString()}`, accent: '#00d4ff', icon: '🏆' },
-    { id: 'worst_net', label: 'Worst Net Month', value: worstNetMonth?.month, sub: `Net ${worstNetMonth?.net?.toLocaleString()}`, accent: '#f87171', icon: '⚠️' },
+    { id: 'best_growth', label: 'Best Growth Month', value: topGrowthMonth?.month, sub: `+${topGrowthMonth?.new?.toLocaleString()} new`, accent: '#22c55e', icon: '📈',
+      tooltip: 'The single calendar month with the highest count of brand-new Cycle 1 subscriptions (not net growth — a month can top this chart and still lose overall if exits were also high).' },
+    { id: 'highest_exit', label: 'Highest Exit Month', value: topExitMonth?.month, sub: `${topExitMonth?.exited?.toLocaleString()} exited`, accent: '#f87171', icon: '📉',
+      tooltip: 'The single calendar month with the highest number of subscriptions that ended (by Cycle End Date) and were not renewed within the 15-day grace window.' },
+    { id: 'best_net', label: 'Best Net Month', value: bestNetMonth?.month, sub: `Net +${bestNetMonth?.net?.toLocaleString()}`, accent: '#00d4ff', icon: '🏆',
+      tooltip: 'The month with the largest gain in closing minus opening subscription count — the best month for overall base growth, combining new starts, renewals and exits together.' },
+    { id: 'worst_net', label: 'Worst Net Month', value: worstNetMonth?.month, sub: `Net ${worstNetMonth?.net?.toLocaleString()}`, accent: '#f87171', icon: '⚠️',
+      tooltip: 'The month with the largest drop in closing minus opening subscription count — the worst month for overall base growth (exits outpaced new starts and renewals by the widest margin).' },
   ];
 
   return (
@@ -229,7 +233,8 @@ export default memo(function Tab02Movement({ monthly, insights, filters, setFilt
       <SortableKPIGrid storageKey="movement" cards={summaryKpis} cols="150px" />
 
       {/* Waterfall / Movement Chart */}
-      <ChartCard title="Subscriber Waterfall — Monthly Movement" subtitle="Click any bar to see subscriber details for that month" badge="All Time">
+      <ChartCard title="Subscriber Waterfall — Monthly Movement" subtitle="Click any bar to see subscriber details for that month" badge="All Time"
+        tooltip="Opening = active subscriptions counted at month start; New = fresh Cycle 1 starts that month; Exited = subscriptions whose cycle ended that month without renewing (past the 15-day grace window); Closing = active subscriptions counted at month end.">
         <ResponsiveContainer width="100%" height={280}>
           <BarChart data={displayMonths} onClick={p => handleMonthClick(p, 'waterfall')} style={{ cursor: 'pointer' }}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--border-dim)" />
@@ -248,7 +253,8 @@ export default memo(function Tab02Movement({ monthly, insights, filters, setFilt
 
       <div className="charts-grid charts-grid-2" style={{ marginTop: '1rem' }}>
         {/* Net Additions */}
-        <ChartCard title="Net Monthly Additions" subtitle="Click a bar to see monthly movement breakdown">
+        <ChartCard title="Net Monthly Additions" subtitle="Click a bar to see monthly movement breakdown"
+          tooltip="Closing minus opening subscriptions for the month. Green bars above zero mean the base grew that month; red bars below zero mean more subscriptions ended than were added.">
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={displayMonths} onClick={p => handleMonthClick(p, 'net')} style={{ cursor: 'pointer' }}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border-dim)" />
@@ -267,7 +273,8 @@ export default memo(function Tab02Movement({ monthly, insights, filters, setFilt
         </ChartCard>
 
         {/* Growth Rate Trend */}
-        <ChartCard title="Monthly Growth Rate Trend" subtitle="Month-over-month % growth in subscriber base">
+        <ChartCard title="Monthly Growth Rate Trend" subtitle="Month-over-month % growth in subscriber base"
+          tooltip="Net change (closing − opening) as a percentage of that month's opening base. Lets you compare growth momentum across months of different sizes, not just raw subscriber counts.">
           <ResponsiveContainer width="100%" height={220}>
             <LineChart data={displayMonths}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border-dim)" />
@@ -282,7 +289,8 @@ export default memo(function Tab02Movement({ monthly, insights, filters, setFilt
       </div>
 
       {/* Monthly Movement Table */}
-      <ChartCard title="Monthly Movement Detail Table" subtitle="Opening balance, new, exited, net, closing and renewal conversion per month" style={{ marginTop: '1rem' }}>
+      <ChartCard title="Monthly Movement Detail Table" subtitle="Opening balance, new, exited, net, closing and renewal conversion per month" style={{ marginTop: '1rem' }}
+        tooltip="Eligible = subscriptions whose cycle ended that month (due to renew); Renewed = of those, how many actually resubscribed within the 15-day grace window; Renewal % = Renewed ÷ Eligible — the true conversion rate for subscribers who reached a renewal decision point.">
         <div className="data-table-wrap" style={{ maxHeight: 380, overflowY: 'auto' }}>
           <table className="data-table">
             <thead>

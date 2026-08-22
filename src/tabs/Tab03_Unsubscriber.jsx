@@ -420,19 +420,32 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
   }, [kpis, byProduct, byBroker, byState, monthlyTrend, reasons, plAnalysis]);
 
   const unsubKpiCards = [
-    { id: 'totalExits',      label: 'Total Exit Cycles',       icon: '🚪', accent: 'var(--accent-red)',    value: fmt(kpis.totalExits),         sub: 'Deduped by Email+Scid+Cycle' },
-    { id: 'uniqueInvestors', label: 'Unique Exited Investors', icon: '👤', accent: 'var(--accent-orange)', value: fmt(kpis.uniqueInvestors),     sub: 'Unique PANs who exited' },
-    { id: 'cycle1Exits',     label: 'First-Time Exits',        icon: '⚡', accent: 'var(--accent-red)',    value: fmt(kpis.cycle1Exits),         sub: 'Exited on Cycle 1 (never renewed)' },
-    { id: 'multiCycleExits', label: 'Multi-Cycle Exits',       icon: '🔄', accent: 'var(--accent-teal)',   value: fmt(kpis.multiCycleExits),     sub: 'Exited after Cycle 2+ (renewed before leaving)' },
-    { id: 'avgCycleAtExit',  label: 'Avg Cycle at Exit',       icon: '📊', accent: 'var(--accent-cyan)',   value: kpis.avgCycleAtExit,           sub: 'Average cycle number on exit' },
-    { id: 'avgTenure',       label: 'Avg Tenure at Exit',      icon: '⏳', accent: 'var(--accent-purple)', value: `${kpis.avgTenureMonths} mo`,  sub: 'Avg months from first sub to exit' },
-    { id: 'avgPLAtExit',     label: 'Avg P&L at Exit',         icon: '💹', accent: avgPLColor,             value: fmtPLShort(avgPL),             sub: 'Avg Total P&L when subscriber exited' },
-    { id: 'exitedInProfit',  label: 'Exited in Profit',        icon: '📈', accent: 'var(--accent-green)',  value: `${fmt(kpis.positiveExits)} (${kpis.pctPositiveExits}%)`, sub: 'Had positive P&L when they left' },
-    { id: 'avgProfitPL',     label: 'Avg P&L — Profit Exits',  icon: '💰', accent: '#15803d',              value: fmtPLShort(kpis.avgPositivePL),  sub: `Avg gain across ${fmt(kpis.positiveExits)} profit exits` },
-    { id: 'exitedInLoss',    label: 'Exited in Loss',          icon: '📉', accent: '#f87171',              value: `${fmt(kpis.negativeExits)} (${kpis.pctNegativeExits}%)`, sub: 'Had negative P&L when they left' },
-    { id: 'avgLossPL',       label: 'Avg P&L — Loss Exits',    icon: '🩸', accent: '#991b1b',              value: fmtPLShort(kpis.avgNegativePL),  sub: `Avg loss across ${fmt(kpis.negativeExits)} loss exits` },
-    { id: 'winBacks',        label: 'Win-Backs',               icon: '🔄', accent: 'var(--accent-green)',  value: fmt(l3mWinBacks),              sub: `of ${fmt(l3mExitedPANs)} exited (last 3 months) · >30d gap` },
-    { id: 'winBackRate',     label: 'Win-Back Rate',           icon: '💚', accent: 'var(--accent-green)',  value: `${l3mWinBackRate}%`,          sub: `${fmt(l3mWinBacks)} / ${fmt(l3mExitedPANs)} exited (last 3 months)` },
+    { id: 'totalExits',      label: 'Total Exit Cycles',       icon: '🚪', accent: 'var(--accent-red)',    value: fmt(kpis.totalExits),         sub: 'Deduped by Email+Scid+Cycle',
+      tooltip: 'One row per unique investor-product that finally left — cycle-to-cycle transitions (e.g. C1→C2) are excluded, keeping only the last cycle they were on when they actually unsubscribed.' },
+    { id: 'uniqueInvestors', label: 'Unique Exited Investors', icon: '👤', accent: 'var(--accent-orange)', value: fmt(kpis.uniqueInvestors),     sub: 'Unique PANs who exited',
+      tooltip: 'Count of distinct PANs behind the exit cycles above — an investor who exited from 2 different products is counted once here but twice in Total Exit Cycles.' },
+    { id: 'cycle1Exits',     label: 'First-Time Exits',        icon: '⚡', accent: 'var(--accent-red)',    value: fmt(kpis.cycle1Exits),         sub: 'Exited on Cycle 1 (never renewed)',
+      tooltip: 'Subscribers who left on their very first cycle — they never reached a renewal decision. High numbers here point to onboarding or early-value problems rather than long-term churn.' },
+    { id: 'multiCycleExits', label: 'Multi-Cycle Exits',       icon: '🔄', accent: 'var(--accent-teal)',   value: fmt(kpis.multiCycleExits),     sub: 'Exited after Cycle 2+ (renewed before leaving)',
+      tooltip: 'Subscribers who renewed at least once before eventually leaving — they found enough value to continue for a while, so the exit driver is likely different from Cycle-1 dropouts.' },
+    { id: 'avgCycleAtExit',  label: 'Avg Cycle at Exit',       icon: '📊', accent: 'var(--accent-cyan)',   value: kpis.avgCycleAtExit,           sub: 'Average cycle number on exit',
+      tooltip: 'Average cycle number subscribers were on when they finally unsubscribed. A value near 1 means most people leave before ever renewing.' },
+    { id: 'avgTenure',       label: 'Avg Tenure at Exit',      icon: '⏳', accent: 'var(--accent-purple)', value: `${kpis.avgTenureMonths} mo`,  sub: 'Avg months from first sub to exit',
+      tooltip: 'Average number of months between a subscriber\'s First Subscription Date and their final Cycle End Date — how long people typically stay before churning.' },
+    { id: 'avgPLAtExit',     label: 'Avg P&L at Exit',         icon: '💹', accent: avgPLColor,             value: fmtPLShort(avgPL),             sub: 'Avg Total P&L when subscriber exited',
+      tooltip: 'Average portfolio P&L across all exits, using the exit row\'s P&L or (if blank) the last known non-zero P&L for that subscriber. A negative average suggests losses are a factor in churn.' },
+    { id: 'exitedInProfit',  label: 'Exited in Profit',        icon: '📈', accent: 'var(--accent-green)',  value: `${fmt(kpis.positiveExits)} (${kpis.pctPositiveExits}%)`, sub: 'Had positive P&L when they left',
+      tooltip: 'Count and share of exits where the subscriber\'s P&L was positive at the time they left — they may have been profit-booking rather than dissatisfied.' },
+    { id: 'avgProfitPL',     label: 'Avg P&L — Profit Exits',  icon: '💰', accent: '#15803d',              value: fmtPLShort(kpis.avgPositivePL),  sub: `Avg gain across ${fmt(kpis.positiveExits)} profit exits`,
+      tooltip: 'Average gain, counting only the exits that were in profit — shows how much winners typically banked before leaving.' },
+    { id: 'exitedInLoss',    label: 'Exited in Loss',          icon: '📉', accent: '#f87171',              value: `${fmt(kpis.negativeExits)} (${kpis.pctNegativeExits}%)`, sub: 'Had negative P&L when they left',
+      tooltip: 'Count and share of exits where the subscriber\'s P&L was negative at the time they left — a signal that poor returns may be driving these departures.' },
+    { id: 'avgLossPL',       label: 'Avg P&L — Loss Exits',    icon: '🩸', accent: '#991b1b',              value: fmtPLShort(kpis.avgNegativePL),  sub: `Avg loss across ${fmt(kpis.negativeExits)} loss exits`,
+      tooltip: 'Average loss, counting only the exits that were underwater — shows how deep the losses were for subscribers who left in the red.' },
+    { id: 'winBacks',        label: 'Win-Backs',               icon: '🔄', accent: 'var(--accent-green)',  value: fmt(l3mWinBacks),              sub: `of ${fmt(l3mExitedPANs)} exited (last 3 months) · >30d gap`,
+      tooltip: 'Among investors who exited in the last 3 months, how many have since come back and re-subscribed after a gap of more than 30 days (a shorter gap is treated as a cycle renewal, not a true win-back).' },
+    { id: 'winBackRate',     label: 'Win-Back Rate',           icon: '💚', accent: 'var(--accent-green)',  value: `${l3mWinBackRate}%`,          sub: `${fmt(l3mWinBacks)} / ${fmt(l3mExitedPANs)} exited (last 3 months)`,
+      tooltip: 'Win-Backs ÷ investors who exited in the last 3 months — the % of recent churn that has already reversed. Higher is better; it signals product value survives a temporary exit.' },
   ];
 
   // Drilldown helpers
@@ -603,7 +616,8 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
 
       {/* Row 1: Monthly exit trend + Cycle distribution */}
       <div className="charts-grid charts-grid-2" style={{ marginBottom: '1rem' }}>
-        <ChartCard title="Monthly Exit Trend" subtitle="Exits per month by Cycle End Date — last 12 months — click a bar to see subscribers" badge="Trend">
+        <ChartCard title="Monthly Exit Trend" subtitle="Exits per month by Cycle End Date — last 12 months — click a bar to see subscribers" badge="Trend"
+          tooltip="Exit cycles grouped by the month their Cycle End Date falls in, split into first-time (Cycle 1) vs returning (Cycle 2+) exits — watch for spikes and whether they're driven by new or renewed subscribers.">
           <ResponsiveContainer width="100%" height={220}>
             <BarChart
               data={last12Months}
@@ -638,7 +652,8 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
           <div className="chart-clickable-hint">💡 Click any bar to see all exits in that month</div>
         </ChartCard>
 
-        <ChartCard title="Exit by Cycle Number" subtitle="Which cycle were they on when they unsubscribed? — click a bar to see subscribers" badge="Cycle">
+        <ChartCard title="Exit by Cycle Number" subtitle="Which cycle were they on when they unsubscribed? — click a bar to see subscribers" badge="Cycle"
+          tooltip="Distribution of the final cycle number subscribers reached before leaving. A Cycle-1-heavy chart means most churn happens before a first renewal ever occurs.">
           <ResponsiveContainer width="100%" height={220}>
             <BarChart
               data={byCycle}
@@ -731,7 +746,8 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
 
       {/* Row 2: Exit by product + Exit by broker */}
       <div className="charts-grid charts-grid-2" style={{ marginBottom: '1rem' }}>
-        <ChartCard title="Exit by Product" subtitle="Top products by total exit cycles — click a bar to see subscribers" badge="Product">
+        <ChartCard title="Exit by Product" subtitle="Top products by total exit cycles — click a bar to see subscribers" badge="Product"
+          tooltip="Which baskets generate the most exit cycles in absolute terms. A high count here may just reflect a large subscriber base — check the Product tab's renewal rate to see relative churn.">
           <ResponsiveContainer width="100%" height={220}>
             <BarChart
               data={byProduct.slice(0, 8)}
@@ -759,7 +775,8 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
           <div className="chart-clickable-hint">💡 Click any bar to see the list of unsubscribed investors for that product</div>
         </ChartCard>
 
-        <ChartCard title="Exit by Broker" subtitle="Top brokers by exit volume — click a bar to see subscribers" badge="Broker">
+        <ChartCard title="Exit by Broker" subtitle="Top brokers by exit volume — click a bar to see subscribers" badge="Broker"
+          tooltip="Exit cycles grouped by the broker/platform the subscriber came through. High concentration on one broker may point to a platform-specific issue or simply reflect where most volume originates.">
           <ResponsiveContainer width="100%" height={220}>
             <BarChart
               data={byBroker.slice(0, 8)}
@@ -792,7 +809,8 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
       {(hasReasons || byState.length > 0) && (
         <div className="charts-grid charts-grid-2" style={{ marginBottom: '1rem' }}>
           {hasReasons && (
-            <ChartCard title="Cancellation Reasons" subtitle="Why subscribers exited — click a bar to see subscribers" badge="Reasons">
+            <ChartCard title="Cancellation Reasons" subtitle="Why subscribers exited — click a bar to see subscribers" badge="Reasons"
+              tooltip="Self-reported cancellation reason at the time of unsubscribing, ranked by frequency. Only exits with a non-blank reason are counted, so this reflects the subset who gave feedback, not all exits.">
               <ResponsiveContainer width="100%" height={220}>
                 <BarChart
                   data={reasons.slice(0, 8)}
@@ -836,7 +854,8 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
             </ChartCard>
           )}
           {byState.length > 0 && (
-            <ChartCard title="Exit by State" subtitle="Geographic distribution of exits — click a bar to see subscribers" badge="Geography">
+            <ChartCard title="Exit by State" subtitle="Geographic distribution of exits — click a bar to see subscribers" badge="Geography"
+              tooltip="Exit cycles grouped by the subscriber's registered state. Useful for spotting regional concentration, but raw counts will naturally favor states with larger subscriber populations.">
               <ResponsiveContainer width="100%" height={220}>
                 <BarChart
                   data={byState.slice(0, 8)}
@@ -902,7 +921,8 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
 
           <div className="charts-grid charts-grid-2" style={{ marginBottom: '1rem' }}>
             {/* P&L Distribution Histogram */}
-            <ChartCard title="P&L Distribution at Exit" subtitle="How many subscribers exited at each P&L bracket — red = loss, green = profit">
+            <ChartCard title="P&L Distribution at Exit" subtitle="How many subscribers exited at each P&L bracket — red = loss, green = profit"
+              tooltip="Every exit cycle bucketed by its P&L at exit (using the exit row's figure, or the subscriber's last known non-zero P&L if that row is blank). Shows whether exits cluster around losses, break-even, or gains.">
               <ResponsiveContainer width="100%" height={240}>
                 <BarChart data={plAnalysis.byBucket || []}>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--border-dim)" />
@@ -933,7 +953,8 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
             </ChartCard>
 
             {/* Avg P&L by Product at Exit */}
-            <ChartCard title="Avg P&L at Exit by Product" subtitle="Which products had the best/worst P&L when subscribers left — sorted best first">
+            <ChartCard title="Avg P&L at Exit by Product" subtitle="Which products had the best/worst P&L when subscribers left — sorted best first"
+              tooltip="Average P&L at the moment of exit, grouped by product and sorted best-to-worst. A deeply negative average for a basket may signal that strategy performance is driving churn, not just satisfaction issues.">
               <ResponsiveContainer width="100%" height={Math.max(240, (plAnalysis.byProduct?.length || 8) * 36)}>
                 <BarChart data={plAnalysis.byProduct || []} layout="vertical">
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--border-dim)" />
@@ -970,6 +991,7 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
           {/* P&L detail table by product */}
           <ChartCard title="P&L at Exit — Full Product Breakdown"
             subtitle="Average P&L, count and % of total exits per product at the time of unsubscription"
+            tooltip="Same avg-P&L-at-exit metric as the chart above, in full table form with exit counts and each product's share of total exits — use this to see the underlying sample size behind each average."
             style={{ marginBottom: '1rem' }}>
             <div className="data-table-wrap" style={{ maxHeight: 320, overflowY: 'auto' }}>
               <table className="data-table">
@@ -1038,14 +1060,20 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
           {/* KPI row */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(170px, 1fr))', gap: '0.75rem', marginBottom: '1rem' }}>
             {[
-              { label: 'Unique Investors',  value: uniqueClientPL.totalClients.toLocaleString('en-IN'),  color: 'var(--accent-cyan)',   icon: '👤' },
-              { label: 'Exited in Profit',  value: `${uniqueClientPL.positiveCount.toLocaleString('en-IN')} (${uniqueClientPL.pctPositive}%)`, color: '#22c55e', icon: '📈' },
-              { label: 'Exited in Loss',    value: `${uniqueClientPL.negativeCount.toLocaleString('en-IN')} (${uniqueClientPL.pctNegative}%)`, color: '#f87171', icon: '📉' },
-              { label: 'Avg P&L / Investor',value: fmtPLShort(uniqueClientPL.avgPL), color: uniqueClientPL.avgPL >= 0 ? '#22c55e' : '#f87171', icon: '💹' },
-              { label: 'Avg Profit (winners)', value: fmtPLShort(uniqueClientPL.avgPositivePL), color: '#15803d', icon: '💰' },
-              { label: 'Avg Loss (losers)',  value: fmtPLShort(uniqueClientPL.avgNegativePL),  color: '#991b1b', icon: '🩸' },
+              { label: 'Unique Investors',  value: uniqueClientPL.totalClients.toLocaleString('en-IN'),  color: 'var(--accent-cyan)',   icon: '👤',
+                tooltip: 'Distinct PANs among exited investors, one row per person with P&L summed across every product they exited.' },
+              { label: 'Exited in Profit',  value: `${uniqueClientPL.positiveCount.toLocaleString('en-IN')} (${uniqueClientPL.pctPositive}%)`, color: '#22c55e', icon: '📈',
+                tooltip: 'Investors whose combined total P&L across all their exited subscriptions was positive at the time they left.' },
+              { label: 'Exited in Loss',    value: `${uniqueClientPL.negativeCount.toLocaleString('en-IN')} (${uniqueClientPL.pctNegative}%)`, color: '#f87171', icon: '📉',
+                tooltip: 'Investors whose combined total P&L across all their exited subscriptions was negative at the time they left.' },
+              { label: 'Avg P&L / Investor',value: fmtPLShort(uniqueClientPL.avgPL), color: uniqueClientPL.avgPL >= 0 ? '#22c55e' : '#f87171', icon: '💹',
+                tooltip: 'Average total P&L per unique exited investor, summed across all products they held — the overall financial outcome per departing client, not per exit event.' },
+              { label: 'Avg Profit (winners)', value: fmtPLShort(uniqueClientPL.avgPositivePL), color: '#15803d', icon: '💰',
+                tooltip: 'Average total P&L among only the investors who left with an overall gain across all their exited subscriptions.' },
+              { label: 'Avg Loss (losers)',  value: fmtPLShort(uniqueClientPL.avgNegativePL),  color: '#991b1b', icon: '🩸',
+                tooltip: 'Average total P&L among only the investors who left with an overall loss across all their exited subscriptions.' },
             ].map(c => (
-              <div key={c.label} className="kpi-card" style={{ '--kpi-accent': c.color }}>
+              <div key={c.label} className="kpi-card" style={{ '--kpi-accent': c.color }} title={c.tooltip}>
                 <div className="kpi-label">{c.label}</div>
                 <div className="kpi-value small" style={{ color: c.color }}>{c.value}</div>
                 <div className="kpi-icon">{c.icon}</div>
@@ -1055,7 +1083,8 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
 
           <div className="charts-grid charts-grid-2" style={{ marginBottom: '1rem' }}>
             {/* Bucket distribution */}
-            <ChartCard title="P&L Distribution — Unique Investors" subtitle="How many unique investors exited at each P&L bracket (total P&L across all their subscriptions)">
+            <ChartCard title="P&L Distribution — Unique Investors" subtitle="How many unique investors exited at each P&L bracket (total P&L across all their subscriptions)"
+              tooltip="Same P&L brackets as the exit-level chart, but here each investor appears once with their total P&L summed across every product they exited — a person-level view rather than an event-level view.">
               <ResponsiveContainer width="100%" height={240}>
                 <BarChart data={uniqueClientPL.byBucket || []}>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--border-dim)" />
@@ -1079,7 +1108,8 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
             </ChartCard>
 
             {/* Top losers + gainers */}
-            <ChartCard title="Top 10 Losers vs Gainers" subtitle="Ranked by total P&L across all exit subscriptions per investor">
+            <ChartCard title="Top 10 Losers vs Gainers" subtitle="Ranked by total P&L across all exit subscriptions per investor"
+              tooltip="The 10 exited investors with the most negative and the 10 with the most positive total P&L (summed across all products they exited) — the extreme ends of the outcome spectrum, not a representative sample.">
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', height: 240, overflowY: 'auto' }}>
                 <div>
                   <div style={{ fontSize: 11, fontWeight: 700, color: '#f87171', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>▼ Top Losers</div>
@@ -1110,6 +1140,7 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
           {/* Full investor-level P&L table */}
           <ChartCard title="All Unique Exit Investors — P&L Summary"
             subtitle={`${uniqueClientPL.totalClients.toLocaleString('en-IN')} unique investors · total P&L = sum across all exit subscriptions per PAN`}
+            tooltip="Full list of exited investors (worst-to-best by total P&L), each appearing once with their combined P&L, number of products exited, and most recent exit date — the detailed backing data for the Top 10 chart above."
             style={{ marginBottom: '1rem' }}>
             <div className="data-table-wrap" style={{ maxHeight: 340, overflowY: 'auto' }}>
               <table className="data-table">
@@ -1232,6 +1263,7 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
         <ChartCard
           title={`🔄 Win-Back Subscribers — ${winBackDetails.length} Investors`}
           subtitle="Returned after more than 30 days from exit — sorted by most recent re-subscription"
+          tooltip="All-time list of investors who exited and later re-subscribed after a gap greater than 30 days (a shorter gap is treated as a cycle renewal, not a win-back). This is the full history — the Win-Backs KPI card above is limited to exits in the last 3 months."
           style={{ marginTop: '1.5rem' }}
         >
           <div className="data-table-wrap" style={{ maxHeight: 420, overflowY: 'auto' }}>

@@ -145,10 +145,14 @@ export default memo(function Tab12Insights({ insights = [], kpis, products, brok
 
       {/* Summary Metrics */}
       <SortableKPIGrid storageKey="insights" cols="200px" cards={[
-        { id: 'total_insights', label: 'Total Insights Generated', value: allInsights.length, accent: 'var(--accent-cyan)',  icon: '🤖' },
-        { id: 'growth_opps',   label: 'Growth Opportunities',      value: allInsights.filter(i => ['Growth Leader','Acquisition Trend','Win-Back Opportunity','Retention Champion'].includes(i.category)).length, accent: 'var(--accent-green)', icon: '📈' },
-        { id: 'lag_alerts',    label: 'Lagging Areas',             value: allInsights.filter(i => ['Retention Laggard','Distributor Laggard','Regional Laggard','Decline Alert','Acquisition Slowdown','Exit Spike','High Churn Pattern','Renewal Conversion Gap','Subscriber Base Shrinking'].includes(i.category)).length, accent: 'var(--accent-red)', icon: '⚠️' },
-        { id: 'quality_sigs',  label: 'Quality Signals',           value: allInsights.filter(i => ['HNI Magnet','Retention Champion','Top Distributor','Platform Health'].includes(i.category)).length, accent: 'var(--accent-gold)',  icon: '💎' },
+        { id: 'total_insights', label: 'Total Insights Generated', value: allInsights.length, accent: 'var(--accent-cyan)',  icon: '🤖',
+          tooltip: 'Count of every auto-generated narrative insight on this page — the base insights plus the additional performance, trend and revenue-opportunity insights computed here.' },
+        { id: 'growth_opps',   label: 'Growth Opportunities',      value: allInsights.filter(i => ['Growth Leader','Acquisition Trend','Win-Back Opportunity','Retention Champion'].includes(i.category)).length, accent: 'var(--accent-green)', icon: '📈',
+          tooltip: 'Insights flagging positive momentum or untapped upside — strong performers, accelerating acquisition, and win-back revenue potential.' },
+        { id: 'lag_alerts',    label: 'Lagging Areas',             value: allInsights.filter(i => ['Retention Laggard','Distributor Laggard','Regional Laggard','Decline Alert','Acquisition Slowdown','Exit Spike','High Churn Pattern','Renewal Conversion Gap','Subscriber Base Shrinking'].includes(i.category)).length, accent: 'var(--accent-red)', icon: '⚠️',
+          tooltip: 'Insights flagging underperformance that needs attention — retention/distributor/regional laggards, declines, high-churn months, and renewal conversion gaps.' },
+        { id: 'quality_sigs',  label: 'Quality Signals',           value: allInsights.filter(i => ['HNI Magnet','Retention Champion','Top Distributor','Platform Health'].includes(i.category)).length, accent: 'var(--accent-gold)',  icon: '💎',
+          tooltip: 'Insights highlighting particularly strong, healthy signals in the business — high-value investor attraction, top retention performers, top distributors, and overall platform health.' },
       ]} />
 
       {/* Full Insights Grid */}
@@ -195,7 +199,8 @@ export default memo(function Tab12Insights({ insights = [], kpis, products, brok
       </div>
 
       {/* Category Summary */}
-      <ChartCard title="Insights by Category" subtitle="Distribution of generated insights across different intelligence dimensions">
+      <ChartCard title="Insights by Category" subtitle="Distribution of generated insights across different intelligence dimensions"
+        tooltip="How the generated insights are spread across intelligence categories — a category with many insights is where the most notable patterns (good or bad) were detected this period.">
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '0.5rem', padding: '0.5rem 0' }}>
           {categories.map(cat => {
             const catInsights = allInsights.filter(i => i.category === cat);

@@ -208,15 +208,20 @@ export default memo(function Tab11Migration({ migrationData, currentMaster, rawD
 
       {/* KPIs */}
       <SortableKPIGrid storageKey="migration" cols="175px" cards={[
-        { id: 'multi_product',  label: 'Multi-Product Investors',  value: formatNumber(multiProductAdoption.multi),   accent: 'var(--accent-cyan)',  icon: '📦', sub: `${multiProductAdoption.multiPct}% of all investors` },
-        { id: 'single_product', label: 'Single-Product Investors', value: formatNumber(multiProductAdoption.single),  accent: 'var(--accent-purple)', icon: '📌', sub: 'Upsell opportunity' },
-        { id: 'top_entry',      label: 'Top Entry Product',        value: entryProducts?.[0]?.product, small: true,   accent: 'var(--accent-green)', icon: '🚀', sub: `${entryProducts?.[0]?.count} journeys` },
-        { id: 'top_dest',       label: 'Top Destination Product',  value: exitProducts?.[0]?.product,  small: true,   accent: 'var(--accent-gold)',  icon: '🎯', sub: `${exitProducts?.[0]?.count} arrivals` },
+        { id: 'multi_product',  label: 'Multi-Product Investors',  value: formatNumber(multiProductAdoption.multi),   accent: 'var(--accent-cyan)',  icon: '📦', sub: `${multiProductAdoption.multiPct}% of all investors`,
+          tooltip: 'Unique investor PANs who have held 2 or more distinct products at any point — each one is proof of successful cross-sell and a candidate for further upsell.' },
+        { id: 'single_product', label: 'Single-Product Investors', value: formatNumber(multiProductAdoption.single),  accent: 'var(--accent-purple)', icon: '📌', sub: 'Upsell opportunity',
+          tooltip: 'Unique investors who have only ever subscribed to one product — the largest pool of untapped cross-sell and upsell potential.' },
+        { id: 'top_entry',      label: 'Top Entry Product',        value: entryProducts?.[0]?.product, small: true,   accent: 'var(--accent-green)', icon: '🚀', sub: `${entryProducts?.[0]?.count} journeys`,
+          tooltip: 'Among investors who went on to hold multiple products, the product they most often started with — your strongest gateway into a multi-product relationship.' },
+        { id: 'top_dest',       label: 'Top Destination Product',  value: exitProducts?.[0]?.product,  small: true,   accent: 'var(--accent-gold)',  icon: '🎯', sub: `${exitProducts?.[0]?.count} arrivals`,
+          tooltip: 'Among investors who held multiple products, the product they most often ended up on last — the strongest upgrade or cross-sell destination.' },
       ]} />
 
       {/* Sankey + Pie */}
       <div className="charts-grid charts-grid-2" style={{ marginBottom: '1rem' }}>
-        <ChartCard title="Single vs Multi-Product Adoption" subtitle="Investor portfolio diversification">
+        <ChartCard title="Single vs Multi-Product Adoption" subtitle="Investor portfolio diversification"
+          tooltip="Share of all unique investors holding exactly one product vs. two or more — a higher multi-product slice means stronger cross-sell penetration across the base.">
           <ResponsiveContainer width="100%" height={240}>
             <PieChart>
               <Pie data={pieData} cx="50%" cy="50%" outerRadius={100} dataKey="value" nameKey="name" labelLine={false}
@@ -241,7 +246,8 @@ export default memo(function Tab11Migration({ migrationData, currentMaster, rawD
           </ResponsiveContainer>
         </ChartCard>
 
-        <ChartCard title="Top Migration Flows by Volume" subtitle="Most common product-to-product journeys">
+        <ChartCard title="Top Migration Flows by Volume" subtitle="Most common product-to-product journeys"
+          tooltip="Each bar is a distinct first-product → last-product journey among multi-product investors, sized by how many investors made that exact move — the longest bars are your most common upgrade or cross-sell paths.">
           <ResponsiveContainer width="100%" height={240}>
             <BarChart data={topFlows.slice(0, 8)} layout="vertical"
               style={{ cursor: 'pointer' }}
@@ -274,7 +280,8 @@ export default memo(function Tab11Migration({ migrationData, currentMaster, rawD
       {/* Entry & Destination Products */}
       <div className="charts-grid charts-grid-2" style={{ marginBottom: '1rem' }}>
         {entryProducts?.length > 0 && (
-          <ChartCard title="Top Entry Products" subtitle="Which products most users subscribe to first">
+          <ChartCard title="Top Entry Products" subtitle="Which products most users subscribe to first"
+            tooltip="For investors who eventually held multiple products, which product they started with most often — shows which offering acts as the on-ramp into a multi-product relationship.">
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={entryProducts}
                 style={{ cursor: 'pointer' }}
@@ -303,7 +310,8 @@ export default memo(function Tab11Migration({ migrationData, currentMaster, rawD
           </ChartCard>
         )}
         {exitProducts?.length > 0 && (
-          <ChartCard title="Top Destination Products" subtitle="Products that attract the most migrations">
+          <ChartCard title="Top Destination Products" subtitle="Products that attract the most migrations"
+            tooltip="For investors who held multiple products, which product they most often ended up on last — shows where cross-sell journeys are landing.">
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={exitProducts}
                 style={{ cursor: 'pointer' }}
@@ -334,13 +342,15 @@ export default memo(function Tab11Migration({ migrationData, currentMaster, rawD
       </div>
 
       {/* Migration Flow Visualization */}
-      <ChartCard title="Product Migration Flow Visualization" subtitle="From product (left) → To product (right) · Bar width = number of users" style={{ marginBottom: '1rem' }}>
+      <ChartCard title="Product Migration Flow Visualization" subtitle="From product (left) → To product (right) · Bar width = number of users" style={{ marginBottom: '1rem' }}
+        tooltip="Bar width is proportional to the number of investors who moved from the product on the left to the product on the right — scan for the widest bars to see the dominant product-to-product journeys at a glance.">
         <SankeyMigration flows={flows} />
       </ChartCard>
 
       {/* Migration Matrix Table */}
       {flows?.length > 0 && (
-        <ChartCard title="Migration Flow Detail Table" subtitle="All product-to-product movement records">
+        <ChartCard title="Migration Flow Detail Table" subtitle="All product-to-product movement records"
+          tooltip="The complete list of first-product → last-product transitions behind the charts above, with the exact number of investors who made each move.">
           <div className="data-table-wrap" style={{ maxHeight: 340, overflowY: 'auto' }}>
             <table className="data-table">
               <thead><tr>

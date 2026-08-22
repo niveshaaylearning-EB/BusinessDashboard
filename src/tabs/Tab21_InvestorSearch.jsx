@@ -77,15 +77,24 @@ export default memo(function Tab21InvestorSearch({ rawData }) {
           {/* Financial Summary */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 10 }}>
             {[
-              { label: 'Total Spend', value: `₹${result.totalSpend.toLocaleString('en-IN')}`, color: '#fbbf24' },
-              { label: 'Networth', value: result.networth ? `₹${result.networth.toLocaleString('en-IN')}` : '—', color: '#00d4ff' },
-              { label: 'P&L', value: result.pnl !== 0 ? `${result.pnl >= 0 ? '+' : ''}₹${result.pnl.toLocaleString('en-IN')}` : '—', color: result.pnl >= 0 ? '#22c55e' : '#f87171' },
-              { label: 'Max Renewal Cycle', value: `Cycle ${result.maxCycle}`, color: '#a78bfa' },
-              { label: 'Products Subscribed', value: result.products.length, color: '#fb923c' },
-              { label: 'First Subscription', value: result.firstSubDate, color: 'var(--text-secondary)' },
+              { label: 'Total Spend', value: `₹${result.totalSpend.toLocaleString('en-IN')}`, color: '#fbbf24',
+                tooltip: 'Sum of plan amounts paid across every cycle and product this investor has ever subscribed to — full historical revenue contribution, not a monthly-equivalent figure.' },
+              { label: 'Networth', value: result.networth ? `₹${result.networth.toLocaleString('en-IN')}` : '—', color: '#00d4ff',
+                tooltip: "Self-reported net worth from the investor's most recent subscription record." },
+              { label: 'P&L', value: result.pnl !== 0 ? `${result.pnl >= 0 ? '+' : ''}₹${result.pnl.toLocaleString('en-IN')}` : '—', color: result.pnl >= 0 ? '#22c55e' : '#f87171',
+                tooltip: "Reported portfolio profit/loss from the investor's most recent subscription record — independent of subscription revenue paid." },
+              { label: 'Max Renewal Cycle', value: `Cycle ${result.maxCycle}`, color: '#a78bfa',
+                tooltip: "Highest cycle number reached across all of this investor's subscriptions. Cycle 1 means they've never renewed; higher numbers mean more renewals." },
+              { label: 'Products Subscribed', value: result.products.length, color: '#fb923c',
+                tooltip: 'Count of distinct products (smallcases) this investor has subscribed to across their full history.' },
+              { label: 'First Subscription', value: result.firstSubDate, color: 'var(--text-secondary)',
+                tooltip: 'Earliest subscription start date on record for this investor, across any product.' },
             ].map(k => (
               <div key={k.label} style={{ background: 'var(--bg-card)', border: '1px solid var(--border-default)', borderRadius: 10, padding: '0.9rem 1rem' }}>
-                <div style={{ fontSize: 10, color: 'var(--text-muted)', marginBottom: 4 }}>{k.label}</div>
+                <div style={{ fontSize: 10, color: 'var(--text-muted)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 5 }}>
+                  {k.label}
+                  {k.tooltip && <span title={k.tooltip} style={{ cursor: 'help' }}>ⓘ</span>}
+                </div>
                 <div style={{ fontWeight: 700, fontSize: '1rem', color: k.color }}>{k.value}</div>
               </div>
             ))}

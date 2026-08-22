@@ -171,6 +171,7 @@ export default memo(function Tab15AuditLog({ currentUser, refreshUser }) {
       <ChartCard
         title="Activity Log"
         subtitle={`Showing ${logs.length} entries · admin: ${currentUser.username}`}
+        tooltip="Chronological record of security-relevant actions across the platform — logins, failed attempts, password changes, user management, and data uploads/access — each row shows who did what, when, and from which IP address."
       >
         {loading && logs.length === 0 ? (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 200, gap: 10, color: 'var(--text-muted)' }}>

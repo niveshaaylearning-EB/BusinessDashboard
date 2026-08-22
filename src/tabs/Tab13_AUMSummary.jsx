@@ -254,14 +254,22 @@ function AUMContent({ summaryData, monthly, currentMaster, filters, setFilters }
   const hasAUM = summaryData.some(r => r.aum > 0);
 
   const latestKpiCards = latest ? [
-    ...(hasAUM ? [{ id: 'aum', label: 'AUM (Active Subs)', value: `🏦 ${fmtCr(latest.aum)}`, accent: 'var(--accent-gold)', sub: `Latest month · ${latest.month}` }] : []),
-    { id: 'active_subs',   label: 'Active Subscriptions',  value: `✅ ${fmtNum(latest.totalActiveSubscriptions)}`, accent: 'var(--accent-cyan)',   sub: `Deduped by Email+Scid · ${latest.month}` },
-    { id: 'total_inv',     label: 'Total Investors',        value: `👤 ${fmtNum(latest.totalInvestors)}`,           accent: 'var(--accent-teal)',   sub: `Unique PANs active · ${latest.month}` },
-    { id: 'new_subs',      label: 'New Subscriptions',      value: `🆕 ${fmtNum(latest.newSubscriptions)}`,         accent: 'var(--accent-green)',  sub: `New + Renewal starts · ${latest.month}` },
-    { id: 'new_signups',   label: 'New Signups',            value: `📝 ${fmtNum(latest.newSignups)}`,               accent: 'var(--accent-green)',  sub: `First-time (Cycle 1) · ${latest.month}` },
-    { id: 'total_signups', label: 'Total Signups (Ever)',   value: `🧾 ${fmtNum(latest.totalSignups)}`,             accent: 'var(--accent-cyan)',   sub: 'Cumulative unique investors' },
-    { id: 'total_cycles',  label: 'Total Sub. Cycles',      value: `🔢 ${fmtNum(latest.totalSubscriptionCycles)}`,  accent: 'var(--accent-teal)',   sub: 'Cumulative · deduped' },
-    { id: 'completed',     label: 'Completed Cycles',       value: `✔️ ${fmtNum(latest.completedCycles)}`,          accent: 'var(--accent-purple)', sub: 'Cumulative UNSUBSCRIBED' },
+    ...(hasAUM ? [{ id: 'aum', label: 'AUM (Active Subs)', value: `🏦 ${fmtCr(latest.aum)}`, accent: 'var(--accent-gold)', sub: `Latest month · ${latest.month}`,
+      tooltip: 'Sum of AUM (or Networth if no AUM column exists) across every subscription active at the end of the latest month — the portfolio value currently under management.' }] : []),
+    { id: 'active_subs',   label: 'Active Subscriptions',  value: `✅ ${fmtNum(latest.totalActiveSubscriptions)}`, accent: 'var(--accent-cyan)',   sub: `Deduped by Email+Scid · ${latest.month}`,
+      tooltip: 'Count of active subscription records (deduplicated by Email+Scid) at the end of the latest month — an investor holding 2 products counts twice.' },
+    { id: 'total_inv',     label: 'Total Investors',        value: `👤 ${fmtNum(latest.totalInvestors)}`,           accent: 'var(--accent-teal)',   sub: `Unique PANs active · ${latest.month}`,
+      tooltip: 'Count of distinct investor PANs with at least one active subscription at the end of the latest month — each investor counts once regardless of how many products they hold.' },
+    { id: 'new_subs',      label: 'New Subscriptions',      value: `🆕 ${fmtNum(latest.newSubscriptions)}`,         accent: 'var(--accent-green)',  sub: `New + Renewal starts · ${latest.month}`,
+      tooltip: 'All subscription starts in the latest month — first-time signups plus renewals of an existing subscription.' },
+    { id: 'new_signups',   label: 'New Signups',            value: `📝 ${fmtNum(latest.newSignups)}`,               accent: 'var(--accent-green)',  sub: `First-time (Cycle 1) · ${latest.month}`,
+      tooltip: 'First-time subscriptions (Cycle 1) that started in the latest month — excludes renewals, so this isolates pure new-investor acquisition.' },
+    { id: 'total_signups', label: 'Total Signups (Ever)',   value: `🧾 ${fmtNum(latest.totalSignups)}`,             accent: 'var(--accent-cyan)',   sub: 'Cumulative unique investors',
+      tooltip: 'Running total of every distinct investor PAN that has ever subscribed, up to and including the latest month — never decreases.' },
+    { id: 'total_cycles',  label: 'Total Sub. Cycles',      value: `🔢 ${fmtNum(latest.totalSubscriptionCycles)}`,  accent: 'var(--accent-teal)',   sub: 'Cumulative · deduped',
+      tooltip: 'Running total of every distinct investor-product-cycle combination started up to the latest month — counts each renewal cycle once.' },
+    { id: 'completed',     label: 'Completed Cycles',       value: `✔️ ${fmtNum(latest.completedCycles)}`,          accent: 'var(--accent-purple)', sub: 'Cumulative UNSUBSCRIBED',
+      tooltip: 'Running total of subscription cycles that have reached UNSUBSCRIBED status by the latest month — cycles that ran their course, whether or not the investor later renewed.' },
   ] : [];
 
   return (
@@ -288,7 +296,8 @@ function AUMContent({ summaryData, monthly, currentMaster, filters, setFilters }
         <>
           <div className="charts-grid charts-grid-2" style={{ marginBottom: '1rem' }}>
             {hasAUM && (
-              <ChartCard title="AUM Trend" subtitle="Sum of AUM / Networth for active subscribers each month" badge="AUM">
+              <ChartCard title="AUM Trend" subtitle="Sum of AUM / Networth for active subscribers each month" badge="AUM"
+                tooltip="Total AUM (or Networth fallback) of every active subscription at the end of each month — a rising line means more assets are under management, a falling one means AUM is shrinking.">
                 <ResponsiveContainer width="100%" height={220}>
                   <LineChart data={chartData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--border-dim)" />
@@ -300,7 +309,8 @@ function AUMContent({ summaryData, monthly, currentMaster, filters, setFilters }
                 </ResponsiveContainer>
               </ChartCard>
             )}
-            <ChartCard title="Active Subscriptions & Investors" subtitle="Month-end active subscriber count and unique investor count" badge="Growth">
+            <ChartCard title="Active Subscriptions & Investors" subtitle="Month-end active subscriber count and unique investor count" badge="Growth"
+              tooltip="Active subscription records vs. distinct active investors at the end of each month — the gap between the two lines shows how many investors hold more than one product.">
               <ResponsiveContainer width="100%" height={220}>
                 <LineChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--border-dim)" />
@@ -315,7 +325,8 @@ function AUMContent({ summaryData, monthly, currentMaster, filters, setFilters }
           </div>
 
           <div className="charts-grid charts-grid-2" style={{ marginBottom: '1rem' }}>
-            <ChartCard title="New Subscriptions & Signups" subtitle="Monthly new starts (all cycles) and first-time signups (Cycle 1)" badge="Acquisition">
+            <ChartCard title="New Subscriptions & Signups" subtitle="Monthly new starts (all cycles) and first-time signups (Cycle 1)" badge="Acquisition"
+              tooltip="New Subscriptions counts every start in the month (first-time plus renewals); New Signups is the subset that are brand-new (Cycle 1) investors — the gap between the two bars is renewal volume.">
               <ResponsiveContainer width="100%" height={220}>
                 <BarChart data={chartData}
                   style={{ cursor: 'pointer' }}
@@ -347,7 +358,8 @@ function AUMContent({ summaryData, monthly, currentMaster, filters, setFilters }
               <div className="chart-clickable-hint">💡 Click any bar/point to see details</div>
             </ChartCard>
 
-            <ChartCard title="Cumulative Growth" subtitle="Running total of unique investors and subscription cycles over time" badge="Cumulative">
+            <ChartCard title="Cumulative Growth" subtitle="Running total of unique investors and subscription cycles over time" badge="Cumulative"
+              tooltip="Running totals since inception — unique investors ever signed up, total subscription cycles started, and cycles that have completed (unsubscribed) — always non-decreasing by definition.">
               <ResponsiveContainer width="100%" height={220}>
                 <LineChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--border-dim)" />
@@ -389,7 +401,8 @@ function AUMContent({ summaryData, monthly, currentMaster, filters, setFilters }
             </div>
 
             <div className="charts-grid charts-grid-2" style={{ marginBottom: '1rem' }}>
-              <ChartCard title="New vs Exited — Monthly" subtitle="Side-by-side comparison of subscriptions started vs ended each month" badge="Flow">
+              <ChartCard title="New vs Exited — Monthly" subtitle="Side-by-side comparison of subscriptions started vs ended each month" badge="Flow"
+                tooltip="Subscriptions that started vs. subscriptions that ended in each of the last 18 months — an exit only counts here once the investor fails to renew within the 15-day grace period, so short payment delays aren't mistaken for churn.">
                 <ResponsiveContainer width="100%" height={240}>
                   <BarChart data={last18} barGap={2}
                     style={{ cursor: 'pointer' }}
@@ -422,7 +435,8 @@ function AUMContent({ summaryData, monthly, currentMaster, filters, setFilters }
                 <div className="chart-clickable-hint">💡 Click any bar/point to see details</div>
               </ChartCard>
 
-              <ChartCard title="Net Growth per Month" subtitle="New minus Exited — positive = net gain, negative = net loss" badge="Net">
+              <ChartCard title="Net Growth per Month" subtitle="New minus Exited — positive = net gain, negative = net loss" badge="Net"
+                tooltip="New minus Exited for each month — green bars above zero mean the base grew that month, red bars below zero mean more subscriptions ended than began.">
                 <ResponsiveContainer width="100%" height={240}>
                   <BarChart data={last18}
                     style={{ cursor: 'pointer' }}
@@ -458,7 +472,8 @@ function AUMContent({ summaryData, monthly, currentMaster, filters, setFilters }
             </div>
 
             <div className="charts-grid charts-grid-1" style={{ marginBottom: '1rem' }}>
-              <ChartCard title="Active Subscriber Trend vs Monthly Exits" subtitle="Closing active count (left) overlaid with exit volume per month (right)" badge="Trend">
+              <ChartCard title="Active Subscriber Trend vs Monthly Exits" subtitle="Closing active count (left) overlaid with exit volume per month (right)" badge="Trend"
+                tooltip="Line shows the month-end active subscription count (left axis) overlaid with the volume of exits that month (right axis) — helps spot whether exit spikes actually dent the active base or get absorbed by new growth.">
                 <ResponsiveContainer width="100%" height={220}>
                   <ComposedChart data={last18}>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--border-dim)" />

@@ -684,7 +684,8 @@ export default memo(function Tab16Comparison({ rawData, filters, setFilters }) {
 
           {/* ── KPI Metrics Table ──────────────────────────────────────── */}
           {activeSection === 'kpis' && (
-            <ChartCard title="Key Metrics Comparison" subtitle="All metrics for both periods — delta shows Period B vs Period A change">
+            <ChartCard title="Key Metrics Comparison" subtitle="All metrics for both periods — delta shows Period B vs Period A change"
+              tooltip="Every tracked metric computed independently for Period A and Period B over their own date ranges. The Delta column shows how Period B compares to Period A — green means the change is favorable for that metric, red means unfavorable (direction depends on whether higher is better).">
               <div className="data-table-wrap">
                 <table className="data-table">
                   <thead>
@@ -757,7 +758,8 @@ export default memo(function Tab16Comparison({ rawData, filters, setFilters }) {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <ChartCard
                 title="Subscriber Closing Count — Normalized by Month"
-                subtitle="Both periods aligned to Month 1, 2, 3… for direct comparison. Hover to see actual calendar month.">
+                subtitle="Both periods aligned to Month 1, 2, 3… for direct comparison. Hover to see actual calendar month."
+                tooltip="Both periods are re-indexed to start at Month 1 regardless of their actual calendar dates, so you can compare 'N months into the period' apples-to-apples even when Period A and Period B span different calendar months.">
                 <ResponsiveContainer width="100%" height={280}>
                   <LineChart data={monthlyChart}>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--border-dim)" />
@@ -789,7 +791,8 @@ export default memo(function Tab16Comparison({ rawData, filters, setFilters }) {
 
               <ChartCard
                 title="Net Monthly Additions — Period Comparison"
-                subtitle="Month-by-month net subscriber change (new minus exits) for both periods — click a bar to see all active subscribers">
+                subtitle="Month-by-month net subscriber change (new minus exits) for both periods — click a bar to see all active subscribers"
+                tooltip="Net subscriber change (new minus exited) for each month-of-period, plotted side by side for Period A and Period B — shows which period had stronger growth momentum at the same point in its lifecycle.">
                 <ResponsiveContainer width="100%" height={240}>
                   <BarChart
                     data={netChart}
@@ -826,7 +829,8 @@ export default memo(function Tab16Comparison({ rawData, filters, setFilters }) {
                   { label: aLabel, color: A_COLOR, monthly: result.a.monthly },
                   { label: bLabel, color: B_COLOR, monthly: result.b.monthly },
                 ].map(({ label, color, monthly }) => (
-                  <ChartCard key={label} title={`Monthly Detail — ${label}`} subtitle={`${monthly.length} months of data`}>
+                  <ChartCard key={label} title={`Monthly Detail — ${label}`} subtitle={`${monthly.length} months of data`}
+                    tooltip="Month-by-month new starts, exits, net change and closing active count for this period, computed from the full subscription history so churn and renewals are counted correctly regardless of the period's date boundaries.">
                     <div className="data-table-wrap" style={{ maxHeight: 300, overflowY: 'auto' }}>
                       <table className="data-table">
                         <thead>
@@ -860,7 +864,8 @@ export default memo(function Tab16Comparison({ rawData, filters, setFilters }) {
           {/* ── Products ───────────────────────────────────────────────── */}
           {activeSection === 'products' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <ChartCard title="Product Mix — Active Subscribers" subtitle="Top products by active subscriber count — click a bar to see subscriber list">
+              <ChartCard title="Product Mix — Active Subscribers" subtitle="Top products by active subscriber count — click a bar to see subscriber list"
+                tooltip="Active subscriber count per product, computed separately for each period from subscriptions that started within that period's date range — a product growing in Period B but not A signals a shifting product mix.">
                 <ResponsiveContainer width="100%" height={Math.max(280, productChart.length * 44)}>
                   <BarChart
                     data={productChart}
@@ -904,7 +909,8 @@ export default memo(function Tab16Comparison({ rawData, filters, setFilters }) {
                   { label: aLabel, color: A_COLOR, products: result.a.products },
                   { label: bLabel, color: B_COLOR, products: result.b.products },
                 ].map(({ label, color, products }) => (
-                  <ChartCard key={label} title={`Top Products — ${label}`} subtitle="Sorted by active subscribers">
+                  <ChartCard key={label} title={`Top Products — ${label}`} subtitle="Sorted by active subscribers"
+                    tooltip="Products ranked by active subscribers, with renewal and churn rate for each — computed only from subscriptions that started within this period's date range.">
                     <div className="data-table-wrap" style={{ maxHeight: 320, overflowY: 'auto' }}>
                       <table className="data-table">
                         <thead>
@@ -938,7 +944,8 @@ export default memo(function Tab16Comparison({ rawData, filters, setFilters }) {
           {/* ── Brokers ────────────────────────────────────────────────── */}
           {activeSection === 'brokers' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <ChartCard title="Broker Active Subscribers" subtitle="Top brokers by active subscriber count — click a bar to see subscriber list">
+              <ChartCard title="Broker Active Subscribers" subtitle="Top brokers by active subscriber count — click a bar to see subscriber list"
+                tooltip="Active subscriber count per broker, computed separately for each period from subscriptions that started within that period's date range — reveals which distribution channels grew or shrank between the two periods.">
                 <ResponsiveContainer width="100%" height={Math.max(280, brokerChart.length * 44)}>
                   <BarChart
                     data={brokerChart}
@@ -981,7 +988,8 @@ export default memo(function Tab16Comparison({ rawData, filters, setFilters }) {
                   { label: aLabel, color: A_COLOR, brokers: result.a.brokers },
                   { label: bLabel, color: B_COLOR, brokers: result.b.brokers },
                 ].map(({ label, color, brokers }) => (
-                  <ChartCard key={label} title={`Broker Detail — ${label}`}>
+                  <ChartCard key={label} title={`Broker Detail — ${label}`}
+                    tooltip="Brokers ranked by active subscribers for this period, with exits and renewal rate — computed only from subscriptions that started within this period's date range.">
                     <div className="data-table-wrap" style={{ maxHeight: 320, overflowY: 'auto' }}>
                       <table className="data-table">
                         <thead>
@@ -1015,7 +1023,8 @@ export default memo(function Tab16Comparison({ rawData, filters, setFilters }) {
           {/* ── Geography ──────────────────────────────────────────────── */}
           {activeSection === 'geo' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <ChartCard title="State-wise Active Subscribers" subtitle="Top states by active subscriber count — click a bar to see subscriber list">
+              <ChartCard title="State-wise Active Subscribers" subtitle="Top states by active subscriber count — click a bar to see subscriber list"
+                tooltip="Active subscriber count per state, computed separately for each period from subscriptions that started within that period's date range — highlights which regions gained or lost ground between the two periods.">
                 <ResponsiveContainer width="100%" height={Math.max(280, geoChart.length * 44)}>
                   <BarChart
                     data={geoChart}
@@ -1062,7 +1071,8 @@ export default memo(function Tab16Comparison({ rawData, filters, setFilters }) {
                   { label: aLabel, color: A_COLOR, geo: result.a.geo },
                   { label: bLabel, color: B_COLOR, geo: result.b.geo },
                 ].map(({ label, color, geo }) => (
-                  <ChartCard key={label} title={`Geography Detail — ${label}`}>
+                  <ChartCard key={label} title={`Geography Detail — ${label}`}
+                    tooltip="States ranked by active subscribers for this period, with churn rate and share of total investor networth — computed only from subscriptions that started within this period's date range.">
                     <div className="data-table-wrap" style={{ maxHeight: 320, overflowY: 'auto' }}>
                       <table className="data-table">
                         <thead>
@@ -1097,7 +1107,8 @@ export default memo(function Tab16Comparison({ rawData, filters, setFilters }) {
           {activeSection === 'churn' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {cancelChart.length > 0 ? (
-                <ChartCard title="Cancellation Reasons Comparison" subtitle="Top exit reasons by count — click a bar to see subscriber list">
+                <ChartCard title="Cancellation Reasons Comparison" subtitle="Top exit reasons by count — click a bar to see subscriber list"
+                  tooltip="Most common reasons subscribers gave for cancelling, compared side by side for each period — a reason growing from Period A to Period B flags an emerging retention problem.">
                   <ResponsiveContainer width="100%" height={Math.max(280, cancelChart.length * 44)}>
                     <BarChart
                       data={cancelChart}
@@ -1153,7 +1164,8 @@ export default memo(function Tab16Comparison({ rawData, filters, setFilters }) {
                   { label: aLabel, color: A_COLOR, cancel: result.a.cancel },
                   { label: bLabel, color: B_COLOR, cancel: result.b.cancel },
                 ].map(({ label, color, cancel }) => (
-                  <ChartCard key={label} title={`Churn Detail — ${label}`} subtitle={`${cancel.total || 0} total exits with reason`}>
+                  <ChartCard key={label} title={`Churn Detail — ${label}`} subtitle={`${cancel.total || 0} total exits with reason`}
+                    tooltip="Full breakdown of cancellation reasons and their share of total exits recorded within this period's date range.">
                     <div className="data-table-wrap" style={{ maxHeight: 320, overflowY: 'auto' }}>
                       <table className="data-table">
                         <thead>

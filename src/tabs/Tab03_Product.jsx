@@ -234,13 +234,17 @@ export default memo(function Tab03Product({ products, insights, currentMaster, f
 
       {/* KPI Summary */}
       <SortableKPIGrid storageKey="product" cols="175px" cards={[
-        { id: 'top_product',      label: 'Top Product',         value: products[0]?.product,  small: true, accent: 'var(--accent-cyan)',  icon: '🏆', sub: `${products[0]?.total} subs` },
-        { id: 'best_renewal',     label: 'Best Renewal',        value: topByRenewal[0]?.product, small: true, accent: 'var(--accent-green)', icon: '🔄', sub: `${topByRenewal[0]?.renewalRate}% renewal` },
-        { id: 'highest_nw',       label: 'Highest NW Product',  value: topByNW[0]?.product,   small: true, accent: 'var(--accent-gold)',  icon: '💰', sub: formatCurrency(topByNW[0]?.avgNetworth, true) },
+        { id: 'top_product',      label: 'Top Product',         value: products[0]?.product,  small: true, accent: 'var(--accent-cyan)',  icon: '🏆', sub: `${products[0]?.total} subs`,
+          tooltip: 'The product with the most total subscription records ever created (active + exited combined) — the biggest basket by lifetime volume, not necessarily the most active today.' },
+        { id: 'best_renewal',     label: 'Best Renewal',        value: topByRenewal[0]?.product, small: true, accent: 'var(--accent-green)', icon: '🔄', sub: `${topByRenewal[0]?.renewalRate}% renewal`,
+          tooltip: 'The product with the highest % of its currently active subscribers on Cycle 2 or later — i.e. the basket whose active base has renewed the most.' },
+        { id: 'highest_nw',       label: 'Highest NW Product',  value: topByNW[0]?.product,   small: true, accent: 'var(--accent-gold)',  icon: '💰', sub: formatCurrency(topByNW[0]?.avgNetworth, true),
+          tooltip: 'The product whose active subscribers have the highest average declared networth — an indicator of which basket attracts the wealthiest (HNI) investors.' },
       ]} />
 
       {/* Treemap */}
-      <ChartCard title="Product Size Treemap" subtitle="Relative subscriber share by product — click any segment to see subscribers" style={{ marginBottom: '1rem' }}>
+      <ChartCard title="Product Size Treemap" subtitle="Relative subscriber share by product — click any segment to see subscribers" style={{ marginBottom: '1rem' }}
+        tooltip="Segment size is proportional to a product's total subscription count ever recorded (active + exited) — the bigger the box, the larger that product's lifetime subscriber volume.">
         <ResponsiveContainer width="100%" height={250}>
           <Treemap data={treemapData} dataKey="size" aspectRatio={4 / 3} content={<TreemapContent />}>
             <Tooltip formatter={(v, n) => [v.toLocaleString(), 'Subscribers']} />
@@ -250,7 +254,8 @@ export default memo(function Tab03Product({ products, insights, currentMaster, f
       </ChartCard>
 
       {/* Full-width bar charts */}
-      <ChartCard title="Active vs Exited by Product" subtitle="Current subscription state per product" style={{ marginBottom: '1rem' }}>
+      <ChartCard title="Active vs Exited by Product" subtitle="Current subscription state per product" style={{ marginBottom: '1rem' }}
+        tooltip="Active = subscriptions currently in Subscribed, Grace Period or Cancelled-but-still-active status; Exited = subscriptions whose Cycle Level Status is Unsubscribed. Compares each product's live base against its cumulative churn.">
         <ResponsiveContainer width="100%" height={Math.max(260, products.length * 36)}>
           <BarChart
             data={products}
@@ -272,7 +277,8 @@ export default memo(function Tab03Product({ products, insights, currentMaster, f
       </ChartCard>
 
       <div className="charts-grid charts-grid-2" style={{ marginBottom: '1rem' }}>
-        <ChartCard title="Renewal Rate by Product" subtitle="% of current subscribers with Cycle > 1">
+        <ChartCard title="Renewal Rate by Product" subtitle="% of current subscribers with Cycle > 1"
+          tooltip="Of a product's currently active subscribers, the % who are on their 2nd cycle or later — i.e. have renewed at least once. Higher bars mean stickier, more loyal subscriber bases.">
           <ResponsiveContainer width="100%" height={Math.max(220, topByRenewal.length * 32)}>
             <BarChart
               data={topByRenewal}
@@ -293,7 +299,8 @@ export default memo(function Tab03Product({ products, insights, currentMaster, f
           <div className="chart-clickable-hint">💡 Click any bar to see subscriber list</div>
         </ChartCard>
 
-        <ChartCard title="Average Networth by Product" subtitle="Avg investor networth per product (HNI indicator)">
+        <ChartCard title="Average Networth by Product" subtitle="Avg investor networth per product (HNI indicator)"
+          tooltip="Average self-declared networth across a product's active subscribers (rows with no networth recorded are excluded, not treated as zero) — a proxy for how affluent that basket's investor base is.">
           <ResponsiveContainer width="100%" height={Math.max(220, topByNW.length * 32)}>
             <BarChart
               data={topByNW}
@@ -316,7 +323,8 @@ export default memo(function Tab03Product({ products, insights, currentMaster, f
       </div>
 
       {/* Product Leaderboard Table */}
-      <ChartCard title="Product Leaderboard" subtitle="Comprehensive metrics for all products — click column headers to sort">
+      <ChartCard title="Product Leaderboard" subtitle="Comprehensive metrics for all products — click column headers to sort"
+        tooltip="Total Subs = all-time subscription records (active + exited); Renewal % and the financial averages (Plan, Discount, Avg NW) are computed over currently active subscribers only, so exited subscribers don't skew them — Avg Cycle is the one exception, averaged across all records for the product.">
         <div className="data-table-wrap" style={{ maxHeight: 420, overflowY: 'auto' }}>
           <table className="data-table">
             <thead>

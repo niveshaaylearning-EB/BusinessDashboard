@@ -195,15 +195,20 @@ function BrokerContent({ brokerMetrics, attributionMetrics, insights, filters, s
 
       {/* KPIs */}
       <SortableKPIGrid storageKey="broker" cols="175px" cards={[
-        { id: 'top_broker_vol',   label: 'Top Broker (Volume)',    value: topBroker?.broker,      small: true, accent: 'var(--accent-cyan)',  icon: '🏆', sub: `${topBroker?.total} subscriptions` },
-        { id: 'best_quality',     label: 'Best Quality Broker',    value: bestQuality?.broker,    small: true, accent: 'var(--accent-gold)',  icon: '💎', sub: `Avg NW: ${formatCurrency(bestQuality?.avgNetworth, true)}` },
-        { id: 'best_renewal',     label: 'Best Renewal Broker',    value: topByRenewal[0]?.broker, small: true, accent: 'var(--accent-green)', icon: '🔄', sub: `${topByRenewal[0]?.renewalRate}% renewal` },
-        { id: 'best_retention',   label: 'Best Retention Broker',  value: [...brokerMetrics].filter(b=>b.total>=3).sort((a,b)=>b.renewalRate-a.renewalRate)[0]?.broker, small: true, accent: 'var(--accent-teal)', icon: '🔒', sub: `${[...brokerMetrics].filter(b=>b.total>=3).sort((a,b)=>b.renewalRate-a.renewalRate)[0]?.renewalRate}% renewal rate` },
+        { id: 'top_broker_vol',   label: 'Top Broker (Volume)',    value: topBroker?.broker,      small: true, accent: 'var(--accent-cyan)',  icon: '🏆', sub: `${topBroker?.total} subscriptions`,
+          tooltip: 'Broker with the most total subscriptions ever acquired (active + exited, deduplicated per investor) — the largest distribution channel by raw volume.' },
+        { id: 'best_quality',     label: 'Best Quality Broker',    value: bestQuality?.broker,    small: true, accent: 'var(--accent-gold)',  icon: '💎', sub: `Avg NW: ${formatCurrency(bestQuality?.avgNetworth, true)}`,
+          tooltip: 'Among brokers with at least 3 total subscribers, the one whose currently active subscribers have the highest average declared net worth.' },
+        { id: 'best_renewal',     label: 'Best Renewal Broker',    value: topByRenewal[0]?.broker, small: true, accent: 'var(--accent-green)', icon: '🔄', sub: `${topByRenewal[0]?.renewalRate}% renewal`,
+          tooltip: 'Broker with the highest renewal rate (% of its active subscribers on cycle 2+) across ALL brokers — no minimum-subscriber threshold, so a broker with very few clients can top this list if all of them happened to renew.' },
+        { id: 'best_retention',   label: 'Best Retention Broker',  value: [...brokerMetrics].filter(b=>b.total>=3).sort((a,b)=>b.renewalRate-a.renewalRate)[0]?.broker, small: true, accent: 'var(--accent-teal)', icon: '🔒', sub: `${[...brokerMetrics].filter(b=>b.total>=3).sort((a,b)=>b.renewalRate-a.renewalRate)[0]?.renewalRate}% renewal rate`,
+          tooltip: 'The same renewal-rate metric as "Best Renewal Broker", but restricted to brokers with 3+ total subscribers — a more statistically reliable read on which channel actually retains investors best.' },
       ]} />
 
       {/* Volume & Quality Charts */}
       <div className="charts-grid charts-grid-2" style={{ marginBottom: '1rem' }}>
-        <ChartCard title="Broker Volume Ranking" subtitle="Active and exited subscriptions per broker">
+        <ChartCard title="Broker Volume Ranking" subtitle="Active and exited subscriptions per broker"
+          tooltip="Top 10 brokers by total subscriptions ever acquired (deduplicated per investor), split into how many are still active vs. have exited.">
           <ResponsiveContainer width="100%" height={260}>
             <BarChart
               data={top10}
@@ -223,7 +228,8 @@ function BrokerContent({ brokerMetrics, attributionMetrics, insights, filters, s
           <div className="chart-clickable-hint">💡 Click any bar to see subscriber details</div>
         </ChartCard>
 
-        <ChartCard title="Avg Networth by Broker" subtitle="Quality indicator — investor wealth per broker channel">
+        <ChartCard title="Avg Networth by Broker" subtitle="Quality indicator — investor wealth per broker channel"
+          tooltip="Average declared net worth of each broker's currently active subscribers — a proxy for the wealth/quality of the client base each channel brings in, not their volume.">
           <ResponsiveContainer width="100%" height={260}>
             <BarChart
               data={topByNW}
@@ -246,7 +252,8 @@ function BrokerContent({ brokerMetrics, attributionMetrics, insights, filters, s
 
       {/* Renewal */}
       <div className="charts-grid charts-grid-2" style={{ marginBottom: '1rem' }}>
-        <ChartCard title="Renewal Rate by Broker" subtitle="Which brokers bring the most loyal subscribers">
+        <ChartCard title="Renewal Rate by Broker" subtitle="Which brokers bring the most loyal subscribers"
+          tooltip="Brokers ranked by % of their active subscribers on cycle 2 or later (i.e. renewed at least once). No minimum-subscriber threshold is applied here, so results for very small brokers may reflect a tiny sample.">
           <ResponsiveContainer width="100%" height={240}>
             <BarChart
               data={topByRenewal}
@@ -268,7 +275,8 @@ function BrokerContent({ brokerMetrics, attributionMetrics, insights, filters, s
 
         {/* Attribution Source Chart */}
         {attributionMetrics?.length > 0 && (
-          <ChartCard title="Acquisition Channel Analysis" subtitle="Subscriptions by attribution / traffic source">
+          <ChartCard title="Acquisition Channel Analysis" subtitle="Subscriptions by attribution / traffic source"
+            tooltip="Subscriptions grouped by acquisition/traffic source (Attribution Source) rather than broker — shows how many signups from each channel are still active versus the total ever acquired.">
             <ResponsiveContainer width="100%" height={240}>
               <BarChart data={attributionMetrics.slice(0, 8)} layout="vertical">
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--border-dim)" />
@@ -285,7 +293,8 @@ function BrokerContent({ brokerMetrics, attributionMetrics, insights, filters, s
       </div>
 
       {/* Leaderboard Table */}
-      <ChartCard title="Broker Performance Leaderboard" subtitle="Click headers to sort — full metrics per broker">
+      <ChartCard title="Broker Performance Leaderboard" subtitle="Click headers to sort — full metrics per broker"
+        tooltip="Full metrics per broker: total (active+exited) subscriptions, current active/exited counts, renewal rate of active subscribers, and average net worth/P&L/plan amount computed on active subscribers only.">
         <div className="data-table-wrap" style={{ maxHeight: 420, overflowY: 'auto' }}>
           <table className="data-table">
             <thead>

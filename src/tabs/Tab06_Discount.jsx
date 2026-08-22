@@ -200,17 +200,24 @@ function DiscountContent({ discountSummary, discountByProduct, discountByBroker,
 
       {/* KPIs */}
       <SortableKPIGrid storageKey="discount" cols="160px" cards={[
-        { id: 'total_discount',   label: 'Total Discount Given',   value: formatCurrency(discountSummary.totalDiscountGiven, true),      accent: 'var(--accent-orange)', icon: '💸', small: true },
-        { id: 'avg_discount',     label: 'Avg Discount',           value: formatCurrency(discountSummary.avgDiscount, true),             accent: 'var(--accent-gold)',   icon: '🏷️' },
-        { id: 'median_discount',  label: 'Median Discount',        value: formatCurrency(discountSummary.medianDiscount, true),          accent: 'var(--accent-gold)',   icon: '📊' },
-        { id: 'disc_util',        label: 'Discount Utilization',   value: `${discountSummary.discountUtilization}%`,                    accent: discountSummary.discountUtilization > 50 ? 'var(--accent-red)' : 'var(--accent-teal)', icon: '📉', sub: '% with discount' },
-        { id: 'disc_subs',        label: 'Discounted Subs',        value: formatNumber(discountSummary.withDiscountCount),               accent: 'var(--accent-orange)', icon: '🎯' },
-        { id: 'offer_codes',      label: 'Unique Offer Codes',     value: (offerCodes || []).filter(c => c.code !== 'No Code').length,   accent: 'var(--accent-purple)', icon: '🔑' },
+        { id: 'total_discount',   label: 'Total Discount Given',   value: formatCurrency(discountSummary.totalDiscountGiven, true),      accent: 'var(--accent-orange)', icon: '💸', small: true,
+          tooltip: 'Sum of all Offer Discount ₹ amounts across active subscriptions — summed per subscription row, so an investor with multiple active products contributes each discount separately.' },
+        { id: 'avg_discount',     label: 'Avg Discount',           value: formatCurrency(discountSummary.avgDiscount, true),             accent: 'var(--accent-gold)',   icon: '🏷️',
+          tooltip: 'Average discount amount among unique active subscribers who received a non-zero discount — subscribers with no discount are excluded from this average, not counted as zero.' },
+        { id: 'median_discount',  label: 'Median Discount',        value: formatCurrency(discountSummary.medianDiscount, true),          accent: 'var(--accent-gold)',   icon: '📊',
+          tooltip: 'Median discount amount among unique active subscribers with a non-zero discount — less skewed by a few very large discounts than the average above.' },
+        { id: 'disc_util',        label: 'Discount Utilization',   value: `${discountSummary.discountUtilization}%`,                    accent: discountSummary.discountUtilization > 50 ? 'var(--accent-red)' : 'var(--accent-teal)', icon: '📉', sub: '% with discount',
+          tooltip: '% of unique active subscribers currently on a discounted plan (Offer Discount > 0). Higher values mean more of the base needed a discount to convert or stay.' },
+        { id: 'disc_subs',        label: 'Discounted Subs',        value: formatNumber(discountSummary.withDiscountCount),               accent: 'var(--accent-orange)', icon: '🎯',
+          tooltip: 'Number of unique active subscribers currently receiving a non-zero discount.' },
+        { id: 'offer_codes',      label: 'Unique Offer Codes',     value: (offerCodes || []).filter(c => c.code !== 'No Code').length,   accent: 'var(--accent-purple)', icon: '🔑',
+          tooltip: 'Count of distinct promotional offer codes that have been used by at least one active subscriber (excludes subscriptions with no code applied).' },
       ]} />
 
       {/* Charts Row 1 */}
       <div className="charts-grid charts-grid-2" style={{ marginBottom: '1rem' }}>
-        <ChartCard title="Total Discount by Product" subtitle="Which products consume the most discount budget">
+        <ChartCard title="Total Discount by Product" subtitle="Which products consume the most discount budget"
+          tooltip="Total ₹ discount given to active subscribers of each product (summed across all their subscriptions, deduplicated per investor within the product) — shows where the discount budget is concentrated.">
           <ResponsiveContainer width="100%" height={240}>
             <BarChart
               data={topByDiscount}
@@ -236,7 +243,8 @@ function DiscountContent({ discountSummary, discountByProduct, discountByBroker,
           <div className="chart-clickable-hint">Click a bar to see discounted subscribers for that product</div>
         </ChartCard>
 
-        <ChartCard title="Discount Utilization % by Product" subtitle="% of subscriptions that used a discount">
+        <ChartCard title="Discount Utilization % by Product" subtitle="% of subscriptions that used a discount"
+          tooltip="% of each product's active subscribers (deduplicated per investor) who are on a discounted plan — a high rate means this product rarely converts at full price.">
           <ResponsiveContainer width="100%" height={240}>
             <BarChart
               data={topByUtil}
@@ -266,7 +274,8 @@ function DiscountContent({ discountSummary, discountByProduct, discountByBroker,
       </div>
 
       {/* Offer Codes */}
-      <ChartCard title="Offer Code Leaderboard" subtitle="Most-used promotional codes by subscription count" style={{ marginBottom: '1rem' }}>
+      <ChartCard title="Offer Code Leaderboard" subtitle="Most-used promotional codes by subscription count" style={{ marginBottom: '1rem' }}
+        tooltip="Ranks promotional offer codes by how many active subscribers used them (deduplicated per investor), alongside the total ₹ discount each code has driven.">
         <ResponsiveContainer width="100%" height={220}>
           <BarChart
             data={top10Codes}
@@ -293,7 +302,8 @@ function DiscountContent({ discountSummary, discountByProduct, discountByBroker,
       </ChartCard>
 
       {/* Broker Bar Chart */}
-      <ChartCard title="Total Discount by Broker" subtitle="Broker-wise discount spend — click a bar to see discounted subscribers" style={{ marginBottom: '1rem' }}>
+      <ChartCard title="Total Discount by Broker" subtitle="Broker-wise discount spend — click a bar to see discounted subscribers" style={{ marginBottom: '1rem' }}
+        tooltip="Total ₹ discount given to active subscribers acquired through each broker — highlights which distribution channels rely most heavily on discounting to close deals.">
         <ResponsiveContainer width="100%" height={240}>
           <BarChart
             data={(discountByBroker || []).slice(0, 8)}
@@ -321,7 +331,8 @@ function DiscountContent({ discountSummary, discountByProduct, discountByBroker,
 
       {/* Broker & State Discount */}
       <div className="charts-grid charts-grid-2" style={{ marginBottom: '1rem' }}>
-        <ChartCard title="Discount by Broker" subtitle="Avg discount and utilization rate by distributor">
+        <ChartCard title="Discount by Broker" subtitle="Avg discount and utilization rate by distributor"
+          tooltip="Per-broker discount profile: active subscriber count, their average non-zero discount, what % of them are on any discount, and the total ₹ discounted through this channel.">
           <div className="data-table-wrap" style={{ maxHeight: 300, overflowY: 'auto' }}>
             <table className="data-table">
               <thead><tr>
@@ -344,7 +355,8 @@ function DiscountContent({ discountSummary, discountByProduct, discountByBroker,
           </div>
         </ChartCard>
 
-        <ChartCard title="Discount by State" subtitle="Geographic discount dependency analysis">
+        <ChartCard title="Discount by State" subtitle="Geographic discount dependency analysis"
+          tooltip="Per-state discount profile: active subscriber count, their average non-zero discount, and what % of a state's active subscribers are on a discounted plan.">
           <div className="data-table-wrap" style={{ maxHeight: 300, overflowY: 'auto' }}>
             <table className="data-table">
               <thead><tr>

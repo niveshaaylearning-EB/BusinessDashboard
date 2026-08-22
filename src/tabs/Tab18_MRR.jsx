@@ -23,10 +23,14 @@ const Tip = ({ active, payload, label }) => {
 export default memo(function Tab18MRR({ mrrMetrics }) {
   const d = mrrMetrics || {};
   const kpis = [
-    { label: 'Monthly Recurring Revenue', value: `₹${formatNumber(d.currentMRR || 0)}`, sub: 'Active subscriptions — plan-normalised', color: '#00d4ff' },
-    { label: 'Annual Run Rate (ARR)', value: `₹${formatNumber(d.currentARR || 0)}`, sub: 'MRR × 12', color: '#22c55e' },
-    { label: 'Active Investors', value: formatNumber(d.activeInvestors || 0), sub: 'Unique PANs with active subscription', color: '#fbbf24' },
-    { label: 'Avg Revenue / Investor', value: `₹${formatNumber(d.avgRevenuePerUser || 0)}/mo`, sub: 'MRR per unique investor', color: '#a78bfa' },
+    { label: 'Monthly Recurring Revenue', value: `₹${formatNumber(d.currentMRR || 0)}`, sub: 'Active subscriptions — plan-normalised', color: '#00d4ff',
+      tooltip: 'Total plan revenue expected next month from currently active subscriptions. Annual plans are divided by 12, quarterly by 3, and half-yearly by 6 to get a monthly-equivalent figure (plans with no stated duration above ₹3,000 are also assumed annual).' },
+    { label: 'Annual Run Rate (ARR)', value: `₹${formatNumber(d.currentARR || 0)}`, sub: 'MRR × 12', color: '#22c55e',
+      tooltip: 'Monthly Recurring Revenue × 12 — a simple annualized projection of the current MRR snapshot, not a forecast of actual future billings.' },
+    { label: 'Active Investors', value: formatNumber(d.activeInvestors || 0), sub: 'Unique PANs with active subscription', color: '#fbbf24',
+      tooltip: 'Count of unique investors (by PAN) currently in an active status — Subscribed, Grace Period, or Cancelled-but-still-active — deduplicated so one investor with multiple rows is only counted once.' },
+    { label: 'Avg Revenue / Investor', value: `₹${formatNumber(d.avgRevenuePerUser || 0)}/mo`, sub: 'MRR per unique investor', color: '#a78bfa',
+      tooltip: 'Current MRR divided by Active Investors — the average monthly-equivalent revenue contributed per active investor.' },
   ];
 
   const trend = d.trend || [];
@@ -46,7 +50,10 @@ export default memo(function Tab18MRR({ mrrMetrics }) {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
         {kpis.map(k => (
           <div key={k.label} style={{ background: 'var(--bg-card)', border: `1px solid ${k.color}40`, borderRadius: 12, padding: '1.2rem' }}>
-            <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 6 }}>{k.label}</div>
+            <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 5 }}>
+              {k.label}
+              {k.tooltip && <span title={k.tooltip} style={{ cursor: 'help', color: 'var(--text-muted)' }}>ⓘ</span>}
+            </div>
             <div style={{ fontSize: '1.6rem', fontWeight: 700, color: k.color }}>{k.value}</div>
             <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>{k.sub}</div>
           </div>
@@ -55,7 +62,8 @@ export default memo(function Tab18MRR({ mrrMetrics }) {
 
       {/* MRR Trend */}
       {trend.length > 0 && (
-        <ChartCard title="MRR Trend — New vs Churn">
+        <ChartCard title="MRR Trend — New vs Churn"
+          tooltip="Reconstructed from subscription history: green New MRR is revenue added by subscriptions starting that month, red Churn MRR is revenue lost from cycles that ended in cancellation that month, and cyan Active MRR is the running cumulative balance (New minus Churn carried forward) — an approximation of recurring revenue at each point in time.">
           <ResponsiveContainer width="100%" height={280}>
             <AreaChart data={trend}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border-default)" />
@@ -73,7 +81,8 @@ export default memo(function Tab18MRR({ mrrMetrics }) {
 
       {/* MRR by Product */}
       {byProduct.length > 0 && (
-        <ChartCard title="MRR by Product">
+        <ChartCard title="MRR by Product"
+          tooltip="Current monthly-equivalent revenue and annualized run rate broken down by product, based on today's active subscriptions only. The share bar shows each product's percentage contribution to total current MRR.">
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
               <thead>

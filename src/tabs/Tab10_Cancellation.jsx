@@ -257,14 +257,19 @@ export default memo(function Tab10Cancellation({ cancellationMetrics, currentMas
 
       {/* KPIs */}
       <SortableKPIGrid storageKey="cancel" cols="175px" cards={[
-        { id: 'total_cancel',  label: 'Total Cancellations',  value: formatNumber(total),                                                    accent: 'var(--accent-red)',    icon: '⛔' },
-        { id: 'top_reason',    label: 'Top Reason',            value: reasons[0]?.reason,                             small: true,            accent: 'var(--accent-orange)', icon: '🔍', sub: `${reasons[0]?.count} exits (${reasons[0]?.pct}%)` },
-        { id: 'top3_cover',    label: 'Top 3 Reasons Cover',  value: `${reasons.slice(0,3).reduce((a,r)=>a+r.pct,0).toFixed(0)}%`,           accent: 'var(--accent-gold)',   icon: '📊', sub: 'of all cancellations' },
-        { id: 'unique_reasons',label: 'Unique Reasons',        value: reasons.length,                                                         accent: 'var(--accent-purple)', icon: '📋' },
+        { id: 'total_cancel',  label: 'Total Cancellations',  value: formatNumber(total),                                                    accent: 'var(--accent-red)',    icon: '⛔',
+          tooltip: 'Number of unsubscribe events with a recorded, non-blank cancellation reason (one per investor-product, counted at their most recent cancelled cycle) — exits with no reason logged are excluded from this count and the breakdown below.' },
+        { id: 'top_reason',    label: 'Top Reason',            value: reasons[0]?.reason,                             small: true,            accent: 'var(--accent-orange)', icon: '🔍', sub: `${reasons[0]?.count} exits (${reasons[0]?.pct}%)`,
+          tooltip: 'The single most common cancellation reason, and what share of all reason-tagged cancellations it accounts for.' },
+        { id: 'top3_cover',    label: 'Top 3 Reasons Cover',  value: `${reasons.slice(0,3).reduce((a,r)=>a+r.pct,0).toFixed(0)}%`,           accent: 'var(--accent-gold)',   icon: '📊', sub: 'of all cancellations',
+          tooltip: 'Combined share of all reason-tagged cancellations explained by just the three most common reasons — a high number here means fixing just a few root causes could address most of your churn.' },
+        { id: 'unique_reasons',label: 'Unique Reasons',        value: reasons.length,                                                         accent: 'var(--accent-purple)', icon: '📋',
+          tooltip: 'Number of distinct cancellation reasons recorded across all exits.' },
       ]} />
 
       {/* Pareto */}
-      <ChartCard title="Cancellation Pareto Analysis" subtitle="Click a bar to see subscribers — Top reasons ranked by volume + cumulative % line (80/20 analysis)" style={{ marginBottom: '1rem' }}>
+      <ChartCard title="Cancellation Pareto Analysis" subtitle="Click a bar to see subscribers — Top reasons ranked by volume + cumulative % line (80/20 analysis)" style={{ marginBottom: '1rem' }}
+        tooltip="Cancellation reasons ranked by volume (bars) with a cumulative percentage line — where the line crosses 80% marks the small set of reasons responsible for the bulk of churn.">
         <ResponsiveContainer width="100%" height={280}>
           <ComposedChart data={paretoData} onClick={handleParetoClick} style={{ cursor: 'pointer' }}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--border-dim)" />
@@ -282,7 +287,8 @@ export default memo(function Tab10Cancellation({ cancellationMetrics, currentMas
       {/* Trend + Reason Distribution */}
       <div className="charts-grid charts-grid-2" style={{ marginBottom: '1rem' }}>
         {monthlyTrend?.length > 0 && (
-          <ChartCard title="Monthly Exit Trend" subtitle="Number of subscriber exits per month">
+          <ChartCard title="Monthly Exit Trend" subtitle="Number of subscriber exits per month"
+            tooltip="Count of unsubscribe events per month, based on Exit Date (or Cycle End Date as fallback) — includes ALL exits, even ones without a logged cancellation reason, so monthly totals can exceed the reason-based KPIs above.">
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={monthlyTrend.slice(-18)}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--border-dim)" />
@@ -295,7 +301,8 @@ export default memo(function Tab10Cancellation({ cancellationMetrics, currentMas
           </ChartCard>
         )}
 
-        <ChartCard title="Reason Distribution (Horizontal)" subtitle="Click a bar to see subscribers — All cancellation reasons ranked by volume">
+        <ChartCard title="Reason Distribution (Horizontal)" subtitle="Click a bar to see subscribers — All cancellation reasons ranked by volume"
+          tooltip="Top cancellation reasons ranked by raw exit count — same underlying data as the Pareto chart, shown without the cumulative line.">
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={top8} layout="vertical" onClick={handleReasonClick} style={{ cursor: 'pointer' }}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border-dim)" />
@@ -311,7 +318,8 @@ export default memo(function Tab10Cancellation({ cancellationMetrics, currentMas
       </div>
 
       {/* Full Cancellation Reasons Table */}
-      <ChartCard title="Cancellation Reason Detail" subtitle="All reasons with count, percentage and cumulative coverage">
+      <ChartCard title="Cancellation Reason Detail" subtitle="All reasons with count, percentage and cumulative coverage"
+        tooltip="Every recorded cancellation reason with its count, share of total reason-tagged cancellations, and running cumulative percentage (Pareto order).">
         <div className="data-table-wrap" style={{ maxHeight: 380, overflowY: 'auto' }}>
           <table className="data-table">
             <thead>

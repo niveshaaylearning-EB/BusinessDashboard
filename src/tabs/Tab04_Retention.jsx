@@ -310,24 +310,38 @@ function RetentionContent({ cohorts: allCohorts, currentMaster, insights, filter
       </div>
       {/* KPIs */}
       <SortableKPIGrid storageKey="retention" cols="160px" cards={[
-        { id: 'total_cohorts',   label: 'Total Cohorts',     value: cohorts.length,                    accent: 'var(--accent-cyan)',   icon: '📊' },
-        { id: 'm0_retention',    label: 'M0 Retention',      value: `${avgRetention[0] || 100}%`,       accent: 'var(--accent-green)',  icon: '🟢', sub: 'Baseline' },
-        { id: 'm3_retention',    label: 'M3 Retention',      value: `${avgRetention[3] ?? '—'}%`,       accent: 'var(--accent-teal)',   icon: '📅' },
-        { id: 'm6_retention',    label: 'M6 Retention',      value: `${avgRetention[6] ?? '—'}%`,       accent: 'var(--accent-gold)',   icon: '📅', sub: '6-month survival' },
-        { id: 'm12_retention',   label: 'M12 Retention',     value: `${avgRetention[12] ?? '—'}%`,      accent: avgRetention[12] > 40 ? 'var(--accent-green)' : 'var(--accent-red)', icon: '📅', sub: '1-year survival' },
-        { id: 'best_m3',  label: 'Best M3 Cohort',   value: bestByInterval[3]?.cohort  || '—', accent: 'var(--accent-green)',  small: true, sub: bestByInterval[3]  ? `${bestByInterval[3].m3}% at M3`  : '' },
-        { id: 'worst_m3', label: 'Worst M3 Cohort',  value: worstByInterval[3]?.cohort || '—', accent: 'var(--accent-red)',    small: true, sub: worstByInterval[3] ? `${worstByInterval[3].m3}% at M3` : '' },
-        { id: 'best_m6',  label: 'Best M6 Cohort',   value: bestByInterval[6]?.cohort  || '—', accent: 'var(--accent-green)',  small: true, sub: bestByInterval[6]  ? `${bestByInterval[6].m6}% at M6`  : '' },
-        { id: 'worst_m6', label: 'Worst M6 Cohort',  value: worstByInterval[6]?.cohort || '—', accent: 'var(--accent-red)',    small: true, sub: worstByInterval[6] ? `${worstByInterval[6].m6}% at M6` : '' },
-        { id: 'best_m12', label: 'Best M12 Cohort',  value: bestByInterval[12]?.cohort  || '—', accent: 'var(--accent-green)', small: true, sub: bestByInterval[12]  ? `${bestByInterval[12].m12}% at M12`  : '' },
-        { id: 'worst_m12',label: 'Worst M12 Cohort', value: worstByInterval[12]?.cohort || '—', accent: 'var(--accent-red)',   small: true, sub: worstByInterval[12] ? `${worstByInterval[12].m12}% at M12` : '' },
-        { id: 'largest_cohort',  label: 'Largest Cohort',    value: [...cohorts].sort((a,b)=>b.size-a.size)[0]?.cohort, accent: 'var(--accent-cyan)', small: true, sub: `${[...cohorts].sort((a,b)=>b.size-a.size)[0]?.size} subscribers` },
-        { id: 'cohort_users',    label: 'Total Cohort Users', value: totalCohortUsers?.toLocaleString(), accent: 'var(--accent-purple)' },
+        { id: 'total_cohorts',   label: 'Total Cohorts',     value: cohorts.length,                    accent: 'var(--accent-cyan)',   icon: '📊',
+          tooltip: 'Number of monthly acquisition cohorts (grouped by First Subscription Date, from the selected start year onward) with at least one subscriber tracked for survival.' },
+        { id: 'm0_retention',    label: 'M0 Retention',      value: `${avgRetention[0] || 100}%`,       accent: 'var(--accent-green)',  icon: '🟢', sub: 'Baseline',
+          tooltip: 'Average % of each cohort still active by the end of their own acquisition month — the starting baseline (near 100%) that every later interval is measured against.' },
+        { id: 'm3_retention',    label: 'M3 Retention',      value: `${avgRetention[3] ?? '—'}%`,       accent: 'var(--accent-teal)',   icon: '📅',
+          tooltip: 'Average % of each cohort still active 3 months after their acquisition month, averaged across all cohorts old enough to have reached M3.' },
+        { id: 'm6_retention',    label: 'M6 Retention',      value: `${avgRetention[6] ?? '—'}%`,       accent: 'var(--accent-gold)',   icon: '📅', sub: '6-month survival',
+          tooltip: 'Average % of each cohort still active 6 months after their acquisition month — a key mid-term stickiness benchmark across all cohorts old enough to have reached M6.' },
+        { id: 'm12_retention',   label: 'M12 Retention',     value: `${avgRetention[12] ?? '—'}%`,      accent: avgRetention[12] > 40 ? 'var(--accent-green)' : 'var(--accent-red)', icon: '📅', sub: '1-year survival',
+          tooltip: 'Average % of each cohort still active a full year after their acquisition month — the headline long-term loyalty number, averaged across cohorts old enough to have reached M12.' },
+        { id: 'best_m3',  label: 'Best M3 Cohort',   value: bestByInterval[3]?.cohort  || '—', accent: 'var(--accent-green)',  small: true, sub: bestByInterval[3]  ? `${bestByInterval[3].m3}% at M3`  : '',
+          tooltip: 'The acquisition cohort (min. 5 subscribers) with the highest % still active at 3 months — the strongest early-retention cohort on record.' },
+        { id: 'worst_m3', label: 'Worst M3 Cohort',  value: worstByInterval[3]?.cohort || '—', accent: 'var(--accent-red)',    small: true, sub: worstByInterval[3] ? `${worstByInterval[3].m3}% at M3` : '',
+          tooltip: 'The acquisition cohort (min. 5 subscribers) with the lowest % still active at 3 months — worth investigating what was different about how or when these subscribers joined.' },
+        { id: 'best_m6',  label: 'Best M6 Cohort',   value: bestByInterval[6]?.cohort  || '—', accent: 'var(--accent-green)',  small: true, sub: bestByInterval[6]  ? `${bestByInterval[6].m6}% at M6`  : '',
+          tooltip: 'The acquisition cohort (min. 5 subscribers) with the highest % still active at 6 months.' },
+        { id: 'worst_m6', label: 'Worst M6 Cohort',  value: worstByInterval[6]?.cohort || '—', accent: 'var(--accent-red)',    small: true, sub: worstByInterval[6] ? `${worstByInterval[6].m6}% at M6` : '',
+          tooltip: 'The acquisition cohort (min. 5 subscribers) with the lowest % still active at 6 months.' },
+        { id: 'best_m12', label: 'Best M12 Cohort',  value: bestByInterval[12]?.cohort  || '—', accent: 'var(--accent-green)', small: true, sub: bestByInterval[12]  ? `${bestByInterval[12].m12}% at M12`  : '',
+          tooltip: 'The acquisition cohort (min. 5 subscribers) with the highest % still active at 12 months — the best-performing cohort for long-term loyalty.' },
+        { id: 'worst_m12',label: 'Worst M12 Cohort', value: worstByInterval[12]?.cohort || '—', accent: 'var(--accent-red)',   small: true, sub: worstByInterval[12] ? `${worstByInterval[12].m12}% at M12` : '',
+          tooltip: 'The acquisition cohort (min. 5 subscribers) with the lowest % still active at 12 months — the weakest cohort for long-term loyalty.' },
+        { id: 'largest_cohort',  label: 'Largest Cohort',    value: [...cohorts].sort((a,b)=>b.size-a.size)[0]?.cohort, accent: 'var(--accent-cyan)', small: true, sub: `${[...cohorts].sort((a,b)=>b.size-a.size)[0]?.size} subscribers`,
+          tooltip: 'The single acquisition month that brought in the most unique investors — your biggest single-month intake by First Subscription Date.' },
+        { id: 'cohort_users',    label: 'Total Cohort Users', value: totalCohortUsers?.toLocaleString(), accent: 'var(--accent-purple)',
+          tooltip: 'Sum of cohort sizes across all cohorts shown (from the selected start year onward) — the total number of unique investors whose retention is being tracked here.' },
       ]} />
 
       {/* Retention Curves */}
       <div className="charts-grid charts-grid-2" style={{ marginBottom: '1rem' }}>
-        <ChartCard title="Average Retention Curve" subtitle="Avg % of cohort still active at each time interval">
+        <ChartCard title="Average Retention Curve" subtitle="Avg % of cohort still active at each time interval"
+          tooltip="Averages the M0/M1/M3/M6/M12/M24 retention % across all cohorts old enough to have reached each interval — shows the typical survival shape over a subscriber's lifetime, independent of any single cohort's quirks.">
           <ResponsiveContainer width="100%" height={240}>
             <LineChart data={retentionCurveData}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border-dim)" />
@@ -340,7 +354,8 @@ function RetentionContent({ cohorts: allCohorts, currentMaster, insights, filter
           </ResponsiveContainer>
         </ChartCard>
 
-        <ChartCard title="Cohort Size Distribution" subtitle="Number of subscribers per monthly cohort">
+        <ChartCard title="Cohort Size Distribution" subtitle="Number of subscribers per monthly cohort"
+          tooltip="Number of unique investors (by PAN) whose First Subscription Date falls in each month — shows acquisition volume over time, last 24 cohorts.">
           <ResponsiveContainer width="100%" height={240}>
             <LineChart data={cohorts.slice(-24)} margin={{ left: 10 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border-dim)" />
@@ -354,7 +369,8 @@ function RetentionContent({ cohorts: allCohorts, currentMaster, insights, filter
       </div>
 
       {/* Cohort Heatmap */}
-      <ChartCard title="Monthly Cohort Retention Heatmap" subtitle="Each row = acquisition cohort · Click a row to see subscriber list · Color = retention %">
+      <ChartCard title="Monthly Cohort Retention Heatmap" subtitle="Each row = acquisition cohort · Click a row to see subscriber list · Color = retention %"
+        tooltip="Each cell is the % of that row's cohort still active at the given month offset (M0/M1/M3/…). Reading a row left-to-right shows how that specific acquisition month's subscribers survived over time; a blank cell means the cohort isn't old enough yet to have reached that interval.">
         <div className="cohort-table">
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.74rem' }}>
             <thead>
@@ -445,7 +461,9 @@ function RetentionContent({ cohorts: allCohorts, currentMaster, insights, filter
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
             {basketRetention.map((p, pi) => (
-              <ChartCard key={pi} title={p.product} subtitle="Top 5 cohort months by current active %">
+              <ChartCard key={pi} title={p.product} subtitle="Top 5 cohort months by current active %"
+                tooltip="For this product, the 5 acquisition-month cohorts (min. 3 subscribers) with the highest % still active today. Cohorts under 3 months old are excluded where possible since they're trivially close to 100% and would otherwise dominate the ranking.">
+
                 <table className="data-table" style={{ fontSize: 11 }}>
                   <thead>
                     <tr>
