@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import {
   DndContext, closestCenter, PointerSensor, KeyboardSensor,
   useSensor, useSensors, DragOverlay,
@@ -50,6 +50,25 @@ export default function SortableKPIGrid({ cards, storageKey, style, cols = '175p
     } catch { /* ignore */ }
     return cards.map(c => c.id);
   });
+
+  // Cards can appear/disappear at runtime (e.g. a card only shown when a filter
+  // is active) — the initializer above only runs once at mount, so without this,
+  // a card that didn't exist yet at mount time could never show up later, and a
+  // card that's since disappeared would stay stuck in the saved order forever.
+  // Keeps the user's manually-dragged order for cards that still exist; new
+  // cards are appended, stale ones dropped.
+  const idsKey = cards.map(c => c.id).join('|');
+  useEffect(() => {
+    const ids = cards.map(c => c.id);
+    setOrder(prevOrder => {
+      const stillValid = prevOrder.filter(id => ids.includes(id));
+      const newIds = ids.filter(id => !stillValid.includes(id));
+      const next = [...stillValid, ...newIds];
+      if (next.length === prevOrder.length && next.every((id, i) => id === prevOrder[i])) return prevOrder;
+      return next;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [idsKey]);
 
   const [activeId, setActiveId] = useState(null);
 
