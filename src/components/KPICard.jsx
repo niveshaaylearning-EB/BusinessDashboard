@@ -1,10 +1,13 @@
 import { memo } from 'react';
 
-function KPICard({ label, value, sub, trend, trendDir, icon, accent = 'var(--accent-cyan)', small }) {
+function KPICard({ label, value, sub, trend, trendDir, icon, accent = 'var(--accent-cyan)', small, tooltip }) {
   return (
     <div className="kpi-card" style={{ '--kpi-accent': accent }}>
       {icon && <div className="kpi-icon">{icon}</div>}
-      <div className="kpi-label">{label}</div>
+      <div className="kpi-label">
+        {label}
+        {tooltip && <span className="kpi-info" title={tooltip}>ⓘ</span>}
+      </div>
       <div className={`kpi-value ${small ? 'small' : ''}`}>{value}</div>
       {(sub || trend) && (
         <div className="kpi-sub">

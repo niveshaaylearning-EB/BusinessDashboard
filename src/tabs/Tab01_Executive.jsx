@@ -137,30 +137,35 @@ export default memo(function Tab01Executive({ kpis, prevKpis, monthly, retention
       label: 'Unique Investors',
       value: formatExact(kpis.totalUniqueSubscribers),
       icon: '👤', accent: 'var(--accent-cyan)', sub: 'All unique PANs',
+      tooltip: 'Count of distinct investors (by PAN) matching the current filters — one person counted once even if they hold multiple baskets.',
       ...delta(kpis.totalUniqueSubscribers, prevKpis?.totalUniqueSubscribers),
     },
     {
       label: 'Total Subscriptions',
       value: formatExact(kpis.totalSubscriptions),
       icon: '📋', accent: 'var(--accent-cyan)', sub: 'Excl. private smallcases',
+      tooltip: 'Every subscription record matching the current filters — an investor holding 2 baskets counts as 2 here, not 1.',
       ...delta(kpis.totalSubscriptions, prevKpis?.totalSubscriptions),
     },
     {
       label: 'Active Subscribers',
       value: formatExact(kpis.activeSubscribers),
       icon: '✅', accent: 'var(--accent-green)', sub: 'Subscribed + Grace + Cancelled-Active',
+      tooltip: 'Unique investors currently in a live status (Subscribed, Grace Period, or Cancelled-but-still-active). With a period selected, only counts those whose current cycle started or ended within it.',
       ...delta(kpis.activeSubscribers, prevKpis?.activeSubscribers),
     },
     {
       label: 'Active Subscriptions',
       value: formatExact(kpis.totalActiveSubscriptions),
       icon: '📦', accent: 'var(--accent-cyan)', sub: 'Total active subscription rows (multi-basket counted)',
+      tooltip: 'Same as Active Subscribers, but counting every active basket separately — an investor active in 2 products counts as 2 here.',
       ...delta(kpis.totalActiveSubscriptions, prevKpis?.totalActiveSubscriptions),
     },
     {
       label: 'Exited Subscribers',
       value: formatExact(kpis.exitedSubscribers),
       icon: '⬛', accent: 'var(--accent-red)', sub: 'Status: Unsubscribed',
+      tooltip: 'Investors whose subscription is Unsubscribed — they churned rather than renewed. With a period selected, only those who exited within it.',
       ...delta(kpis.exitedSubscribers, prevKpis?.exitedSubscribers),
     },
 
@@ -170,6 +175,7 @@ export default memo(function Tab01Executive({ kpis, prevKpis, monthly, retention
       value: `+${formatExact(kpis.newUniqueMTD)}`,
       icon: '🆕', accent: 'var(--accent-green)',
       sub: 'Cycle 1 starts this month',
+      tooltip: 'First-time signups (Cycle 1) that started this calendar month. Always the real current month — not affected by the Period filter.',
       trend: `+${formatExact(kpis.newUniqueMTD)}`, trendDir: 'up',
     },
     {
@@ -177,12 +183,14 @@ export default memo(function Tab01Executive({ kpis, prevKpis, monthly, retention
       value: `+${formatExact(kpis.renewalsMTD)}`,
       icon: '🔄', accent: 'var(--accent-teal)',
       sub: 'Cycle 2+ starts this month',
+      tooltip: 'Renewal cycles (Cycle 2 or later) that started this calendar month — returning customers, not new signups. Always the real current month.',
       trend: `+${formatExact(kpis.renewalsMTD)}`, trendDir: 'up',
     },
     {
       label: 'Net Growth (MTD)',
       value: `${kpis.netGrowthMTD >= 0 ? '+' : ''}${formatExact(kpis.netGrowthMTD)}`,
       icon: '📈', accent: kpis.netGrowthMTD >= 0 ? 'var(--accent-green)' : 'var(--accent-red)',
+      tooltip: 'New Unique (MTD) minus Exited (MTD) — the net change in unique investors so far this calendar month.',
       trendDir: kpis.netGrowthMTD >= 0 ? 'up' : 'down',
     },
 
@@ -192,6 +200,7 @@ export default memo(function Tab01Executive({ kpis, prevKpis, monthly, retention
       value: `${retentionMetrics?.current ?? kpis.retentionRate}%`,
       icon: '🔒', accent: 'var(--accent-teal)',
       sub: retSub,
+      tooltip: '% of the opening subscriber base for the current month that has NOT churned — 100% minus this month\'s churn rate. A snapshot of the current month, separate from the Period filter.',
       trend: prevKpis
         ? `${kpis.retentionRate > prevKpis.retentionRate ? '+' : ''}${(kpis.retentionRate - prevKpis.retentionRate).toFixed(1)}% vs prev period`
         : retentionMetrics?.momChange !== null ? `${retentionMetrics?.momChange > 0 ? '+' : ''}${retentionMetrics?.momChange}% MoM` : undefined,
@@ -204,6 +213,7 @@ export default memo(function Tab01Executive({ kpis, prevKpis, monthly, retention
       value: `${kpis.renewalRate}%`,
       icon: '🔁', accent: 'var(--accent-purple)',
       sub: 'Active subs with Cycle > 1',
+      tooltip: '% of currently active subscribers (matching current filters) who are on their 2nd cycle or later — i.e. have renewed at least once. Different from the Renewal Intelligence tab\'s month-by-month conversion rate.',
       ...delta(kpis.renewalRate, prevKpis?.renewalRate),
     },
 
@@ -213,30 +223,35 @@ export default memo(function Tab01Executive({ kpis, prevKpis, monthly, retention
       value: formatCurrencyExact(kpis.avgNetworth),
       icon: '💳', accent: 'var(--accent-gold)',
       sub: `Median: ${formatCurrencyExact(kpis.medianNetworth)} · Active only`,
+      tooltip: 'Average portfolio net worth across active, unique investors matching current filters. Median is also shown since a few very large portfolios can skew the average upward.',
     },
     {
       label: 'Avg P&L',
       value: formatCurrencyExact(kpis.avgPL),
       icon: '💹', accent: kpis.avgPL >= 0 ? 'var(--accent-green)' : 'var(--accent-red)',
       sub: 'Avg Total P&L per active subscriber',
+      tooltip: 'Average cumulative profit/loss per active subscriber\'s portfolio, matching current filters. Positive means the average active subscriber is up overall.',
     },
     {
       label: 'Avg Plan Amount',
       value: formatCurrencyExact(kpis.avgPlanAmount),
       icon: '🏷️', accent: 'var(--accent-cyan)',
       sub: 'Active subscribers only',
+      tooltip: 'Average subscription plan price paid by active subscribers matching current filters (before any discount is applied).',
     },
     {
       label: 'Avg Discount',
       value: formatCurrencyExact(kpis.avgDiscount),
       icon: '🎯', accent: 'var(--accent-orange)',
       sub: 'Among discounted · Active only',
+      tooltip: 'Average discount amount, but only among active subscribers who actually used an offer/discount code — not averaged across everyone.',
     },
     {
       label: 'Discount Penetration',
       value: `${kpis.discountPenetration}%`,
       icon: '📉', accent: 'var(--accent-orange)',
       sub: 'Active subs with discount',
+      tooltip: '% of active subscribers (matching current filters) who are on a discounted plan, out of all active subscribers.',
     },
 
     // ── Row 5: Products ───────────────────────────────────────────────
@@ -245,12 +260,14 @@ export default memo(function Tab01Executive({ kpis, prevKpis, monthly, retention
       value: kpis.totalProducts,
       icon: '🎯', accent: 'var(--accent-purple)',
       sub: 'Excl. private smallcases',
+      tooltip: 'Number of distinct smallcase products represented in the currently filtered data (private/internal smallcases excluded).',
     },
     {
       label: 'Avg Products / User',
       value: kpis.avgProductsPerUser,
       icon: '📦', accent: 'var(--accent-teal)',
       sub: 'Cross-sell ratio',
+      tooltip: 'Average number of distinct products each unique investor holds — how well cross-sell is working. Above 1 means investors typically hold more than one basket.',
     },
 
     // ── Row 6: Exit ───────────────────────────────────────────────────
@@ -259,6 +276,7 @@ export default memo(function Tab01Executive({ kpis, prevKpis, monthly, retention
       value: formatExact(kpis.exitedLastMonth),
       icon: '⚠️', accent: 'var(--accent-red)',
       sub: 'Exits in the previous month',
+      tooltip: 'How many subscribers churned in the calendar month before this one. Always the real previous month — not affected by the Period filter.',
       trendDir: kpis.exitedLastMonth > 0 ? 'down' : 'neutral',
     },
 
@@ -271,18 +289,21 @@ export default memo(function Tab01Executive({ kpis, prevKpis, monthly, retention
       value: formatCrores(totalAUMAllTime),
       icon: '🏦', accent: 'var(--accent-gold)',
       sub: 'Active subscribers · In Crores',
+      tooltip: 'Total assets under management across ALL currently active subscribers, company-wide — permanently unfiltered, so it never changes with Period/Smallcase/etc. A stable headline reference number.',
     },
     ...(hasActiveFilter ? [{
       label: 'AUM (Selected Filter)',
       value: formatCrores(kpis.totalAUM),
       icon: '🎯', accent: 'var(--accent-cyan)',
       sub: 'Active subscribers matching current filters',
+      tooltip: 'Total AUM narrowed to whatever Period/Smallcase/etc. filters are currently active — only appears once a filter is selected, so you can compare it against the all-time total alongside it.',
     }] : []),
     {
       label: 'Total Signups',
       value: formatExact(kpis.totalSignupsEver),
       icon: '🧾', accent: 'var(--accent-cyan)',
       sub: 'Unique investors ever (incl. exited)',
+      tooltip: 'Every unique investor who has EVER signed up, including those who have since fully exited — the all-time historical reach of the business, not just who\'s active today.',
     },
   ];
 
@@ -385,7 +406,8 @@ export default memo(function Tab01Executive({ kpis, prevKpis, monthly, retention
 
       {/* New Unique vs Renewals — Monthly Breakdown */}
       <div className="charts-grid charts-grid-2" style={{ marginBottom: '1rem' }}>
-        <ChartCard title="New Unique vs Renewal Subscribers" subtitle="Monthly split: first-time subscribers (Cycle 1) vs returning renewals (Cycle 2+)" badge="Acquisition Split">
+        <ChartCard title="New Unique vs Renewal Subscribers" subtitle="Monthly split: first-time subscribers (Cycle 1) vs returning renewals (Cycle 2+)" badge="Acquisition Split"
+          tooltip="Shows, month by month, how much of your subscriber activity is brand-new signups vs. existing customers renewing. A month leaning heavily toward renewals means growth is coming from retention, not new acquisition.">
           <ResponsiveContainer width="100%" height={220}>
             <BarChart
               data={last12}
@@ -404,7 +426,8 @@ export default memo(function Tab01Executive({ kpis, prevKpis, monthly, retention
           <div className="chart-clickable-hint">💡 Click any bar to see subscriber details</div>
         </ChartCard>
 
-        <ChartCard title="Monthly Net Additions" subtitle="New starts minus exits per month — net growth direction" badge="MTD Trend">
+        <ChartCard title="Monthly Net Additions" subtitle="New starts minus exits per month — net growth direction" badge="MTD Trend"
+          tooltip="Bars above zero mean more people joined than left that month (growing); below zero means more churned than joined (shrinking). Use this to spot which months drove real growth vs. decline.">
           <ResponsiveContainer width="100%" height={220}>
             <BarChart
               data={last12}
@@ -427,7 +450,8 @@ export default memo(function Tab01Executive({ kpis, prevKpis, monthly, retention
 
       {/* Subscriber growth */}
       <div className="charts-grid charts-grid-1" style={{ marginBottom: '1rem' }}>
-        <ChartCard title="Subscriber Growth Trend" subtitle="Closing active subscribers per month (24-month view)" badge="Historical">
+        <ChartCard title="Subscriber Growth Trend" subtitle="Closing active subscribers per month (24-month view)" badge="Historical"
+          tooltip="The total number of active subscribers at the end of each month, over the last 2 years — the long-term trajectory of the business, independent of any single month's ups and downs.">
           <ResponsiveContainer width="100%" height={200}>
             <AreaChart data={last24}>
               <defs>
@@ -449,7 +473,8 @@ export default memo(function Tab01Executive({ kpis, prevKpis, monthly, retention
       {/* Product quick view */}
       {products?.length > 0 && (
         <div className="charts-grid charts-grid-2" style={{ marginBottom: '1rem' }}>
-          <ChartCard title="Product Mix — Active Subscribers" subtitle="Active subscriber distribution by product (excl. private)">
+          <ChartCard title="Product Mix — Active Subscribers" subtitle="Active subscriber distribution by product (excl. private)"
+            tooltip="Each bar's total length is a product's all-time subscriber volume, split into still-active (cyan) vs. churned (red). A product with a large red share has retention problems even if its total volume looks big.">
             <ResponsiveContainer width="100%" height={Math.max(240, products.length * 40)}>
               <BarChart
                 data={products}
@@ -471,7 +496,8 @@ export default memo(function Tab01Executive({ kpis, prevKpis, monthly, retention
             <div className="chart-clickable-hint">💡 Click any bar to see subscriber details</div>
           </ChartCard>
 
-          <ChartCard title="Renewal Rate by Product" subtitle="% of active subscribers who have renewed (Cycle > 1)">
+          <ChartCard title="Renewal Rate by Product" subtitle="% of active subscribers who have renewed (Cycle > 1)"
+            tooltip="For each product, what share of its current active base has renewed at least once. Higher bars mean stickier products — useful for spotting which baskets to promote or which need retention work.">
             <ResponsiveContainer width="100%" height={Math.max(240, products.length * 40)}>
               <BarChart
                 data={products}
