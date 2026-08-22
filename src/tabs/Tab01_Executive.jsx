@@ -58,7 +58,7 @@ const toRow = r => ({
   cycle:   r['Cycle Number']   || '—',
 });
 
-export default memo(function Tab01Executive({ kpis, prevKpis, monthly, retentionMetrics, products, insights, goal, setGoal, currentUser, filters, setFilters, currentMaster }) {
+export default memo(function Tab01Executive({ kpis, prevKpis, monthly, retentionMetrics, products, insights, goal, setGoal, currentUser, filters, setFilters, currentMaster, totalAUMAllTime }) {
   const [editingGoal, setEditingGoal] = useState(false);
   const [goalInput, setGoalInput] = useState('');
   const { drilldown, open: openDrilldown, close: closeDrilldown } = useDrilldown();
@@ -126,6 +126,10 @@ export default memo(function Tab01Executive({ kpis, prevKpis, monthly, retention
       subCols
     );
   };
+
+  const hasActiveFilter = !!(filters?.dateFrom || filters?.dateTo ||
+    ['smallcase', 'state', 'broker', 'attribution', 'riskProfile', 'planType', 'status']
+      .some(k => filters?.[k]?.length));
 
   const kpiList = [
     // ── Row 1: Subscriber counts ──────────────────────────────────────
@@ -259,12 +263,21 @@ export default memo(function Tab01Executive({ kpis, prevKpis, monthly, retention
     },
 
     // ── Row 7: AUM & Historical ───────────────────────────────────────
+    // AUM always shows the all-time total (unaffected by filters) as a stable
+    // headline figure; a second card only appears once a specific period or
+    // basket/dimension filter is picked, showing AUM for just that selection.
     {
-      label: 'AUM',
-      value: formatCrores(kpis.totalAUM),
+      label: 'Total AUM (All Time)',
+      value: formatCrores(totalAUMAllTime),
       icon: '🏦', accent: 'var(--accent-gold)',
       sub: 'Active subscribers · In Crores',
     },
+    ...(hasActiveFilter ? [{
+      label: 'AUM (Selected Filter)',
+      value: formatCrores(kpis.totalAUM),
+      icon: '🎯', accent: 'var(--accent-cyan)',
+      sub: 'Active subscribers matching current filters',
+    }] : []),
     {
       label: 'Total Signups',
       value: formatExact(kpis.totalSignupsEver),

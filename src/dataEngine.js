@@ -239,16 +239,49 @@ function inRange(d, from, to) {
   return d && (!from || d >= from) && (!to || d <= to);
 }
 
-// Monthly movement: include row if start date OR exit date is in range
+const DIMENSION_KEYS = [
+  ['smallcase', 'Smallcase Name'], ['state', 'State'], ['broker', 'Broker Name'],
+  ['attribution', 'Attribution Source'], ['riskProfile', 'Risk Profile'],
+  ['planType', 'Plan Type'], ['status', 'Latest Subscription Status'],
+];
+
+function hasDimensionFilters(filters) {
+  return DIMENSION_KEYS.some(([key]) => filters?.[key]?.length);
+}
+
+function matchesDimensionFilters(row, filters) {
+  if (!filters) return true;
+  return DIMENSION_KEYS.every(([key, field]) =>
+    !filters[key]?.length || filters[key].includes(String(row[field] || '').trim())
+  );
+}
+
+// A row counts for a period if its subscription was active at any point that
+// overlaps [from, to] — started on/before the period ends, AND (still ongoing,
+// or ended on/after the period starts). This is deliberately NOT "started
+// within the period": someone who started in January and is still active in
+// August must still show up when filtering to August.
+function overlapsPeriod(row, from, to) {
+  const start = parseExcelDate(row['Subscription Start Date']);
+  if (!start) return false;
+  if (to && start > toEndOfDay(to)) return false;
+  const isUnsub = String(row['Cycle Level Status'] || '').trim().toUpperCase() === 'UNSUBSCRIBED';
+  if (isUnsub) {
+    const end = parseExcelDate(row['Cycle End Date'] || row['Exit Date']);
+    if (from && end && end < from) return false;
+  }
+  return true;
+}
+
 export function filterRawByDate(rawData, filters) {
-  if (!filters?.dateFrom && !filters?.dateTo) return rawData;
   const normalized = normalizeData(rawData);
-  const from = filters.dateFrom || null;
-  const to   = filters.dateTo ? toEndOfDay(filters.dateTo) : null;
+  if (!filters?.dateFrom && !filters?.dateTo && !hasDimensionFilters(filters)) return normalized;
+  const from = filters?.dateFrom || null;
+  const to   = filters?.dateTo || null;
   return normalized.filter(row => {
-    const startD = parseExcelDate(row['Subscription Start Date']);
-    const exitD  = parseExcelDate(row['Exit Date']);
-    return inRange(startD, from, to) || inRange(exitD, from, to);
+    if (!matchesDimensionFilters(row, filters)) return false;
+    if (!from && !to) return true;
+    return overlapsPeriod(row, from, to);
   });
 }
 
@@ -266,27 +299,16 @@ export function filterRawByExitDate(rawData, filters) {
 }
 
 // ─── APPLY FILTERS ────────────────────────────────────────────────────────────
+// Same semantics as filterRawByDate: a row matches a date period if its
+// subscription was active at any point overlapping it, not just if it started
+// within the window — otherwise picking a period would wrongly drop everyone
+// who joined earlier but is still active through it.
 export function applyFilters(data, filters) {
   if (!filters) return data;
   return data.filter(row => {
-    if (filters.smallcase?.length && !filters.smallcase.includes(String(row['Smallcase Name'] || '').trim())) return false;
-    if (filters.state?.length && !filters.state.includes(String(row['State'] || '').trim())) return false;
-    if (filters.broker?.length && !filters.broker.includes(String(row['Broker Name'] || '').trim())) return false;
-    if (filters.attribution?.length && !filters.attribution.includes(String(row['Attribution Source'] || '').trim())) return false;
-    if (filters.riskProfile?.length && !filters.riskProfile.includes(String(row['Risk Profile'] || '').trim())) return false;
-    if (filters.planType?.length && !filters.planType.includes(String(row['Plan Type'] || '').trim())) return false;
-    if (filters.status?.length && !filters.status.includes(String(row['Latest Subscription Status'] || '').trim())) return false;
-    if (filters.dateFrom) {
-      const d = parseExcelDate(row['Subscription Start Date']);
-      if (!d || d < filters.dateFrom) return false;
-    }
-    if (filters.dateTo) {
-      const d = parseExcelDate(row['Subscription Start Date']);
-      const endOfDay = new Date(filters.dateTo);
-      endOfDay.setHours(23, 59, 59, 999);
-      if (!d || d > endOfDay) return false;
-    }
-    return true;
+    if (!matchesDimensionFilters(row, filters)) return false;
+    if (!filters.dateFrom && !filters.dateTo) return true;
+    return overlapsPeriod(row, filters.dateFrom || null, filters.dateTo || null);
   });
 }
 

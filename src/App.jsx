@@ -1234,7 +1234,10 @@ function Dashboard({ rawData, fileName, savedAt, currentUser, activeTab, setActi
     const unsubData = getUnsubscriberAnalysis(rawData);
     const ltvData = getLTVData(rawData, master);
     const reactivationPipeline = getReactivationPipeline(rawData);
-    return { master, filterOptions, cohorts, migrationData, aumTimeline, unsubData, ltvData, reactivationPipeline };
+    // Always-unfiltered AUM total — a stable headline number that never changes
+    // with the period/basket filters, shown alongside the filtered AUM figure.
+    const totalAUMAllTime = getSummaryKPIs(master, rawData).totalAUM;
+    return { master, filterOptions, cohorts, migrationData, aumTimeline, unsubData, ltvData, reactivationPipeline, totalAUMAllTime };
   }, [rawData]);
 
   // Filter-dependent computations — keyed on deferredFilters so the UI
@@ -1242,38 +1245,34 @@ function Dashboard({ rawData, fileName, savedAt, currentUser, activeTab, setActi
   const derived = useMemo(() => {
     const { master, cohorts, migrationData } = baseData;
 
-    // date-filtered master: used only for period-specific views (product perf, discounts, offer codes)
+    // Filtered master: EVERY filter applies here — dimensions (smallcase, state,
+    // broker, etc.) AND the date period. "1M" means "active at some point during
+    // the last month," not "started in the last month" (see overlapsPeriod).
     const filtered = applyFilters(master, deferredFilters);
 
-    // dimension-only master: all subscribers matching dimension filters but NOT date-restricted.
-    // Used for current-state analysis (segments, geography, broker, renewal funnel, churn risk, etc.)
-    // so that picking "1M" doesn't erase 99% of subscribers from every tab.
-    const dimFiltered = applyFilters(master, { ...deferredFilters, dateFrom: null, dateTo: null });
-
-    // Time-series: rows where start OR exit date is in range
+    // Time-series + dimension-aware: rows matching all filters, keyed by whether
+    // the subscription overlapped the selected period.
     const filteredRaw = filterRawByDate(rawData, deferredFilters);
     const monthly = getMonthlyMovement(filteredRaw);
     const cancellationMetrics = getCancellationMetrics(filteredRaw);
 
-    // KPIs: active count from dimFiltered (all current subs), events (new/renewals MTD) from filteredRaw
-    const kpis = getSummaryKPIs(dimFiltered, filteredRaw);
+    const kpis = getSummaryKPIs(filtered, filteredRaw);
     const retentionMetrics = getRetentionMetrics(monthly);
-    // Product perf and discounts are intentionally period-specific — use date-filtered master
     const products = getProductMetrics(filtered, filteredRaw);
-    const renewalFunnel = buildRenewalFunnel(dimFiltered);
-    const renewalByProduct = getRenewalByProduct(dimFiltered);
+    const renewalFunnel = buildRenewalFunnel(filtered);
+    const renewalByProduct = getRenewalByProduct(filtered);
     const discountSummary = getDiscountSummary(filtered);
     const discountByProduct = getDiscountByDimension(filtered, 'Smallcase Name');
     const discountByBroker = getDiscountByDimension(filtered, 'Broker Name');
     const discountByState = getDiscountByDimension(filtered, 'State');
     const offerCodes = getOfferCodeMetrics(filtered);
-    const investorSegments = getInvestorSegments(dimFiltered);
-    const brokerMetrics = getBrokerMetrics(dimFiltered);
-    const attributionMetrics = getAttributionMetrics(dimFiltered);
-    const geoMetrics = getGeographyMetrics(dimFiltered);
-    const insights = generateInsights(dimFiltered, monthly, products, brokerMetrics, geoMetrics);
+    const investorSegments = getInvestorSegments(filtered);
+    const brokerMetrics = getBrokerMetrics(filtered);
+    const attributionMetrics = getAttributionMetrics(filtered);
+    const geoMetrics = getGeographyMetrics(filtered);
+    const insights = generateInsights(filtered, monthly, products, brokerMetrics, geoMetrics);
 
-    // Period-over-period: compare filtered masters for the two windows
+    // Period-over-period: compare the immediately preceding window of the same length
     let prevKpis = null;
     if (deferredFilters.dateFrom && deferredFilters.dateTo) {
       const periodMs = deferredFilters.dateTo.getTime() - deferredFilters.dateFrom.getTime();
@@ -1281,15 +1280,15 @@ function Dashboard({ rawData, fileName, savedAt, currentUser, activeTab, setActi
       const prevFrom = new Date(prevTo.getTime() - periodMs);
       const prevFilters = { ...deferredFilters, dateFrom: prevFrom, dateTo: prevTo };
       const prevRaw      = filterRawByDate(rawData, prevFilters);
-      const prevFiltered = applyFilters(master, { ...prevFilters, dateFrom: null, dateTo: null });
+      const prevFiltered = applyFilters(master, prevFilters);
       prevKpis = getSummaryKPIs(prevFiltered, prevRaw);
     }
 
-    const mrrMetrics          = getMRRMetrics(dimFiltered, filteredRaw);
-    const revenueAtRisk       = getRevenueAtRisk(dimFiltered);
-    const churnRisk           = getChurnRiskScores(dimFiltered);
-    const rmPerformance       = getRMPerformance(dimFiltered, filteredRaw);
-    const renewalCalendar     = getRenewalCalendar(dimFiltered);
+    const mrrMetrics          = getMRRMetrics(filtered, filteredRaw);
+    const revenueAtRisk       = getRevenueAtRisk(filtered);
+    const churnRisk           = getChurnRiskScores(filtered);
+    const rmPerformance       = getRMPerformance(filtered, filteredRaw);
+    const renewalCalendar     = getRenewalCalendar(filtered);
     const offerCodeROI        = getOfferCodeROI(filtered, filteredRaw);
 
     return {
@@ -1328,6 +1327,7 @@ function Dashboard({ rawData, fileName, savedAt, currentUser, activeTab, setActi
   const tabProps = useMemo(() => ({
     currentMaster: derived.filteredMaster, rawData,
     kpis: derived.kpis, prevKpis: derived.prevKpis,
+    totalAUMAllTime: baseData.totalAUMAllTime,
     retentionMetrics: derived.retentionMetrics,
     monthly: derived.monthly, products: derived.products, cohorts: derived.cohorts,
     filteredRaw: derived.filteredRaw,
