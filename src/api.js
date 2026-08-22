@@ -1,7 +1,8 @@
 const BASE = import.meta.env.VITE_API_URL || (() => {
-  // Vite's dev server always runs on 5173 (vite.config.js) — in that mode there's
-  // no nginx in front of anything, so talk to the local/LAN backend on :8000 directly.
-  if (window.location.port === '5173') {
+  // import.meta.env.DEV is true under `vite dev`, false in a production build —
+  // unlike checking window.location.port, this doesn't break when Vite bumps to
+  // 5174/5175/etc. because 5173 was already taken by another process.
+  if (import.meta.env.DEV) {
     const h = window.location.hostname;
     const isLocal = h === 'localhost' || h === '127.0.0.1';
     return isLocal ? 'http://localhost:8000' : `${window.location.protocol}//${h}:8000`;
