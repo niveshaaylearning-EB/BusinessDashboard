@@ -6,6 +6,7 @@ import {
 import ChartCard from '../components/ChartCard';
 import SortableKPIGrid from '../components/SortableKPIGrid';
 import InsightsPanel from '../components/InsightsPanel';
+import FAQSection from '../components/FAQSection';
 import { formatNumber, normalizeData } from '../dataEngine';
 import TabDateFilter from '../components/TabDateFilter';
 import DrilldownModal, { useDrilldown } from '../components/DrilldownModal';
@@ -374,6 +375,23 @@ export default memo(function Tab11Migration({ migrationData, currentMaster, rawD
       <div style={{ marginTop: '1rem' }}>
         <InsightsPanel insights={migrationInsights} title="🤖 Migration Intelligence — Cross-Product Journey Analysis" max={8} />
       </div>
+
+      <FAQSection items={[
+        { q: 'What is this page showing?',
+          a: 'How investors move between products over time — who started on one basket and later ended up on a different one. It only looks at people who have held 2 or more products; someone who has only ever subscribed to one product doesn\'t appear in any of the flows here (they show up as "Single Product" in the adoption split instead).' },
+        { q: 'How is a "migration" actually identified?',
+          a: 'For every investor (by PAN) who has held more than one distinct product, we look at their very first product (by subscription start date) and their most recent one. If those two are different, that\'s counted as one migration from the first to the last. It\'s a start-to-now comparison, not a count of every product they\'ve ever touched — someone who went A → B → A would show as "no migration" here, since they ended up back where they started.' },
+        { q: 'What does "Multi-Product Investors" vs "Single-Product Investors" mean?',
+          a: 'Multi-Product counts unique people (by PAN) who have held 2+ different products at any point in their history, even if they\'re only active on one right now. Single-Product is everyone else — people who have only ever touched one basket. A high Single-Product number is really a list of upsell candidates, since they\'ve never been introduced to a second product.' },
+        { q: 'What are "Top Entry Product" and "Top Destination Product"?',
+          a: 'Among people who went on to hold multiple products, Entry Product is the one they most commonly started on — effectively your best on-ramp into a multi-product relationship. Destination Product is the one they most commonly ended up on most recently — your strongest upgrade/cross-sell landing spot. If the same product tops both lists, it\'s acting as a true hub in the customer journey.' },
+        { q: 'How does the Period filter affect the numbers on this page?',
+          a: 'Working out someone\'s first and last product always requires their FULL subscription history, so that part of the calculation is never limited by the Period filter. What the Period filter does is narrow down which migrations get counted at all — only migrations where the move to the destination product started within the selected period are included. Pick a narrow period and you\'ll see fewer, more recent migrations; clear the filter and you see the full all-time list.' },
+        { q: 'Why don\'t the migration counts add up to my total subscriber count?',
+          a: 'This page only counts people who changed their product over time — the majority of a subscriber base that has always stuck with one product simply isn\'t part of any flow. The list of flows is also capped at the top 25 by volume, and the Entry/Destination Product cards only show the top 5 each, so smaller or rarer paths won\'t appear individually (they\'re still counted in the total Multi-Product number, just not broken out).' },
+        { q: 'Where do the "Migration Intelligence" insights at the bottom come from?',
+          a: 'They\'re generated directly from the flow data above — the multi-product adoption rate, the top entry/destination products, and the single busiest migration path — not a separate AI process. They\'ll update automatically if you change the Period filter, since the underlying flow data changes too.' },
+      ]} />
     </div>
   );
 });

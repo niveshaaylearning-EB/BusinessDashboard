@@ -1,5 +1,6 @@
 ﻿import { memo, useState, useCallback } from 'react';
 import { searchInvestor, formatCurrency } from '../dataEngine';
+import FAQSection from '../components/FAQSection';
 
 const STATUS_COLOR = (s) => {
   const u = String(s).toUpperCase();
@@ -155,6 +156,23 @@ export default memo(function Tab21InvestorSearch({ rawData }) {
           ))}
         </div>
       )}
+
+      <FAQSection items={[
+        { q: 'What is this page for?',
+          a: 'A single place to pull up everything you have on one investor — name, PAN, contact details, every product they\'ve held, and a full timeline of every subscription cycle they\'ve ever had, including cancellation reasons and discounts used. Useful for support conversations, renewal outreach, or just answering "what\'s this person\'s history with us."' },
+        { q: 'How does the search actually match — does it need an exact PAN or email?',
+          a: 'No — it\'s a partial, case-insensitive match against name, PAN, and email at once. Typing part of a name, the first few characters of a PAN, or part of an email address is enough; you\'ll get every investor whose record contains that text anywhere in those three fields (minimum 2 characters).' },
+        { q: 'Important: does this search look across ALL investors, or only the ones matching the dashboard\'s current filters?',
+          a: 'Only the ones matching whatever Period/Product/Broker/State filters are currently applied elsewhere in the dashboard. If an investor doesn\'t fall within your current filter selection, they won\'t be found here — and if they are found, their Subscription Timeline below will only show cycles that match those same filters, not necessarily their complete history. If a search comes up empty or a timeline looks incomplete, clear filters first and try again.' },
+        { q: 'If someone holds multiple products or has changed email/PAN details over time, will I see everything under one profile?',
+          a: 'Matches are grouped together by PAN — if your search text (e.g. an old email) hits any record belonging to a PAN, every other record for that same PAN gets pulled in too, so the Products, Total Spend, and Timeline all reflect the combined picture across every product and cycle tied to that PAN.' },
+        { q: 'What determines which row is used for the investor\'s "current" details (name, networth, P&L, status) at the top?',
+          a: 'Whichever of their matched records has the highest Cycle Number is treated as the most representative/recent snapshot, and its Networth, P&L, and Status feed the summary cards. Total Spend, however, is not just from that one row — it\'s summed across every cycle in their full timeline.' },
+        { q: 'Why does Total Spend not match the sum of "Plan ₹" I can add up by eye in the timeline table?',
+          a: 'They should match — Total Spend is the sum of the Plan ₹ amount on every row in the timeline shown below it. If you\'re comparing against a different total, double-check whether the timeline itself is filtered (see the filter-scoping note above) before assuming there\'s a discrepancy.' },
+        { q: 'What\'s the difference between Networth/P&L shown here and Total Spend?',
+          a: 'Networth and P&L are the investor\'s own portfolio figures (self-reported net worth and reported profit/loss on their investments) from their most recent record — they say nothing about what they\'ve paid you. Total Spend is purely the subscription fee revenue collected from them, entirely independent of how their portfolio has performed.' },
+      ]} />
     </div>
   );
 });

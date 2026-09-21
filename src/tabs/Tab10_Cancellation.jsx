@@ -8,6 +8,7 @@ import ChartCard from '../components/ChartCard';
 import { YAxisTick } from '../components/YAxisTick';
 import SortableKPIGrid from '../components/SortableKPIGrid';
 import InsightsPanel from '../components/InsightsPanel';
+import FAQSection from '../components/FAQSection';
 import { formatNumber, normalizeData } from '../dataEngine';
 import DrilldownModal, { useDrilldown } from '../components/DrilldownModal';
 
@@ -354,6 +355,23 @@ export default memo(function Tab10Cancellation({ cancellationMetrics, currentMas
       <div style={{ marginTop: '1rem' }}>
         <InsightsPanel insights={cancellationInsights} title="🤖 Cancellation Intelligence — Why Clients Cancel" max={8} />
       </div>
+
+      <FAQSection items={[
+        { q: 'What is this page for?',
+          a: 'It\'s the "why did they leave" view — it groups every cancellation by the reason the subscriber (or the system) recorded, so you can see which one or two problems are causing most of your cancellations and are worth fixing first. You\'ll find it as the "Cancellation Reasons" tab inside Retention Intelligence.' },
+        { q: 'How is a cancellation counted — could the same person be counted twice?',
+          a: 'No. Each unique investor-and-product combination is only counted once, using their latest cancelled cycle. So if someone cancelled a product, came back, and cancelled it again, that shows up as a single, up-to-date cancellation event, not two.' },
+        { q: 'Why does "Total Cancellations" not match the bars on the Monthly Exit Trend chart?',
+          a: 'The Monthly Exit Trend chart counts every exit event, whether or not a reason was logged for it. The "Total Cancellations" KPI and the reason breakdown below it only count exits that actually have a non-blank Cancellation Reason on file. So the monthly trend total can be higher than the reason-based figures — that gap is exactly the exits with no reason recorded.' },
+        { q: 'What does the "Pareto" chart and the cumulative % line mean?',
+          a: 'It\'s the classic "which few problems cause most of the pain" view: reasons are ranked from most to least common (bars), and the line running through them adds up their share as you go left to right. Where that line crosses 80% tells you the small handful of reasons responsible for the bulk of your cancellations — fix those first for the biggest impact.' },
+        { q: 'How does the Period filter on this page affect the numbers?',
+          a: 'It limits which subscription records are even looked at — only rows that were active at some point in, or exited during, your chosen window are counted, matching the same filter behavior as the rest of the dashboard. Clear it to see cancellation reasons across the full history in the file.' },
+        { q: 'I clicked a bar and the drilldown shows a one-line summary instead of a subscriber list — why?',
+          a: 'The chart uses a shortened version of long reason text to keep labels readable, and occasionally that shortened label doesn\'t match cleanly back to actual subscriber rows (for example, if the filtered dataset for this page has no matching rows). In that case it falls back to showing the reason\'s count and percentage instead of individual names.' },
+        { q: 'Is "Cancellation Reason" the same thing as churn overall?',
+          a: 'Not quite — this page only covers people who exited AND had a reason recorded for leaving. The broader picture of everyone who has left (with or without a stated reason) lives in the Unsubscriber and Retention tabs; this page is specifically for understanding the "why," not the full headcount of who left.' },
+      ]} />
     </div>
   );
 });

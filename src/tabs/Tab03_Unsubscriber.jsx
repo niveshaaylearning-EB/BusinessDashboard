@@ -11,6 +11,7 @@ import ChartCard from '../components/ChartCard';
 import { YAxisTick } from '../components/YAxisTick';
 import { parseExcelDate, getUnsubscriberAnalysis, filterRawByExitDate } from '../dataEngine';
 import DrilldownModal, { useDrilldown } from '../components/DrilldownModal';
+import FAQSection from '../components/FAQSection';
 
 const ROW_HEIGHT = 42;
 const LIST_HEIGHT = 480;
@@ -1310,6 +1311,23 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
           max={12}
         />
       )}
+
+      <FAQSection items={[
+        { q: 'What is this page for?',
+          a: 'A deep dive into everyone who has actually left — why they left, what they were on (which product, cycle, broker), and what their portfolio looked like (profit or loss) at the moment they walked away. Use it to spot patterns behind why people stop subscribing, not just how many did.' },
+        { q: 'Why is "Total Exit Cycles" not just a count of every cancellation row in the data?',
+          a: 'Each investor-product pair is counted once here, using the LAST cycle they were on when they finally left — not every cycle-ending row along the way. If someone renewed 3 times and then left on their 4th cycle, that\'s one exit here, not four.' },
+        { q: 'A subscriber renewed (e.g. moved from Cycle 1 to Cycle 2) — why don\'t they show up as an exit?',
+          a: 'A cycle simply ending isn\'t the same as leaving — it\'s just the point where a renewal payment is due. This page specifically filters out "cycle transitions" (someone whose old cycle ended but who is confirmed to have continued into the next cycle), so only people who actually stopped are counted. It checks this two ways: by looking at whether their next subscription period started right after, or by checking their current status and cycle number.' },
+        { q: 'Does the Period filter at the top of the dashboard apply to this page?',
+          a: 'Yes — every KPI, chart and table here is scoped to whichever period and dimension filters (product, broker, etc.) are active globally, based on each subscriber\'s exit date. There is also a separate "Exit Date Range" filter built into this page itself, which lets you narrow further by exit date independent of the global period — when that local filter is set, it takes over and the page is scoped to it instead.' },
+        { q: 'Why does "P&L at Exit" sometimes look like it\'s using an old number?',
+          a: 'Profit/loss is a live figure that\'s only kept up to date on active subscriptions — once someone unsubscribes, that row\'s P&L value often goes blank in the underlying data. When that happens, this page falls back to the last known non-zero P&L recorded for that subscriber before they left, as the best available estimate of "what their position looked like when they exited."' },
+        { q: 'What\'s the difference between the "Inclusive" and "Continuity" exit counts in the Short-Return panel?',
+          a: 'Some people cancel and then come back within 30 days — essentially a short break, not a real departure. The Inclusive view counts every exit as an exit regardless of how quickly they returned (strict, event-based counting). The Continuity view treats a return within 30 days as if the person never actually left, so it excludes both that exit and the re-entry. Use Continuity if you want a truer picture of long-term attrition.' },
+        { q: 'How is a "Win-Back" different from a normal renewal?',
+          a: 'A renewal (or cycle transition) is someone continuing within a short window of their cycle ending — that\'s not counted as an exit at all. A Win-Back is someone who genuinely left, stayed away for more than 30 days, and then came back and re-subscribed later. The Win-Back Rate card compares this against only the investors who exited in the last 3 months, so it\'s a recent-cohort recovery signal, not an all-time one.' },
+      ]} />
     </div>
   );
 });

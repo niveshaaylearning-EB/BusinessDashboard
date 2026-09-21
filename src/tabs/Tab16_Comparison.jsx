@@ -7,6 +7,7 @@ import ChartCard from '../components/ChartCard';
 import InsightsPanel from '../components/InsightsPanel';
 import TabDateFilter from '../components/TabDateFilter';
 import { YAxisTick } from '../components/YAxisTick';
+import FAQSection from '../components/FAQSection';
 import {
   applyFilters, filterRawByDate, getSummaryKPIs, getMonthlyMovement,
   getProductMetrics, getBrokerMetrics, getGeographyMetrics, getCancellationMetrics,
@@ -1213,6 +1214,23 @@ export default memo(function Tab16Comparison({ rawData, filters, setFilters }) {
       {comparisonInsights.length > 0 && (
         <InsightsPanel insights={comparisonInsights} title="🤖 Comparison Intelligence — Period-over-Period Analysis" max={8} />
       )}
+
+      <FAQSection items={[
+        { q: 'What is this page for?',
+          a: 'A side-by-side comparison of two custom date ranges you pick yourself — e.g. this quarter vs. last quarter, or this year vs. last year. It recomputes every major metric independently for each period so you can see exactly how the business performed in one window versus another, across KPIs, products, brokers, geography, and cancellations.' },
+        { q: 'Does the Period filter I set elsewhere in the dashboard affect this page?',
+          a: 'No — this page deliberately ignores the global Period filter shown on other tabs. It has its own, separate pair of date pickers (Period A and Period B) that you set independently right here. This is intentional: the whole point of this page is comparing two ranges of your own choosing, which wouldn\'t work if it were also constrained by a single global filter.' },
+        { q: 'Why do the Quick Presets (e.g. "Last 3M vs Prev 3M") use rolling months instead of calendar months?',
+          a: 'They\'re anchored to today\'s date and count backward — "Last 3 Months" means the 3 months ending today, and "Prev 3 Months" is the 3 months immediately before that, back to back with no gap or overlap. This gives a true apples-to-apples comparison of two equal-length, consecutive windows, rather than calendar quarters that might be different lengths.' },
+        { q: 'How is "New Subscriptions (All)" different from "Unique New Investors" in the KPI table?',
+          a: 'New Subscriptions (All) counts every subscription start in the period, including renewals — an investor renewing counts here. Unique New Investors is stricter: only first-time subscribers (Cycle 1), counted once per person by PAN. If a period had lots of renewal activity but few genuinely new people, these two numbers will diverge a lot — that\'s a useful signal in itself.' },
+        { q: 'What does the "Delta (B vs A)" column actually mean, and why is green sometimes on a smaller number?',
+          a: 'Delta always shows how Period B compares to Period A, as a percentage change. The color isn\'t just "up = green" — it depends on whether higher is better for that specific metric. For a metric like Exits, a smaller number in B is the good outcome, so a decrease shows green even though the percentage itself is negative. Check the metric label to see which direction is favorable.' },
+        { q: 'Why does the "Subscriber Closing Count" chart line up the two periods as Month 1, Month 2… instead of actual calendar months?',
+          a: 'Because Period A and Period B usually cover different calendar months (e.g. comparing this January–March against last October–December), plotting them by real calendar date wouldn\'t let you compare them side by side. Instead both periods are re-indexed to start at "Month 1" so you\'re comparing "how each period performed N months into itself" — hover over a point to see which actual calendar month it corresponds to for each period.' },
+        { q: 'Why are the product/broker/geography breakdowns here based only on subscriptions that STARTED within each period, while the KPI table\'s Active Subscribers is based on who was active at period-end?',
+          a: 'These serve different questions on purpose. The breakdowns show mix analysis — "what kind of business did we write in this window" — which only makes sense using subscriptions that actually began then. Active Subscribers is a stock/snapshot question — "how big was the base at the end of the period" — which naturally includes people who joined earlier and were simply still active. Comparing the two answers different things, so don\'t expect the breakdown totals to reconcile exactly with the KPI table.' },
+      ]} />
     </div>
   );
 });

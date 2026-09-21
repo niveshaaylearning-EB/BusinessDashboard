@@ -3,6 +3,7 @@ import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, R
 import ChartCard from '../components/ChartCard';
 import { YAxisTick } from '../components/YAxisTick';
 import { formatCurrency, formatNumber } from '../dataEngine';
+import FAQSection from '../components/FAQSection';
 
 const COLORS = ['#00d4ff', '#fbbf24', '#22c55e', '#a78bfa', '#f87171', '#fb923c', '#2dd4bf'];
 
@@ -117,6 +118,23 @@ export default memo(function Tab18MRR({ mrrMetrics }) {
           </div>
         </ChartCard>
       )}
+
+      <FAQSection items={[
+        { q: 'What is "MRR" and why does it matter here?',
+          a: 'MRR stands for Monthly Recurring Revenue — it\'s a way of putting every subscription plan on the same monthly footing, even though people actually pay annually, quarterly, or half-yearly. Instead of comparing one investor\'s ₹12,000/year plan to another\'s ₹1,000/month plan directly, both get converted to a monthly-equivalent figure so revenue trends are easy to read at a glance.' },
+        { q: 'How exactly is a plan amount converted to "monthly-equivalent"?',
+          a: 'Annual plans are divided by 12, quarterly by 3, and half-yearly by 6. If a plan\'s duration isn\'t stated but the amount is over ₹3,000, it\'s assumed to be an annual plan and divided by 12 as well — smaller unlabeled amounts are left as-is (treated as already monthly). This is an estimate, not an exact accounting figure, since it relies on the plan-duration text being filled in correctly on each record.' },
+        { q: 'What is ARR, and is it a real forecast of next year\'s revenue?',
+          a: 'Annual Run Rate is simply the current MRR multiplied by 12 — a straight-line projection of "if nothing changed, what would a year of this look like." It is not a forecast: it doesn\'t account for expected renewals, churn, or new signups over the next 12 months, it just annualizes today\'s snapshot.' },
+        { q: 'Do the Period and other filters (product, broker, etc.) affect this page?',
+          a: 'Yes — the current MRR, ARR, Active Investors, and MRR-by-Product figures are all computed from whichever subscribers match your currently selected filters, including the date period. If you\'ve picked a past period, "current" MRR here means MRR from the active subscribers within that period\'s window, not necessarily today\'s live figure — clear the period filter to see the true current snapshot.' },
+        { q: 'How is the MRR Trend chart (New / Churn / Active MRR) built, since we don\'t have historical MRR snapshots?',
+          a: 'It\'s reconstructed from subscription history rather than pulled from stored monthly snapshots: a subscription\'s monthly-equivalent value is added as "New MRR" in the month its cycle started, and subtracted as "Churn MRR" in the month a cycle ended in cancellation. "Active MRR" is just the running balance of New minus Churn carried forward month over month. Treat it as a close approximation of revenue over time, not an audited historical ledger.' },
+        { q: 'Why doesn\'t Active Investors here exactly match Active Subscribers on the Executive tab?',
+          a: 'Active Investors on this page counts unique investors (by PAN) who are active — the same style of counting as "Unique Investors"/"Active Subscribers" on the Executive tab, under whatever filters are currently applied. If the two pages show different numbers, first check whether the same period and dimension filters are selected on both.' },
+        { q: 'Why might MRR by Product not sum exactly to the Current MRR card above it?',
+          a: 'Both are computed the same way from the same active, filtered subscriptions, so in principle they match — small differences can appear only from independent rounding of each product\'s figure before they\'re summed and displayed. It should never be off by more than a rupee or two.' },
+      ]} />
     </div>
   );
 });

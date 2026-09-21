@@ -8,6 +8,7 @@ import {
   Legend, ResponsiveContainer, LineChart, Line, ReferenceLine,
 } from 'recharts';
 import DrilldownModal, { useDrilldown } from '../components/DrilldownModal';
+import FAQSection from '../components/FAQSection';
 
 const PAGE_SIZE = 24;
 
@@ -463,6 +464,23 @@ export default memo(function Tab17SubscriberFlow({ monthly, currentMaster, filte
         </div>
       )}
       <InsightsPanel insights={flowInsights} title="🤖 Flow Intelligence — Subscriber Movement Analysis" max={8} />
+
+      <FAQSection items={[
+        { q: 'What is this page for?',
+          a: 'A month-by-month look at how people move in and out of your subscriber base: how many are brand new, how many are existing investors renewing, how many left, and what that adds up to as a net gain or loss. It\'s the same underlying monthly numbers as the Executive tab, but broken out in full detail with a chart for every angle.' },
+        { q: '"New" vs "Renewals" — how is that split decided?',
+          a: 'It comes straight from the Cycle Number on each subscription record. A subscription on its first cycle counts as New; anything on cycle 2 or later counts as a Renewal. So a person renewing for the third year in a row still just adds one to "Renewals" that month, not "New."' },
+        { q: 'How does the Period filter affect the numbers here?',
+          a: 'Both the date picker at the top and this page\'s own internal filtering use the same start/end dates, so everything you see — KPI cards, all four charts, and the table — is scoped to whatever period is selected. Outside that window, activity simply doesn\'t appear here.' },
+        { q: 'What counts as an "Exit" here, and does it match "Unsubscribed" elsewhere in the dashboard?',
+          a: 'Yes — an exit is a subscription cycle that ended in cancellation (status Unsubscribed) during that month. It\'s the same exit event used to compute Churn % in the table and the "Exited Subscribers" figure on the Executive tab, just grouped by month here.' },
+        { q: 'Why is "Renewal %" on this page different from the "Renewal Rate" on the Executive tab?',
+          a: 'They answer different questions. Here, Renewal % is: of everyone who started a paid cycle that month, what share were renewals rather than first-timers — a mix-of-inflow number. The Executive tab\'s Renewal Rate is: of all currently active subscribers, what share have renewed at least once — a snapshot of the whole base. Don\'t expect the two percentages to match.' },
+        { q: 'The Cumulative Flow chart looks like it starts from zero even though we\'ve had subscribers for years — is that a bug?',
+          a: 'No — the running totals in that chart deliberately restart from zero at the beginning of whatever period you\'ve selected, so you can see how much moved during just that window. It is not the all-time cumulative subscriber count; for the true all-time trend, see the Subscriber Growth Trend chart on the Executive tab.' },
+        { q: 'Why do the "Active (EOD)" and "Net" columns in the table sometimes not add up month to month?',
+          a: 'Active (EOD) is the closing active-subscriber count for that month as computed independently each month, while Net is just that month\'s New + Renewals minus Exits. Small mismatches between consecutive months\' Active figures and the Net value can happen when a subscription\'s status changes for reasons other than a clean start/renew/exit event (for example, a data correction or a cycle that spans a status change outside this simple in/out model).' },
+      ]} />
     </div>
   );
 });

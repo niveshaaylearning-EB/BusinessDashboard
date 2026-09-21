@@ -2,6 +2,7 @@
 import Tab23Reactivation from './Tab23_Reactivation';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import ChartCard from '../components/ChartCard';
+import FAQSection from '../components/FAQSection';
 
 const RISK_META = {
   Critical: { color: '#f87171', bg: 'rgba(248,113,113,0.15)', icon: '🔴',
@@ -118,6 +119,23 @@ function ChurnContent({ churnRisk }) {
           </table>
         </div>
       </div>
+
+      <FAQSection items={[
+        { q: 'What is this page for?',
+          a: 'It ranks every currently active investor by how likely they seem to leave soon, using a points-based formula so the team can focus retention outreach on the people most at risk first, instead of guessing.' },
+        { q: 'How is the risk score actually calculated?',
+          a: 'Points are added or subtracted for five things: being on cycle 1 or 2 (new investors are more likely to leave, +3 or +1), how the investor\'s portfolio is performing (losing more than 20% adds +4, losing more than 5% adds +2, gaining over 10% subtracts 2), how soon their subscription needs renewing (15 days or less left adds +3, 30 days or less adds +2, 60 days or less adds +1), how dependent they are on a discount (a discount worth more than 40% of the plan price adds +2, any discount adds +1), and whether they joined less than 30 days ago (+1). The total score sorts them into Low (under 3), Medium (3-4), High (5-6), or Critical (7+).' },
+        { q: 'Does the period filter (the date range picker) change these numbers?',
+          a: 'No — and this is on purpose. This page is meant to answer "who among today\'s active investors is at risk right now," so it always looks at everyone currently active, regardless of what past date range you\'ve selected elsewhere. Only the product, broker, and state filters narrow this list. If you\'ve picked a period and the numbers here look the same as before you picked it, that\'s expected, not a bug.' },
+        { q: 'Why does someone with a big loss and a big discount still show as Low risk?',
+          a: 'The formula also rewards loyalty and stability — someone on a later renewal cycle, or with more time left before their subscription needs renewing, pulls the score down even if other factors push it up. A single bad factor rarely puts someone into a high band on its own; it\'s the combination that matters.' },
+        { q: 'Can the score go negative?',
+          a: 'Yes. A profitable, comfortably-timed renewal (gains over 10%, no discount, not brand new) can push the score below zero, and it still lands in the Low band — the formula has no floor at zero, it just means "very unlikely to leave soon."' },
+        { q: 'How is this different from the Reactivation Pipeline tab next to it?',
+          a: 'This tab is about people who are still subscribed today but showing warning signs — the goal is to keep them before they leave. The Reactivation Pipeline (the other sub-tab here) is about people who have already left and scores how worth chasing they are for a win-back offer. Different population, different formula, same idea of prioritizing outreach.' },
+        { q: 'One investor appears once here even though they hold multiple products — why?',
+          a: 'Investors are counted once by PAN, not once per product. If someone holds two baskets, this page uses one representative row for them rather than scoring each basket separately, so the total here reflects unique people, not subscription count.' },
+      ]} />
     </div>
   );
 }

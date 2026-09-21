@@ -9,6 +9,7 @@ import SortableKPIGrid from '../components/SortableKPIGrid';
 import InsightsPanel from '../components/InsightsPanel';
 import DrilldownModal, { useDrilldown } from '../components/DrilldownModal';
 import { parseExcelDate, isActive } from '../dataEngine';
+import FAQSection from '../components/FAQSection';
 
 const ALL_INTERVALS = [0, 1, 3, 6, 12, 24];
 const INTERVALS = ALL_INTERVALS;
@@ -495,6 +496,23 @@ function RetentionContent({ cohorts: allCohorts, currentMaster, insights, filter
       <div style={{ marginTop: '1rem' }}>
         <InsightsPanel insights={retentionInsights} title="🤖 Retention Intelligence — Cohort Survival Analysis" max={8} />
       </div>
+
+      <FAQSection items={[
+        { q: 'What is this page for?',
+          a: 'It groups subscribers by the month they first joined (a "cohort" — just a batch of people who started around the same time) and tracks what % of each batch is still active as time passes. This shows whether people who join today are more or less likely to stick around than people who joined a year ago.' },
+        { q: 'How is a subscriber assigned to a cohort?',
+          a: 'By the month of their First Subscription Date (or Subscription Start Date if that\'s missing) — someone who first joined in March 2024 is in the "2024-03" cohort forever, even if they later renewed, switched products, or came back after a break. Each person (by PAN) is counted once per cohort.' },
+        { q: 'What do the M0 / M1 / M3 / M6 / M12 / M24 columns mean?',
+          a: 'They\'re checkpoints in months after a cohort\'s start: M0 is the end of their joining month (close to 100% by definition), M6 is 6 months later, M12 is a full year later, and so on. Each number is the % of that cohort still active at that checkpoint. A blank cell just means the cohort isn\'t old enough yet to have reached that checkpoint — it\'s not a zero.' },
+        { q: 'Does the Period filter at the top of the dashboard narrow this page down?',
+          a: 'It works a bit differently here than on most other pages. The retention percentages themselves are always calculated from each cohort\'s FULL history (they have to be, to correctly track someone for a full year) — the period filter doesn\'t shrink that math. What it DOES do is control which acquisition-month rows are shown: picking a period only displays cohorts that started within that window, while every row shown still has its retention % calculated the normal, full-history way. The Smallcase/Broker/etc. filters, by contrast, do genuinely narrow which subscribers are counted before cohorts are built.' },
+        { q: 'Why is there also a "From: [year]" dropdown, separate from the main filters?',
+          a: 'That\'s a page-specific shortcut for trimming the cohort list by starting year, so you can quickly focus on recent cohorts without touching the dashboard-wide period filter. It only affects which cohort rows are displayed here.' },
+        { q: 'Why does a brand-new cohort always look great, and older ones look "worse"?',
+          a: 'A cohort that started last month hasn\'t had time to lose anyone yet, so it\'s naturally close to 100% at M0/M1 — that\'s not a real achievement, just recency. That\'s also why the "Top 5 Retention Months" panel per product deliberately favors cohorts at least 3 months old where possible, so it\'s ranking genuine survival rather than cohorts too young to have been tested.' },
+        { q: 'What\'s the difference between this page\'s Renewal-based numbers and the Retention Rate shown on the Executive page?',
+          a: 'This page measures long-term survival of a fixed group of people over many months (did they stay active at all, on any cycle). The Executive page\'s Retention Rate is a single current-month snapshot (100% minus this month\'s churn), and the Subscriber Movement page\'s Renewal % is narrower still — it only looks at people who were actually due to renew that month. All three are valid, but they answer different questions and won\'t match each other.' },
+      ]} />
     </div>
   );
 }

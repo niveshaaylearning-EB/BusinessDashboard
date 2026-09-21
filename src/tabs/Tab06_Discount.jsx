@@ -8,6 +8,7 @@ import ChartCard from '../components/ChartCard';
 import { YAxisTick } from '../components/YAxisTick';
 import SortableKPIGrid from '../components/SortableKPIGrid';
 import InsightsPanel from '../components/InsightsPanel';
+import FAQSection from '../components/FAQSection';
 import { formatCurrency, formatNumber } from '../dataEngine';
 import TabDateFilter from '../components/TabDateFilter';
 import DrilldownModal, { useDrilldown } from '../components/DrilldownModal';
@@ -380,6 +381,23 @@ function DiscountContent({ discountSummary, discountByProduct, discountByBroker,
       </div>
 
       <InsightsPanel insights={discountInsights} title="🤖 Pricing Intelligence — Discount & Offer Analysis" max={8} />
+
+      <FAQSection items={[
+        { q: 'What is this page for?',
+          a: 'It shows how much you\'re giving away in discounts, who is getting them, and whether relying on discounts is helping or hurting. Use it to spot products, brokers or offer codes that lean too heavily on price cuts to win business.' },
+        { q: 'Why might "Total Discount Given" not match the sum of the "Total Discount by Product" bars below it?',
+          a: 'The top card adds up the discount on every active subscription row — so if one person holds 2 discounted products, both amounts are counted. The bars below it, on the other hand, first narrow each product down to one row per person (their most recent cycle) before adding up the discount. So the product-by-product total will usually come out a bit lower than the headline card — that\'s expected, not an error.' },
+        { q: 'How is "Avg Discount" calculated — is it averaged across everyone?',
+          a: 'No. It only averages the discount amount among active subscribers who actually have a discount greater than zero. People paying full price aren\'t included as a "0" in this average, which is why the number looks meaningfully higher than if you divided total discount by every subscriber.' },
+        { q: 'What does "Discount Utilization" actually measure?',
+          a: 'The percentage of currently active subscribers (counted once per person, even if they hold more than one product) who are on some kind of discounted plan. A higher number means more of your base needed a price break to sign up or stay — it\'s a signal of pricing power, not a bad thing on its own, but worth watching if it keeps climbing.' },
+        { q: 'Why do some subscribers show a discount but no offer code, or vice versa?',
+          a: 'A subscriber can have a discount amount recorded without ever entering a promotional code (e.g. a manually applied discount), and the "No Code" group is deliberately excluded from the Offer Code Leaderboard and the "Unique Offer Codes" count — only genuine, named promo codes are counted there.' },
+        { q: 'How does the Period filter at the top affect this page?',
+          a: 'It narrows every chart and KPI here to subscribers who were active at some point during the period you pick, not just people who started or got a discount in that window. If you don\'t set a period, you\'re seeing all currently active discounted subscribers regardless of when they joined.' },
+        { q: 'What\'s the difference between the "Discount Analytics" tab and the "Offer Code ROI" tab next to it?',
+          a: 'This tab (Discount Analytics) shows discount spend and dependency by product, broker and state. The "Offer Code ROI" tab goes one level deeper into each specific promo code, weighing the discount it cost against the retention or revenue it actually brought in — useful for deciding which codes to keep running.' },
+      ]} />
     </div>
   );
 }

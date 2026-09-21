@@ -1,6 +1,7 @@
 ﻿import { memo } from 'react';
 import ChartCard from '../components/ChartCard';
 import SortableKPIGrid from '../components/SortableKPIGrid';
+import FAQSection from '../components/FAQSection';
 import { formatCurrency, formatNumber } from '../dataEngine';
 
 export default memo(function Tab12Insights({ insights = [], kpis, products, brokerMetrics, geoMetrics, monthly }) {
@@ -221,6 +222,23 @@ export default memo(function Tab12Insights({ insights = [], kpis, products, brok
           })}
         </div>
       </ChartCard>
+
+      <FAQSection items={[
+        { q: 'What is this page for?',
+          a: 'A single feed of plain-English observations about the business, automatically generated from the same numbers used everywhere else in the dashboard — best/worst performing products, distributors and regions, growth trends, pricing patterns, and warning signs like rising exits or a shrinking base. It\'s meant as a starting point for "what should I look into today," not a replacement for the detailed tabs.' },
+        { q: 'Is this a real AI model writing these, or is it something else?',
+          a: 'It\'s not a live AI model call — every insight here is produced by a fixed set of rules running against your filtered numbers (e.g. "which product has the highest renewal rate," "did churn exceed 5% in any recent month"). The wording is templated but the numbers plugged into it are always freshly computed from your current data and filters, so they\'re accurate, just not open-ended commentary from a model.' },
+        { q: 'Why do I see more insights here than on the individual tabs?',
+          a: 'The base list comes from the same engine used elsewhere, but this page adds several extra ones computed only here — portfolio performance comparison, an acquisition trend based on the last 3 months vs. the prior 3, a "win-back" revenue estimate from exited subscribers, an affordability check (plan price vs. investor net worth), and some month-by-month churn/renewal pattern checks. That\'s why the total count can be higher than what shows up on, say, the Executive tab.' },
+        { q: 'How is "Recovering 20% of exited subscribers could generate ₹X" calculated?',
+          a: 'It multiplies the number of exited subscribers by the average plan amount of currently active subscribers, then takes 20% of that as an illustrative recovery scenario. It\'s a simple what-if number to size the opportunity, not a forecast or a guaranteed outcome — the real win-back rate will depend on why those people left in the first place.' },
+        { q: 'What counts as "Growth Opportunities" vs "Lagging Areas" vs "Quality Signals" in the summary cards?',
+          a: 'These are just groupings of the insights below by category — Growth Opportunities are ones flagging positive momentum or untapped upside (like acquisition speeding up), Lagging Areas flag things that need attention (like a product or region with low renewal rates, or several months of high churn), and Quality Signals highlight things that are already working well (like a product attracting high-value investors). An insight only lands in one of these buckets if its category matches the list defined for that bucket — a few insight types won\'t be counted in any of the three.' },
+        { q: 'Do the numbers here change if I apply a Period or product filter elsewhere in the dashboard?',
+          a: 'Yes — the underlying KPIs, product list, broker/region breakdowns and monthly trend data driving these insights are all computed from whatever filters are currently applied, the same as the rest of the dashboard. Narrowing to a specific period or product will regenerate this whole page around that slice of data.' },
+        { q: 'Why did an insight I saw yesterday disappear today?',
+          a: 'Most insights only appear when their underlying condition is actually true for the current data and filters — e.g. the "High Churn Pattern" insight only shows up if at least 2 months had churn above 5%, and the "Subscriber Base Shrinking" alert only appears if the last two months both had negative net growth. As new data comes in or filters change, conditions that used to be true can stop being true, and that insight simply won\'t regenerate.' },
+      ]} />
     </div>
   );
 });

@@ -1,6 +1,7 @@
 ﻿import { memo, useState, useEffect, useCallback } from 'react';
 import { api } from '../api';
 import ChartCard from '../components/ChartCard';
+import FAQSection from '../components/FAQSection';
 
 const ACTION_COLORS = {
   login:            '#22c55e',
@@ -242,6 +243,23 @@ export default memo(function Tab15AuditLog({ currentUser, refreshUser }) {
           </>
         )}
       </ChartCard>
+
+      <FAQSection items={[
+        { q: 'What is this page for?',
+          a: 'A security and accountability record — a running list of who did what on this platform and when. Every login, failed login attempt, password change, user account change, and data upload/access is logged here, along with the IP address it came from. It\'s the page to check if you need to answer "who uploaded this file" or "who changed this account" or "was there a suspicious login attempt."' },
+        { q: 'Why can only admins see this page?',
+          a: 'The log contains sensitive information — other people\'s login activity, IP addresses, and account changes — so access is restricted to admin users only. If you\'re logged in as a non-admin, you\'ll see a message explaining that instead of the log itself.' },
+        { q: 'What do the different action types mean?',
+          a: 'Login/Logout are normal session activity. Login Failed is a wrong-password (or similar) attempt; Account Locked means too many failed attempts triggered a lockout. Registration is a new user account being created. Password Changed is a user changing their own password; Password Reset (Admin) is an admin resetting someone else\'s. User Created/Updated/Deleted/Deactivated are admin actions on other accounts. Data Uploaded and Data Accessed track when a subscription file was uploaded or when someone viewed data.' },
+        { q: 'How far back does this log go, and how much loads at once?',
+          a: 'The log loads 50 entries at a time, newest first — use the "Load More" button at the bottom to page further back in history. There\'s no date filter on this page; if you need a specific window, look through the pages or use the action-type chips above the table to narrow things down by category first.' },
+        { q: 'What do the action-type filter chips at the top do?',
+          a: 'Clicking one (e.g. "Login Failed" or "Data Uploaded") reloads the table to show only that action type, reset back to page 1. This is the only filter on the page — there\'s no way to filter by date range or by a specific user from here, only by action type.' },
+        { q: 'Why does the "Details" column sometimes look like raw code?',
+          a: 'It\'s the raw JSON data attached to that specific action — for example a data upload entry might include the filename and row count, or a user-management action might include which fields changed. It\'s shown as-is rather than reformatted, since the exact content varies a lot by action type; hover over a truncated entry to see the full text.' },
+        { q: 'The page says "Backend not connected" — what does that mean?',
+          a: 'It means the dashboard couldn\'t reach the backend server that stores and serves audit logs (and user accounts generally) — this is unrelated to your uploaded subscription data. Make sure the backend service is running, then click Retry Connection.' },
+      ]} />
     </div>
   );
 });

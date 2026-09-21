@@ -3,6 +3,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import ChartCard from '../components/ChartCard';
 import { YAxisTick } from '../components/YAxisTick';
 import { formatCurrency, formatNumber } from '../dataEngine';
+import FAQSection from '../components/FAQSection';
 
 const Tip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
@@ -139,6 +140,21 @@ export default memo(function Tab24RMPerformance({ rmPerformance }) {
           </table>
         </div>
       </div>
+
+      <FAQSection items={[
+        { q: 'What is this page for?',
+          a: 'It breaks the whole investor base down by which relationship manager (RM) they\'re assigned to, so you can compare how many people each RM manages, how well those people stick around, and how much subscription revenue each RM\'s book represents.' },
+        { q: 'Why do I see an "Unassigned" row, or why does this page say no data was found?',
+          a: 'Investors are grouped by the "RM Email" column in your uploaded file. Anyone with that field blank gets grouped under "Unassigned" so they\'re not silently dropped. If the column is missing from your file entirely, the page can\'t build any groups and shows the empty-state message instead.' },
+        { q: 'If one investor holds 2 products under the same RM, do they count twice?',
+          a: 'No. Within each RM\'s book, investors are counted once by PAN — so "Total" and "Active" reflect unique people per RM, not subscription rows. If the same person is somehow logged under two different RM emails (a data entry issue), they would appear once under each RM, since the grouping happens by RM before deduplication.' },
+        { q: 'How is "Renewal Rate" calculated here, and is it the same as the Renewal tab\'s numbers?',
+          a: 'It\'s the share of an RM\'s currently active investors who are on cycle 2 or later — i.e., have renewed at least once. It\'s a per-RM slice of the same idea used elsewhere, not a different formula, but because it\'s scoped to one RM\'s book it will naturally differ from the company-wide renewal numbers on other tabs.' },
+        { q: 'Does "Total Revenue" mean money already collected, or the total investor base value?',
+          a: 'It\'s the sum of the Plan Amount (subscription price) across every investor ever assigned to that RM, active or exited — a measure of how much subscription revenue that RM\'s book has represented in total, not their portfolio value or a live P&L figure.' },
+        { q: 'Does the period/date filter change these numbers?',
+          a: 'Yes — this page respects whatever period and product/broker/state filters are currently selected on the dashboard, the same as most other tabs. If you narrow the period, both the RM totals and their renewal rates will reflect only investors matching that narrower selection.' },
+      ]} />
     </div>
   );
 });

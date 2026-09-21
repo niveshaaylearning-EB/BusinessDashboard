@@ -12,6 +12,7 @@ import { useState, useMemo } from 'react';
 import { formatCurrency, formatNumber } from '../dataEngine';
 import TabDateFilter from '../components/TabDateFilter';
 import DrilldownModal, { useDrilldown } from '../components/DrilldownModal';
+import FAQSection from '../components/FAQSection';
 
 function basketLabel(name) {
   const n = (name || '').toLowerCase();
@@ -370,6 +371,23 @@ export default memo(function Tab03Product({ products, insights, currentMaster, f
       <div style={{ marginTop: '1rem' }}>
         <InsightsPanel insights={productInsights} title="🤖 Product Intelligence — Basket Performance Analysis" max={8} />
       </div>
+
+      <FAQSection items={[
+        { q: 'What is this page for?',
+          a: 'A side-by-side comparison of every smallcase product (basket) — how many subscribers each has, how many stick around and renew, how wealthy their investors are, and how they\'re performing financially. Use it to see which baskets are pulling their weight and which need attention.' },
+        { q: 'Does selecting a period or filter here change these numbers?',
+          a: 'Yes. Every metric on this page — Total Subs, Active, Exited, Renewal %, and all the financial averages — is scoped to whatever period and dimension filters (product, broker, state, etc.) are currently selected at the top of the dashboard, using the same filtered dataset as the rest of the app.' },
+        { q: '"Total Subs" for a product — is that people or subscription records?',
+          a: 'It\'s subscription records, not unique people. If a product has been resubscribed many times by the same investors over the years (each renewal cycle is its own record in the underlying data), Total Subs reflects that full history for the product, not a headcount of distinct investors.' },
+        { q: 'Why is "Renewal Rate" different from "Avg Cycle"?',
+          a: 'Renewal Rate only looks at currently active subscribers, and asks what share of them are on their 2nd cycle or later (i.e. have renewed at least once). Avg Cycle is a different number — the average cycle count across ALL subscription records for that product, active and exited combined — so a product can have a high Avg Cycle from historical loyal subscribers while its currently-active Renewal Rate is lower, or vice versa.' },
+        { q: 'Why do "Avg Plan Amount," "Avg Discount" and "Avg Networth" only reflect some subscribers?',
+          a: 'These averages are calculated only over active subscribers, and specifically only over the ones with a non-zero value for that field — for example, Avg Discount averages just the subscribers who actually used a discount, not everyone (that would understate the real discount size for the people who used one). Rows with no plan amount or networth on record are also left out rather than counted as zero, so a product with a lot of missing data won\'t show an artificially low average.' },
+        { q: 'What does "Avg P&L" mean here, and why can it be negative for a popular product?',
+          a: 'It\'s the average cumulative profit or loss across a product\'s currently active subscribers\' portfolios. A product can be very popular (lots of active subscribers) while its average investor is currently down — subscriber count and investment performance are two separate things, and this page tracks both.' },
+        { q: 'The Treemap box sizes and the "Active vs Exited" bar chart look different for the same product — why?',
+          a: 'The Treemap sizes boxes by Total Subs (all-time subscription records, active + exited together), while the bar chart splits that same total into how much is currently active (green) vs. has exited (red). A big Treemap box with a large red portion means a product with high lifetime volume but weak current retention.' },
+      ]} />
     </div>
   );
 });

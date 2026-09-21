@@ -7,6 +7,7 @@ import ChartCard from '../components/ChartCard';
 import { YAxisTick } from '../components/YAxisTick';
 import SortableKPIGrid from '../components/SortableKPIGrid';
 import InsightsPanel from '../components/InsightsPanel';
+import FAQSection from '../components/FAQSection';
 import { formatCurrency, formatNumber } from '../dataEngine';
 import { useState, useMemo } from 'react';
 import TabDateFilter from '../components/TabDateFilter';
@@ -339,6 +340,23 @@ export default memo(function Tab09Geography({ geoMetrics, insights, filters, set
       <div style={{ marginTop: '1rem' }}>
         <InsightsPanel insights={geoInsights} title="🤖 Geography Intelligence — Regional Distribution Analysis" max={8} />
       </div>
+
+      <FAQSection items={[
+        { q: 'What is this page for?',
+          a: 'It breaks the subscriber base down by state, so you can see where your customers actually live — which states bring the most people, which have the wealthiest investors, and where people are most likely to stay subscribed.' },
+        { q: 'How is a state\'s "Total" subscriber count worked out?',
+          a: 'Every subscription row (active or exited) with that state on record is narrowed down to one row per person first — if the same investor appears twice for the same state, only their most recent cycle counts. Active and Exited are then split from that same de-duplicated group.' },
+        { q: 'The "Top State (Volume)" card shows a "% NW" figure — is that the state\'s share of subscribers?',
+          a: 'No, that\'s an easy mix-up. The "% NW" is this state\'s share of the country\'s total active-subscriber net worth (i.e. how much of the nation\'s wealth sits with investors in that state), not its share of headcount. A state can lead heavily in subscriber count while still holding a modest share of total net worth, or vice versa.' },
+        { q: 'How is "Networth Concentration by State" different from just ranking states by subscriber count?',
+          a: 'It measures where the money is, not where the people are. A state with relatively few, very wealthy subscribers can show a high networth share here while ranking low on the plain subscriber-count chart — the two views intentionally tell different stories.' },
+        { q: 'Why is "Renewal Rate by State" missing some smaller states?',
+          a: 'That chart only includes states with at least 3 total subscribers, so a rate isn\'t built on just one or two people (which could show a misleading 0% or 100%). Smaller states still appear in the full table at the bottom, just not in that particular ranked chart.' },
+        { q: 'How does the Period filter change this page?',
+          a: 'It limits every state\'s numbers to subscribers who were active at some point during your chosen window. Without a period selected, you\'re seeing each state\'s complete, all-time subscriber picture.' },
+        { q: 'A state\'s Avg PnL or Avg Networth looks off compared to what I\'d expect — why?',
+          a: 'These averages are calculated only from a state\'s currently active subscribers, and can be skewed by a small handful of very large or very negative portfolios if that state has few subscribers. Check the subscriber count column alongside it before drawing conclusions from a state with a small sample.' },
+      ]} />
     </div>
   );
 });

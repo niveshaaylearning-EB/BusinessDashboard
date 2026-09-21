@@ -1,5 +1,6 @@
 ﻿import { memo, useState } from 'react';
 import { formatNumber } from '../dataEngine';
+import FAQSection from '../components/FAQSection';
 
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -120,6 +121,21 @@ export default memo(function Tab25RenewalCalendar({ renewalCalendar }) {
           </div>
         </div>
       )}
+
+      <FAQSection items={[
+        { q: 'What is this page for?',
+          a: 'It lays out, month by month, how many currently active subscriptions are due to expire over the next year — so you can plan renewal outreach and staff for the busiest months ahead of time, instead of finding out when a subscription lapses.' },
+        { q: 'Does the date-period filter (the range picker used elsewhere) change what\'s shown here?',
+          a: 'No — this page is deliberately left out of the period filter. It\'s about who is active right now and when their current subscription runs out, so a past date range you\'ve picked elsewhere on the dashboard wouldn\'t make sense applied here — it could hide a subscription that\'s genuinely expiring soon just because it happened to start outside that older window. Only the product, broker, and state filters narrow this page.' },
+        { q: 'Why doesn\'t a subscriber I know is active show up in any month here?',
+          a: 'Only subscriptions with a valid, future "Cycle End Date" are included — if that field is missing or already in the past for an active row, it\'s left out of the calendar since there\'s no reliable expiry date to place it on. Only the next 12 months are shown, so anything expiring further out won\'t appear either.' },
+        { q: 'If an investor holds 2 products, do they show up in 2 months?',
+          a: 'They can, since each product subscription has its own cycle end date. But within a single month, the same investor won\'t be double-counted for the same product — investors are deduplicated by PAN before the expiry dates are grouped, so one person\'s book is counted once per distinct upcoming renewal.' },
+        { q: 'What does "Revenue at Renewal" for a month actually represent?',
+          a: 'It\'s the sum of the Plan Amount (subscription price) for everyone expiring that month — the total ₹ that will lapse if nobody renews, and the total that stays if everybody does. It\'s not a forecast of what will actually happen, just the size of the stake.' },
+        { q: 'How is this different from the "Revenue at Risk" (Revenue at Risk / Churn Risk) tab nearby?',
+          a: 'This calendar simply sorts active subscriptions by when they expire, with no judgment about how likely each one is to renew. The Churn Risk tab instead scores each active investor by how likely they are to leave, based on things like recent performance and discount dependency. Use this page to plan capacity and timing; use Churn Risk to decide who needs a phone call first.' },
+      ]} />
     </div>
   );
 });

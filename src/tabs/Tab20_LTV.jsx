@@ -3,6 +3,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import ChartCard from '../components/ChartCard';
 import { YAxisTick } from '../components/YAxisTick';
 import { formatCurrency, formatNumber } from '../dataEngine';
+import FAQSection from '../components/FAQSection';
 
 const Tip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
@@ -131,6 +132,23 @@ export default memo(function Tab20LTV({ ltvData }) {
           </table>
         </div>
       </div>
+
+      <FAQSection items={[
+        { q: 'What is "Lifetime Value" (LTV) measuring here?',
+          a: 'How much money each investor has actually paid you in total, ever — across every product they\'ve subscribed to and every renewal cycle. It\'s a real, historical total of money already collected, not a projection of what they might pay in the future.' },
+        { q: 'How is Total LTV calculated — could it double-count anything?',
+          a: 'Each investor\'s plan payments are added up per product and per renewal cycle, with duplicate rows for the same person/product/cycle combination (which can happen when a record has multiple plan-option variants) removed first. So renewing 3 times on one product and holding 2 products both add to the total correctly, without the same payment being counted twice.' },
+        { q: 'I picked a Period or Product filter — why doesn\'t a shown investor\'s Total LTV number shrink to match?',
+          a: 'That\'s intentional. Filters control WHICH investors appear on this page (only investors matching your currently selected period/product/broker/etc. show up), but once someone qualifies to be shown, their Total Spend / LTV figure is always their full lifetime total — not just what they spent within the filtered window. The point of "lifetime" value is that it stays the true all-time number even when you\'re filtering to find a particular group of people.' },
+        { q: 'What counts as "Active" vs not, for the Avg Active LTV figure?',
+          a: 'An investor is treated as Active if any of their subscription records currently show a status other than Unsubscribed — meaning they still hold at least one live subscription. Avg Active LTV then averages lifetime spend only across that group, so you can see what your current paying base has spent so far, separate from investors who have fully exited.' },
+        { q: 'How is "Networth" used in the Avg LTV by Networth Tier chart, and can it change over time?',
+          a: 'Each investor\'s networth is taken from whichever of their records reports the highest value on file — it\'s self-reported by the investor and can be updated over time, so it reflects their most recently known figure, not a historical snapshot from when they first subscribed.' },
+        { q: 'Why might the sum of all investors\' Total LTV not exactly equal "Total Investor LTV" at the top?',
+          a: 'It should match — the top KPI is simply the sum across every investor currently in scope. If the table looks short of that total, remember the table only lists the top 200 investors by spend for performance reasons, while the KPI card sums all of them, not just the ones shown.' },
+        { q: 'Two investors have the same Networth but very different LTV — is that a problem?',
+          a: 'No — networth (their reported portfolio size) and LTV (what they\'ve actually paid you in subscription fees) are independent numbers. A wealthy investor might be on a single low-cost plan, while a more modest investor might hold several products and have renewed many times — LTV reflects their subscription behavior, not their overall wealth.' },
+      ]} />
     </div>
   );
 });

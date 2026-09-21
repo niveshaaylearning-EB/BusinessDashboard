@@ -1,5 +1,6 @@
 ﻿import { memo, useState } from 'react';
 import { formatNumber } from '../dataEngine';
+import FAQSection from '../components/FAQSection';
 
 const BUCKET_META = {
   critical: { label: '0 – 30 Days', color: '#f87171', bg: 'rgba(248,113,113,0.08)', icon: '🔴',
@@ -105,6 +106,23 @@ export default memo(function Tab19RevenueRisk({ revenueAtRisk }) {
           </table>
         </div>
       </div>
+
+      <FAQSection items={[
+        { q: 'What is this page for?',
+          a: 'A heads-up list of active subscriptions that are about to come up for renewal in the next 90 days, grouped by how soon — so your team knows exactly who to reach out to first before they lapse. Think of it as a renewal to-do list ordered by urgency, plus how much plan revenue is riding on each group.' },
+        { q: 'Why doesn\'t picking a Period (like "Last 6 Months") on other tabs change anything here?',
+          a: 'This page is intentionally built to always look forward from today, not backward at a selected date range. It answers "what\'s expiring soon, starting from right now" — a subscription due in 20 days is just as urgent whether you\'re viewing "last month" or "this year" on the rest of the dashboard, so the past-dated Period filter is deliberately left out of this calculation. Product, broker, and state filters still narrow the list, since those describe who the subscriber is rather than when you\'re looking.' },
+        { q: 'How are the four buckets (0–30, 31–60, 61–90, 90+ days) decided?',
+          a: 'Each active subscription\'s current cycle has an end date (when it\'s due to renew). The gap between today and that end date determines the bucket — for example, a subscription ending in 25 days falls in the 0–30 day bucket. Only subscriptions with a future end date are counted at all; anything already past its end date is excluded (it would show up elsewhere as already exited/unsubscribed).' },
+        { q: 'What does the ₹ figure in each bucket actually represent?',
+          a: 'It\'s the sum of the full plan amount for every subscription in that bucket — not a monthly-equivalent figure like on the MRR page. So an annual plan worth ₹12,000 shows as the full ₹12,000 "at risk," since that\'s the actual renewal revenue that would be lost if the investor doesn\'t come back.' },
+        { q: 'What does "Revenue at Risk (90 days)" at the top include, and why isn\'t the 90+ bucket part of it?',
+          a: 'It\'s the total across the 0–30, 31–60, and 61–90 day buckets — everything due for renewal within the next three months. The 90+ Days bucket (green, "safe") is shown for context but deliberately excluded from that headline total, since those renewals are far enough out that they\'re not yet an active outreach priority.' },
+        { q: 'How is "Churn Risk" (High/Medium/Low) worked out — is it a predictive model?',
+          a: 'It\'s not a predictive score — it\'s a direct restatement of the time bucket: High risk means renewing within 30 days, Medium means 31–60 days, and Low means 61–90 days. It\'s a simple urgency label, not a statistical likelihood of actually churning.' },
+        { q: 'Someone I know unsubscribed weeks ago — why do they still show up here?',
+          a: 'They shouldn\'t — this page only includes subscriptions that are currently active with a cycle end date still in the future. If someone genuinely cancelled, check whether their record was actually updated to a cancelled/unsubscribed status in the source data; a stale status is usually a data-upload timing issue rather than this page miscounting.' },
+      ]} />
     </div>
   );
 });

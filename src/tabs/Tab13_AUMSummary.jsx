@@ -9,6 +9,7 @@ import {
 } from 'recharts';
 import ChartCard from '../components/ChartCard';
 import DrilldownModal, { useDrilldown } from '../components/DrilldownModal';
+import FAQSection from '../components/FAQSection';
 import { parseExcelDate } from '../dataEngine';
 
 function fmtDate(d) {
@@ -551,6 +552,23 @@ function AUMContent({ summaryData, monthly, currentMaster, filters, setFilters }
       {aumInsights.length > 0 && (
         <InsightsPanel insights={aumInsights} title="🤖 AUM Intelligence — Growth & Subscription Trends" max={8} />
       )}
+
+      <FAQSection items={[
+        { q: 'What is this page for?',
+          a: 'A month-by-month history of the business: how much money is under management (AUM), how many active subscriptions and unique investors you had at the end of each month, and how many new subscriptions/signups came in that month. Think of it as the "AUM (Executive tab) chart, but broken out one row per month with all the surrounding numbers."' },
+        { q: 'How is each month\'s AUM calculated?',
+          a: 'For every month, we take every subscription that was still active at the end of that month, and add up its AUM figure (or, if your data has no dedicated AUM column, its Networth instead — see the next question). It\'s a snapshot at month-end, so a subscriber who joined and left within the same month still gets counted for that month\'s snapshot as long as they were active on the last day.' },
+        { q: 'What\'s the difference between AUM and Networth here, and why does it matter?',
+          a: 'If your uploaded file has an AUM column, we use that directly — it\'s already correct per-product. If there\'s no AUM column, we fall back to Networth, but Networth needs to be handled differently: it\'s a per-investor figure (one number per person), not a per-product one, so we make sure each investor\'s Networth is only counted once per active product they hold, not double-counted if they hold multiple baskets.' },
+        { q: 'What\'s the difference between "New Subscriptions" and "New Signups"?',
+          a: 'New Subscriptions counts every subscription that started that month — including renewals of an existing subscriber\'s plan. New Signups is a stricter number: only first-time subscribers (Cycle 1), i.e. genuinely new people. The gap between the two bars in the "New Subscriptions & Signups" chart is your renewal volume for that month.' },
+        { q: 'Why do Total Signups, Total Subscription Cycles and Completed Cycles only ever go up, never down?',
+          a: 'Those three are running (cumulative) totals since the very first month of data — "everyone who has ever signed up," "every subscription cycle ever started," and "every cycle that has ever finished." By definition a running total can\'t decrease; it\'s meant to show the all-time footprint of the business, not the current active state (that\'s what Active Subscriptions and Total Investors are for).' },
+        { q: 'I picked a Period filter (e.g. "Last 6 Months") — does that change how AUM or the cumulative totals are calculated?',
+          a: 'No — internally, every month\'s figures (including the cumulative running totals) are always computed from your ENTIRE upload history, because a cumulative total or an AUM snapshot would be wrong if it ignored everything before the filter window. What the Period filter does is simply trim which rows of the monthly table and chart are shown to you — the math behind each row you do see is still correct and based on full history, just narrowed down to the months you asked for.' },
+        { q: 'Why might Active Subscriptions here not match the Executive tab\'s Active Subscribers number?',
+          a: 'This page counts active subscription records deduplicated by Email+Scid — someone active on 2 products counts as 2. The Executive tab\'s "Active Subscribers" card counts unique investors by PAN — that same person counts once. Check the ⓘ tooltip on each card; the sub-label spells out which counting method is being used.' },
+      ]} />
     </div>
   );
 }

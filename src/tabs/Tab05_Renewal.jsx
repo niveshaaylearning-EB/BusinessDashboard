@@ -10,6 +10,7 @@ import { YAxisTick } from '../components/YAxisTick';
 import SortableKPIGrid from '../components/SortableKPIGrid';
 import InsightsPanel from '../components/InsightsPanel';
 import DrilldownModal, { useDrilldown } from '../components/DrilldownModal';
+import FAQSection from '../components/FAQSection';
 import { formatNumber, parseExcelDate, isActive, getMonthlyMovement } from '../dataEngine';
 import TabDateFilter from '../components/TabDateFilter';
 
@@ -534,6 +535,23 @@ function RenewalContent({ renewalFunnel, renewalByProduct, currentMaster, insigh
       <div style={{ marginTop: '1rem' }}>
         <InsightsPanel insights={renewalInsights} title="🤖 Renewal Intelligence — Funnel & Product Loyalty Analysis" max={8} />
       </div>
+
+      <FAQSection items={[
+        { q: 'What is this page for?',
+          a: 'It shows how far subscribers get through repeat renewal cycles — how many are still on their very first cycle, how many have renewed once, twice, and so on — and where along the way people stop renewing. The funnel and the product tables below it are two views of the same underlying idea: how sticky is each stage of the subscription.' },
+        { q: 'If someone holds 2 products, do they count twice in the funnel?',
+          a: 'No. The funnel counts each person once (by PAN), even if they hold several products. If they\'ve renewed 3 times on one product and only once on another, they\'re placed at Cycle 3 — their single highest cycle number across everything they hold. The "Renewal Details by Product" table below, by contrast, counts every product subscription separately, so the same person can appear in more than one product\'s row there.' },
+        { q: 'Does the funnel only count people who are still active today?',
+          a: 'No — within whatever period/product/broker filters are selected, it includes everyone who reached that cycle, whether they\'re still subscribed or have since left. So "Cycle 3 Subs" means "reached cycle 3," not "currently on cycle 3 right now." That\'s why the funnel is a good way to see where people give up over time, even though it isn\'t a live headcount of currently-active subscribers.' },
+        { q: 'What does the "Avg Renewal Rate" banner at the top actually measure, and how does the date filter affect it?',
+          a: 'It answers a narrower question than the funnel: of the subscriptions whose current cycle actually ENDED in the selected period, what share renewed rather than lapsing? This is deliberately calculated from the complete, unfiltered history — not just rows that started within the selected dates — because a subscription can start well before your chosen period and still end (and need to renew) inside it. If we only looked at rows starting in the period, we\'d wrongly drop those. So this one number does respond to the date filter, but by looking at when cycles ended, not when they started.' },
+        { q: 'Why might the C1→C2, C2→C3 etc. percentages in the funnel look different from the "Avg Renewal Rate" banner?',
+          a: 'The funnel percentages (and the product table below it) do respond to whatever period and product/broker filters you\'ve picked — they show the highest cycle each filtered subscriber has reached. The "Avg Renewal Rate" banner asks a narrower, differently-scoped question — of subscriptions whose cycle actually ended in your selected dates, how many renewed — using the full history so it doesn\'t miss cycles that started earlier. Because the two numbers are built from different scopes and different definitions of "eligible," they\'re related but won\'t always match exactly.' },
+        { q: 'How is "Tenure" calculated in the Client Tenure & Loyalty section, and who is included?',
+          a: 'Only currently active investors are included here (unlike the funnel above, which includes past subscribers too). For each one, tenure is measured from their very earliest subscription start date found anywhere in the uploaded history — not their most recent renewal date — through to today. That earliest-date lookup is why a long-time client who recently renewed still shows their true multi-year tenure instead of resetting to a few months.' },
+        { q: 'The Renewal Calendar and Revenue at Risk tabs next to this one show different subscriber counts — why?',
+          a: 'Those two sibling tabs are deliberately forward-looking (they\'re about who\'s active right now and coming up for renewal soon), so the date-period filter does not narrow them the way it narrows this Renewal Funnel view. Switching sub-tabs at the top of this page keeps your product/broker filters but changes how the period filter behaves.' },
+      ]} />
     </div>
   );
 }

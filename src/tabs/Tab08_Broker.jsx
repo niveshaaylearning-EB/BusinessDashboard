@@ -8,6 +8,7 @@ import ChartCard from '../components/ChartCard';
 import { YAxisTick } from '../components/YAxisTick';
 import SortableKPIGrid from '../components/SortableKPIGrid';
 import InsightsPanel from '../components/InsightsPanel';
+import FAQSection from '../components/FAQSection';
 import { formatCurrency, formatNumber } from '../dataEngine';
 import TabDateFilter from '../components/TabDateFilter';
 import DrilldownModal, { useDrilldown } from '../components/DrilldownModal';
@@ -342,6 +343,23 @@ function BrokerContent({ brokerMetrics, attributionMetrics, insights, filters, s
       <div style={{ marginTop: '1rem' }}>
         <InsightsPanel insights={brokerInsights} title="🤖 Broker Intelligence — Distribution Network Analysis" max={8} />
       </div>
+
+      <FAQSection items={[
+        { q: 'What is this page for?',
+          a: 'It ranks every broker/distributor channel by how many subscribers they\'ve brought in, how wealthy those subscribers are, and how well they stick around — so you can see which partners are driving good, lasting business versus just volume.' },
+        { q: 'How is a broker\'s "Total" subscriber count worked out?',
+          a: 'Every subscription row (active or exited) tagged with that broker\'s name is narrowed down to one row per person — if someone appears twice under the same broker (e.g. two products, or a renewal row and an old row), only their most recent cycle counts. "Active" and "Exited" are then split out of that same de-duplicated count, so Active + Exited should always equal Total for a broker.' },
+        { q: 'Why can "Best Renewal Broker" be a broker I\'ve barely heard of?',
+          a: 'That particular card has no minimum subscriber requirement — a broker with just one or two subscribers who both happened to renew can show 100% and top the list. "Best Retention Broker" right next to it applies a 3-subscriber minimum, which gives a far more trustworthy read on which channel actually retains people well.' },
+        { q: 'What counts as a subscriber having "renewed" for the renewal rate numbers here?',
+          a: 'Renewal rate is the share of a broker\'s currently active subscribers who are on their 2nd billing cycle or later — meaning they\'ve paid at least once before and chose to continue. Someone still on their very first cycle isn\'t counted as a renewal yet, even if they\'re a happy, active subscriber.' },
+        { q: 'Is "Avg Networth" for a broker based on everyone they\'ve ever brought in?',
+          a: 'No — it\'s the average declared net worth of only that broker\'s currently active subscribers. Investors who already left aren\'t included, so this reflects the quality of the broker\'s present client base, not their entire historical intake.' },
+        { q: 'How does the Period filter affect this page?',
+          a: 'It limits every broker\'s numbers to subscribers who were active at some point during your chosen window, using the same filtered data as the rest of the dashboard. Leave it blank to see each broker\'s full current standing with no date restriction.' },
+        { q: 'What\'s the difference between this tab and the "RM Performance" tab next to it?',
+          a: 'This tab groups subscribers by broker/distributor firm. "RM Performance" looks at individual relationship managers instead — a different, more granular breakdown that isn\'t just brokers split apart, so the two views use separate underlying data and won\'t map 1-to-1.' },
+      ]} />
     </div>
   );
 }

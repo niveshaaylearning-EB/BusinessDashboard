@@ -7,6 +7,7 @@ import {
 import ChartCard from '../components/ChartCard';
 import SortableKPIGrid from '../components/SortableKPIGrid';
 import InsightsPanel from '../components/InsightsPanel';
+import FAQSection from '../components/FAQSection';
 import { formatCurrency, formatNumber } from '../dataEngine';
 import TabDateFilter from '../components/TabDateFilter';
 import DrilldownModal, { useDrilldown } from '../components/DrilldownModal';
@@ -426,6 +427,23 @@ function InvestorContent({ investorSegments, currentMaster, insights, filters, s
       <div style={{ marginTop: '1rem' }}>
         <InsightsPanel insights={investorInsights} title="🤖 Investor Intelligence — Portfolio & Segment Analysis" max={8} />
       </div>
+
+      <FAQSection items={[
+        { q: 'What is this page for?',
+          a: 'It groups your active investors into wealth tiers (by declared net worth) and performance tiers (by how much their portfolio has gained or lost), so you can see which kinds of investors you have the most of, which ones stick around longest, and which ones are actually making money.' },
+        { q: 'How exactly are investors sorted into networth tiers?',
+          a: 'Each active investor is counted once (using their most recent subscription cycle if they hold more than one product) and placed into one bucket based on their declared Networth: under ₹1L, ₹1L–5L, ₹5L–25L, ₹25L–1Cr, or above ₹1Cr. "HNI Investors" on the KPI row combines the top two buckets (above ₹25L).' },
+        { q: 'Clicking some of the lower networth bars in the chart shows a summary instead of a subscriber list — why?',
+          a: 'The chart itself is accurate, but the drill-down lookup for the two lowest bars (under ₹1L and ₹1L–5L) isn\'t wired up the same way as the other three, so clicking them falls back to a one-line summary rather than the full subscriber list. This is a known display quirk on the smaller buckets only — the ₹5L-and-above buckets drill down correctly.' },
+        { q: 'How is a portfolio classified as "Profitable" vs "Loss Making"?',
+          a: 'It\'s not based on the raw profit/loss rupee amount — it\'s the return as a percentage of the investor\'s net worth (or their plan amount, if net worth isn\'t on file). Loss Making is below -5%, Break Even is -5% to +5%, Profitable is +5% to +25%, and High Performers is above +25%. The "Profitable Investors" KPI at the top combines the last two of those.' },
+        { q: 'Why does "HNI Avg Plan" / "HNI Renewal Rate" use a smaller group than "HNI Investors"?',
+          a: 'The "HNI Investors" count includes both the ₹25L–1Cr and above-₹1Cr tiers. But "HNI Avg Plan" and "HNI Renewal Rate" are scoped only to the top, above-₹1Cr tier — a narrower, wealthier slice. So don\'t expect those two numbers to describe the same population as the HNI count above them.' },
+        { q: 'How does the Period filter change what this page shows?',
+          a: 'It limits every chart and table to investors who were active at some point during your chosen window (not just ones who joined in that window). Clear the period filter to see the full, currently active investor base with no date restriction.' },
+        { q: 'What\'s the "Investor Search" tab next to this one for?',
+          a: 'It lets you look up one specific investor by name or PAN instead of seeing everyone grouped into tiers — useful when a client calls in and you need their individual record rather than the aggregate picture on this page.' },
+      ]} />
     </div>
   );
 }

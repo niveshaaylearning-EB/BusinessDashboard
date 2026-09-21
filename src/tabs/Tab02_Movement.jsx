@@ -10,6 +10,7 @@ import DrilldownModal, { useDrilldown } from '../components/DrilldownModal';
 import { useState, useMemo } from 'react';
 import TabDateFilter from '../components/TabDateFilter';
 import { parseExcelDate, normalizeData } from '../dataEngine';
+import FAQSection from '../components/FAQSection';
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
@@ -330,6 +331,23 @@ export default memo(function Tab02Movement({ monthly, insights, filters, setFilt
       <div style={{ marginTop: '1rem' }}>
         <InsightsPanel insights={movementInsights} title="🤖 Growth Intelligence — Monthly Movement Analysis" max={8} />
       </div>
+
+      <FAQSection items={[
+        { q: 'What is this page for?',
+          a: 'It tracks how the subscriber base changes month by month — who joined, who left, who renewed, and whether the total is growing or shrinking. Think of it as a monthly bank statement for subscribers: an opening balance, money in, money out, and a closing balance.' },
+        { q: 'How are "Opening" and "Closing" actually counted?',
+          a: 'Opening is how many subscriptions were active at the very start of the month; Closing is how many were active at the very end. If one person holds 2 products, that counts as 2 in both — this page counts subscriptions, not people.' },
+        { q: 'What\'s the difference between "New" and "Renewals"?',
+          a: 'New means a brand-new subscriber starting their very first cycle (Cycle 1) that month. Renewals means an existing subscriber starting their 2nd cycle or later that month — i.e. they paid again to continue. Someone who joins and leaves in the same month still counts as both New and Exited, so the net effect on that month is zero even though two events happened.' },
+        { q: 'Why does "Exited" not match a simple count of cancellations that month?',
+          a: 'When someone\'s subscription cycle ends, they get a 15-day grace window to pay and continue before it\'s counted as a real exit. If they renew anywhere inside that window, it\'s counted as a renewal, not an exit — even if the payment lands in the next calendar month. Only subscriptions where the grace window passed with no renewal are counted as Exited.' },
+        { q: 'What do "Eligible" and "Renewal %" in the table mean?',
+          a: 'Eligible is how many subscriptions reached the end of their cycle that month — i.e. they had to make a renew-or-leave decision. Renewed is how many of those actually renewed within the grace window. Renewal % = Renewed ÷ Eligible, which is a purer measure of "when people were asked to renew, how many said yes" than the overall Retention Rate on the Executive page, which also includes people who weren\'t due to renew at all.' },
+        { q: 'Does picking a period (like 3M or 6M) change what this page shows?',
+          a: 'Yes — every chart and the table on this page are scoped to whatever period you select. It\'s not "who was active at some point," it\'s built from the actual monthly opening/new/exited/closing activity that happened inside that window.' },
+        { q: 'Why might "Net Growth" look small even in a month with a lot of New subscribers?',
+          a: 'Net is New minus Exited (plus the renewal effect washes out since renewals don\'t change the headcount). A big New number can be offset by an equally big Exited number in the same month — check both bars on the waterfall chart together rather than just one.' },
+      ]} />
     </div>
   );
 });

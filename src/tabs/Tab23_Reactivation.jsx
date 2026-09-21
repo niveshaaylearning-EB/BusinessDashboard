@@ -1,5 +1,6 @@
 ﻿import { memo, useState } from 'react';
 import { formatNumber } from '../dataEngine';
+import FAQSection from '../components/FAQSection';
 
 const PRIORITY_META = {
   Hot:      { color: '#f87171', bg: 'rgba(248,113,113,0.15)', icon: '🔥', desc: 'High networth + positive P&L + recent exit — contact now',
@@ -119,6 +120,21 @@ export default memo(function Tab23Reactivation({ reactivationPipeline }) {
           </table>
         </div>
       </div>
+
+      <FAQSection items={[
+        { q: 'What is this page for?',
+          a: 'It lists investors who have left in a recent window and ranks how worth chasing each one is for a win-back offer — so outreach effort goes to the people most likely to actually come back, not just whoever left most recently.' },
+        { q: 'Who counts as "eligible" for this list?',
+          a: 'One exit per person-and-product combination — if someone unsubscribed from a product more than once, only their most recent exit on that product is used. By default the window is the last 180 days from today, but if you\'ve picked a date range elsewhere on the dashboard, that range replaces the 180-day default and the list shows exits within your chosen dates instead.' },
+        { q: 'How is the win-back score calculated?',
+          a: 'Points are added for signs the person is worth chasing: they were profitable when they left (gaining over 10% adds +3, any gain adds +1, while a loss worse than -15% subtracts 2), they had a larger portfolio (over ₹1 crore adds +3, over ₹25 lakh adds +2, over ₹5 lakh adds +1), they\'d renewed multiple times before leaving (3+ cycles adds +2, 2 cycles adds +1), and they left recently (within 30 days adds +2, within 60 days adds +1). If their stated reason for leaving mentions price or cost, that adds +2 since a better offer might bring them back; if it mentions performance or losses, that subtracts 1, since a discount won\'t fix a trust problem.' },
+        { q: 'What do Hot, Warm, Possible, and Cold actually mean?',
+          a: 'They\'re just score bands: Hot is 6 or more points, Warm is 4-5, Possible is 2-3, and Cold is below 2. Higher bands mean the combination of profitability, account size, loyalty, and recency of exit all point toward a good chance of return — not a guarantee, just a priority order.' },
+        { q: 'What does "Revenue Potential" mean — is that guaranteed money?',
+          a: 'No. It\'s simply the sum of what every eligible person\'s last subscription plan cost, added up as if every single one of them came back. Treat it as the upper ceiling of what a fully successful win-back campaign could recover, not a forecast.' },
+        { q: 'Does the product/broker/state filter narrow this list?',
+          a: 'Yes — those filters apply normally here. Only the date range behaves specially, by replacing (not narrowing) the default 180-day exit window when one is selected.' },
+      ]} />
     </div>
   );
 });

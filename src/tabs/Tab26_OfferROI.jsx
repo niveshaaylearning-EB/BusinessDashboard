@@ -153,6 +153,23 @@ export default memo(function Tab26OfferROI({ offerCodeROI }) {
           </table>
         </div>
       </div>
+
+      <FAQSection items={[
+        { q: 'What is this page for?',
+          a: 'It answers one question: do discount codes actually pay for themselves? For each offer code, it compares how many people it brought in (Acquired) against how many of them stuck around for a second cycle or beyond (Renewed) — and stacks that against the renewal rate of people who signed up with no code at all (the baseline). A code that acquires a lot of people but renews worse than "No Code" is buying volume, not loyalty.' },
+        { q: 'How is "Acquired" counted — every subscription, or something narrower?',
+          a: 'Only first-time subscriptions (Cycle 1). Each investor (by PAN) is counted once, under whichever offer code they used on their very first subscription — later renewals or a second product don\'t create a second "acquisition." If someone signed up with no code, they land in the "No Code" row, which is the baseline everything else is compared against.' },
+        { q: 'What counts as "Renewed" for a given code?',
+          a: 'Whether that investor EVER reached Cycle 2 or higher, at any point since — not whether they\'re active right now. So someone who renewed once and later exited still counts as "Renewed" here. This page measures whether a code buys people who stick past their first cycle, not current-day active status — for that, check the Retention or Movement tabs.' },
+        { q: 'What does the "vs Baseline" column mean, and why does it matter more than the raw Renewal % number?',
+          a: 'It\'s that code\'s renewal rate minus the "No Code" renewal rate. A code can have a decent-looking renewal rate in isolation but still be underperforming if organic (no-code) signups renew even better — the raw number alone can be misleading, "vs Baseline" tells you whether the discount is actually worth the cost.' },
+        { q: 'Total Discount Cost — is that a monthly figure or all-time?',
+          a: 'It\'s the total ₹ discount value given to every investor who used that code on their first subscription, summed once per investor (not per renewal cycle) — a one-time acquisition cost figure, not a recurring monthly one.' },
+        { q: 'Do the period and product/broker filters affect this page?',
+          a: 'Yes — this page is built from whatever period and dimension filters are currently active elsewhere in the dashboard, same as most tabs. If you pick a period, only first-time subscriptions that started (or exited) within that window are counted.' },
+        { q: 'Why do some rows show "—" instead of a number?',
+          a: 'Avg Discount, Total Discount Cost, Avg NW and Avg P&L can show "—" when there\'s no usable data for that column — e.g. a code where no investor has a recorded networth or P&L figure yet, or a discount amount of zero. It means "not available," not zero.' },
+      ]} />
     </div>
   );
 });
