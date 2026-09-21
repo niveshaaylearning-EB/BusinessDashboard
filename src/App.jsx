@@ -291,7 +291,7 @@ function LoginScreen({ onLogin }) {
     <div className="login-screen">
       <div className="login-brand">
         <div className="login-brand-icon">📊</div>
-        <div className="login-brand-name">NIA Antigravity</div>
+        <div className="login-brand-name">Equity Business Dashboard</div>
         <div className="login-brand-sub">Subscription Intelligence Platform</div>
       </div>
 
@@ -299,13 +299,13 @@ function LoginScreen({ onLogin }) {
       {view === 'login' && (
         <form className="login-card" onSubmit={handleLogin} autoComplete="off">
           <div className="login-title">Sign In</div>
-          <div className="login-desc">Enter your username or email — we'll send a one-time code</div>
+          <div className="login-desc">Enter your email — we'll send a one-time code</div>
 
           <div className="login-field">
-            <label className="login-label">Username or Email</label>
-            <input className="login-input" type="text" value={username} autoFocus
+            <label className="login-label">Email</label>
+            <input className="login-input" type="email" value={username} autoFocus
               onChange={e => { setUsername(e.target.value); reset(); }}
-              placeholder="Enter username or email address" />
+              placeholder="Enter your email address" />
           </div>
 
           {error   && <div className="login-error"><span>⚠️</span> {error}</div>}
@@ -316,7 +316,7 @@ function LoginScreen({ onLogin }) {
           </button>
 
           <div style={{ textAlign: 'center', marginTop: 16, fontSize: 13, color: 'var(--text-muted)' }}>
-            New to NIA Antigravity?{' '}
+            New to Equity Business Dashboard?{' '}
             <button type="button" onClick={() => { reset(); setOtp(''); setView('register'); }}
               style={{ background: 'none', border: 'none', color: 'var(--accent-cyan)', cursor: 'pointer', fontSize: 13, padding: 0 }}>
               Create account
@@ -511,7 +511,7 @@ function UploadScreen({ onDataLoaded, userName }) {
         <div className="upload-brand-logo">
           <div className="brand-icon">📊</div>
           <div>
-            <div className="brand-name">NIA Antigravity</div>
+            <div className="brand-name">Equity Business Dashboard</div>
             {userName && <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Logged in as {userName}</div>}
           </div>
         </div>
@@ -1391,7 +1391,7 @@ function Dashboard({ rawData, fileName, savedAt, currentUser, activeTab, setActi
         <div className="header-brand">
           <div className="header-brand-icon">📊</div>
           <div>
-            <span className="header-brand-text">NIA Antigravity</span>
+            <span className="header-brand-text">Equity Business Dashboard</span>
             <span className="header-brand-sep">·</span>
             <span className="header-brand-sub">Subscription Intelligence</span>
           </div>
