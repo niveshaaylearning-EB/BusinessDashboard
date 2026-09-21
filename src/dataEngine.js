@@ -345,12 +345,43 @@ export function applyFilters(data, filters) {
   });
 }
 
+// ─── LATEST ACTIVITY DATE ─────────────────────────────────────────────────────
+// The most recent date actually present in the data — used as the anchor for
+// every "current month" / "MTD" / "as of" calculation instead of today's real
+// calendar date. If the uploaded file's newest row is from three weeks ago,
+// anchoring to real "now" makes every MTD-style figure read as 0 (nothing has
+// happened yet in a month with no data at all), which then cascades into
+// nonsense like a Retention Rate formula collapsing to a meaningless 100%, or
+// a "current month" bucket in a monthly series being empty. Anchoring to the
+// data's own latest activity means "this month" always refers to the most
+// recent month the data can actually speak to.
+export function getLatestActivityDate(rawData) {
+  const normalized = filterNonPrivate(normalizeData(rawData));
+  const realNow = new Date();
+  let latestDataDate = null;
+  for (const r of normalized) {
+    // Subscription Start Date is always a real past event. Cycle End Date is
+    // only a real past event for rows that have actually UNSUBSCRIBED — for
+    // a still-active row it's the future renewal-due date (e.g. a 1-year
+    // plan bought this month legitimately ends next year), so including it
+    // unconditionally would push "latest date" into the future and silently
+    // fall back to the real clock, defeating this whole anchor.
+    const s = parseExcelDate(r['Subscription Start Date']);
+    if (s && s <= realNow && (!latestDataDate || s > latestDataDate)) latestDataDate = s;
+    if (String(r['Cycle Level Status'] || '').trim().toUpperCase() === 'UNSUBSCRIBED') {
+      const e = parseExcelDate(r['Cycle End Date']);
+      if (e && e <= realNow && (!latestDataDate || e > latestDataDate)) latestDataDate = e;
+    }
+  }
+  return latestDataDate || realNow;
+}
+
 // ─── SUMMARY KPIs ─────────────────────────────────────────────────────────────
 // currentMaster = deduplicated, private-SC-excluded, filter-applied dataset
 // rawData = original file rows (used only for MTD counts)
 export function getSummaryKPIs(currentMaster, rawData) {
   const normalized = filterNonPrivate(normalizeData(rawData));
-  const now = new Date();
+  const now = getLatestActivityDate(rawData);
 
   // Current month window
   const mStart = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -524,11 +555,17 @@ export function getSummaryKPIs(currentMaster, rawData) {
 // ─── RETENTION METRICS (MoM & YoY from monthly movement data) ────────────────
 export function getRetentionMetrics(monthly) {
   if (!monthly?.length) return null;
-  const now = new Date();
+  // "Current month" is the most recent month actually present in the movement
+  // data — NOT today's real calendar date. If the uploaded file's newest
+  // activity is from weeks ago, anchoring to real "now" would look up a
+  // month that doesn't exist in `monthly` and silently return null/no MoM
+  // comparison, even though kpis.retentionRate (the number this feeds) has
+  // already been fixed to anchor the same way — the two must agree.
+  const anchor = monthly[monthly.length - 1].monthDate;
   const mkKey = (d) => `${d.toLocaleString('default', { month: 'short' })} '${String(d.getFullYear()).slice(2)}`;
-  const curKey = mkKey(now);
-  const prevKey = mkKey(new Date(now.getFullYear(), now.getMonth() - 1, 1));
-  const lyKey = mkKey(new Date(now.getFullYear() - 1, now.getMonth(), 1));
+  const curKey = monthly[monthly.length - 1].month;
+  const prevKey = mkKey(new Date(anchor.getFullYear(), anchor.getMonth() - 1, 1));
+  const lyKey = mkKey(new Date(anchor.getFullYear() - 1, anchor.getMonth(), 1));
   const find = (k) => monthly.find(m => m.month === k);
   // Monthly retention = (1 - churnRate/100) × 100 = % of opening still active at month end
   const toRet = (m) => m ? +(100 - m.churnRate).toFixed(1) : null;
@@ -656,7 +693,12 @@ export function getMonthlyMovement(rawData) {
   if (!subIntervals.size) return [];
 
   const minT = Math.min(...subEarliestStart.values());
-  const maxDate = new Date();
+  // Anchor the trailing edge of the range to the data's own latest activity,
+  // not today's real date — otherwise the last bucket is an empty "current
+  // month" with nothing in it whenever the upload is more than a few weeks
+  // stale, which also breaks getRetentionMetrics below (it anchors off this
+  // array's last entry).
+  const maxDate = getLatestActivityDate(rawData);
   const months = [];
   const cursor = new Date(new Date(minT).getFullYear(), new Date(minT).getMonth(), 1);
   while (cursor <= maxDate) { months.push(new Date(cursor)); cursor.setMonth(cursor.getMonth() + 1); }
@@ -1835,9 +1877,11 @@ export function getAUMSummaryTimeline(rawData, filters) {
     .filter(r => r.isUnsub && r.cycleEndT !== Infinity)
     .sort((a, b) => a.cycleEndT - b.cycleEndT);
 
-  // Build month range
+  // Build month range — anchored to the data's own latest activity, not
+  // today's real date, so a stale upload doesn't tack on empty trailing
+  // months at the end of the timeline.
   const minDate = new Date(rows[0].startT);
-  const now = new Date();
+  const now = getLatestActivityDate(rawData);
   const months = [];
   const cursor = new Date(minDate.getFullYear(), minDate.getMonth(), 1);
   while (cursor <= now) { months.push(new Date(cursor)); cursor.setMonth(cursor.getMonth() + 1); }
