@@ -13,7 +13,7 @@ import {
   getUnsubscriberAnalysis, formatNumber, formatCurrency, filterRawByDate,
   getMRRMetrics, getRevenueAtRisk, getLTVData,
   getChurnRiskScores, getReactivationPipeline, getRMPerformance,
-  getRenewalCalendar, getOfferCodeROI,
+  getRenewalCalendar, getOfferCodeROI, mergeUploadedData,
 } from './dataEngine';
 import { saveToStorage, loadFromStorage, loadFromLocalCache, clearStorage } from './storage';
 
@@ -872,8 +872,8 @@ export default function App() {
   }, [backendSynced, rawData]);
 
   const handleDataLoaded = useCallback(async (rows, name) => {
-    // Automatic backup: before the old dataset gets replaced, download a full
-    // backup of what's about to be overwritten. This needs no extra click —
+    // Automatic backup: before the old dataset gets touched, download a full
+    // backup of what's about to be merged/replaced. This needs no extra click —
     // it happens as a side effect of the upload action the user is already
     // taking — and it protects data independent of anything server-side.
     if (rawData?.length) {
@@ -886,19 +886,26 @@ export default function App() {
       } catch { /* best-effort — never block the actual upload on this */ }
     }
 
-    setRawData(rows);
+    // A new upload is often a partial/latest-only export, not the full
+    // history — merge it with what's already here instead of replacing it,
+    // so a subscription row missing from this file is never lost. Rows in
+    // the new file win on overlap (freshest data); anything only in the old
+    // dataset is appended as-is.
+    const merged = mergeUploadedData(rawData, rows);
+
+    setRawData(merged);
     setFileName(name);
     setSavedAt(new Date().toISOString());
     setBackendSynced(false);
     // 1. Save locally first — instant, always works
     try {
-      await saveToStorage(rows, name);
+      await saveToStorage(merged, name);
     } catch (err) {
       alert(`Warning: Could not save data locally.\n${err.message}\n\nData is visible now but will be lost on refresh.`);
     }
     // 2. Sync to PostgreSQL — durable cross-session persistence
     try {
-      await api.uploadData(rows, name);
+      await api.uploadData(merged, name);
       setBackendSynced(true);
     } catch {
       // Backend offline — data is local only; banner will prompt user to sync

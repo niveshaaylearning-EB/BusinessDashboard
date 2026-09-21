@@ -181,6 +181,41 @@ export function normalizeData(rawData) {
   return result;
 }
 
+// ─── ROW IDENTITY KEY ─────────────────────────────────────────────────────────
+// Same investor-product-cycle identity used throughout this file (Email+Scid,
+// falling back to PAN+Smallcase, plus Cycle Number) — the unique key for "is
+// this the same subscription cycle record." Used by mergeUploadedData below to
+// tell a genuinely new/updated row apart from one that already exists.
+export function getRowKey(row) {
+  const email = String(row['Email'] || '').trim().toLowerCase();
+  const scid  = String(row['Scid']  || '').trim();
+  const pan   = String(row['PAN']   || '').trim().toUpperCase();
+  const sc    = String(row['Smallcase Name'] || '').trim();
+  const bk    = (email && scid) ? `${email}|||${scid}` : `${pan}|||${sc}`;
+  const cycle = Number(row['Cycle Number']) || 0;
+  return `${bk}|||${cycle}`;
+}
+
+// ─── MERGE A NEW UPLOAD WITH THE EXISTING DATASET ─────────────────────────────
+// A re-upload is often a partial/latest-only export, not the full history —
+// naively replacing oldRawData with newRawData would silently delete every
+// subscription row missing from the new file. Instead: normalize both sides,
+// keep every new-upload row as-is (it wins on overlap — it's the freshest
+// data for that subscription cycle), and append any old row whose identity
+// key doesn't appear anywhere in the new upload, so it never gets lost.
+export function mergeUploadedData(oldRawData, newRawData) {
+  if (!oldRawData?.length) return newRawData;
+  if (!newRawData?.length) return oldRawData;
+
+  const oldNorm = normalizeData(oldRawData);
+  const newNorm = normalizeData(newRawData);
+
+  const newKeys = new Set(newNorm.map(getRowKey));
+  const missingFromNew = oldNorm.filter(r => !newKeys.has(getRowKey(r)));
+
+  return [...newNorm, ...missingFromNew];
+}
+
 // ─── BUILD CURRENT SUBSCRIPTION MASTER ───────────────────────────────────────
 // Dedup: Email+Scid (unique client per smallcase) → highest Cycle# → latest First Subscription Date
 // Both active and unsubscribed included. Excludes private smallcases and Requested Access.
