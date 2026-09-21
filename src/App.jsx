@@ -1437,9 +1437,11 @@ function Dashboard({ rawData, fileName, savedAt, currentUser, activeTab, setActi
             onClick={handleExportRawBackup} title="Download a full backup of the raw uploaded data — keep this safe; re-uploading it fully restores the dataset">
             💾 Backup
           </button>
-          <button className="btn-icon" onClick={onLogout}
-            title={`${currentUser?.full_name || currentUser?.username} · ${currentUser?.role} · Click to logout`}
-            style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          {/* Profile display — NOT clickable, just shows who's signed in.
+              Logout is a separate, clearly-labeled button below so nobody
+              gets signed out from a stray click on their own name. */}
+          <div className="btn-icon" style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'default' }}
+            title={`${currentUser?.full_name || currentUser?.username} · ${currentUser?.role}`}>
             👤 {currentUser?.username}
             <span style={{
               fontSize: '0.65rem', fontWeight: 700, padding: '1px 6px',
@@ -1449,6 +1451,11 @@ function Dashboard({ rawData, fileName, savedAt, currentUser, activeTab, setActi
             }}>
               {currentUser?.role}
             </span>
+          </div>
+          <button className="btn-icon" style={{ color: '#f87171', borderColor: '#f87171' }}
+            onClick={() => { if (window.confirm('Log out of Equity Business Dashboard?')) onLogout(); }}
+            title="Log out">
+            🚪 Logout
           </button>
         </div>
       </header>
