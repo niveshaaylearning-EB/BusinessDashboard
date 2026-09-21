@@ -7,6 +7,7 @@ import SortableKPIGrid from '../components/SortableKPIGrid';
 import ChartCard from '../components/ChartCard';
 import { YAxisTick } from '../components/YAxisTick';
 import InsightsPanel from '../components/InsightsPanel';
+import FAQSection from '../components/FAQSection';
 import { formatCurrency, formatNumber, formatExact, formatCurrencyExact, formatCrores, parseExcelDate } from '../dataEngine';
 import TabDateFilter from '../components/TabDateFilter';
 import DrilldownModal, { useDrilldown } from '../components/DrilldownModal';
@@ -520,6 +521,23 @@ export default memo(function Tab01Executive({ kpis, prevKpis, monthly, retention
       )}
 
       <InsightsPanel insights={insights} max={6} />
+
+      <FAQSection items={[
+        { q: 'What is this page for?',
+          a: 'A single-screen snapshot of the whole business: how many subscribers you have, how much is under management, how healthy renewals and retention are, and which products are carrying the base. It\'s the page to check first — every other tab drills into one specific piece of this.' },
+        { q: 'Why does "Total AUM (All Time)" not change when I pick a period or filter, but everything else does?',
+          a: 'That one card is deliberately always showing the full, current portfolio value regardless of any filter — it\'s meant to be a stable headline number you can always trust. Every other card and chart on this page (and the rest of the dashboard) respects whatever period/product/broker filters you\'ve selected. If you pick a specific period or product, a second card — "AUM (Selected Filter)" — appears alongside it showing the AUM for just that slice.' },
+        { q: 'I picked a period like "6M" — what exactly does that filter to?',
+          a: 'It scopes every number to activity that happened in that window: a subscriber counts if they started their subscription in that window, or if they exited/unsubscribed in that window. Someone who started before the window and is still active won\'t show up as "new," but they will still count toward the active total. This is stricter than "who was active at some point during this window" — it\'s "what happened during this window."' },
+        { q: 'What\'s the difference between "Total Subscriptions" and "Unique Investors" in the ticker bar?',
+          a: 'Total Subscriptions counts every subscription record — if one person holds 2 products, that\'s 2. Unique Investors counts each person once by PAN, no matter how many products or renewal cycles they have. Most of the KPI cards on this page use per-product counting (like Total Subscriptions), since a person can be active on one product and exited on another.' },
+        { q: 'How is "Retention Rate" different from "Renewal Rate"?',
+          a: 'Retention Rate is a simple snapshot: what share of all subscriptions are currently active, out of everyone who ever subscribed. Renewal Rate is narrower and more specific: of the people who were actually due to renew (their cycle came up for renewal), what share of them renewed. Renewal Rate is the better signal for "are we losing people at the moment of choice," since it excludes people who are simply still mid-subscription and not due yet.' },
+        { q: 'Where do the AI-generated insights at the bottom come from?',
+          a: 'They\'re computed directly from the same filtered numbers shown above — best/worst performing products, growth trends, concentration risk, retention laggards, etc. — not a separate AI model call. They update live as you change filters, so they always describe whatever slice of data you\'re currently looking at.' },
+        { q: 'Something on this page looks wrong or doesn\'t match another tab — what should I check first?',
+          a: 'Check whether the same filters (period, product, broker) are applied on both tabs — a mismatch there is the most common reason two tabs show different numbers for what looks like "the same thing." Also check the ⓘ tooltip next to the specific card — many numbers that look similar are actually counted differently (per-person vs. per-product, or lifetime vs. within-period), and the tooltip spells out exactly which one you\'re looking at.' },
+      ]} />
     </div>
   );
 });
