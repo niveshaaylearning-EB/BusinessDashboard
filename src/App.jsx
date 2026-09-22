@@ -770,6 +770,11 @@ export default function App() {
   const [savedAt, setSavedAt] = useState('');
   const [backendSynced, setBackendSynced] = useState(false);
   const [initLoading, setInitLoading] = useState(true);
+  // 'auth' = checking your session (fast); 'data' = fetching the dataset
+  // itself, which can take a while once it's grown large — shown as a
+  // distinct message so a slow load doesn't look like the page is stuck
+  // or the data has vanished.
+  const [loadingPhase, setLoadingPhase] = useState('auth');
   const [activeTab, setActiveTab] = useState('exec');
   const [filters, setFilters] = useState({});
   const [filtersOpen, setFiltersOpen] = useState(true);
@@ -777,6 +782,10 @@ export default function App() {
   const [theme, setTheme] = useState(() => localStorage.getItem('nia_theme') || 'dark');
   const [restoreError, setRestoreError] = useState(null);
   const [retrying, setRetrying] = useState(false);
+  // True from the moment login succeeds until restoreFromBackend() resolves —
+  // without this, the brief window before rawData is set would otherwise show
+  // the "upload a file" screen, wrongly suggesting there's no data at all.
+  const [restoringAfterLogin, setRestoringAfterLogin] = useState(false);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -842,6 +851,7 @@ export default function App() {
         const user = await api.getMe();
         setCurrentUser(user);
         setAuthed(true);
+        setLoadingPhase('data');
         const restored = await restoreFromBackend();
         if (!restored && stored?.rawData?.length) {
           // Backend has no data for this account — push local cache silently
@@ -937,7 +947,10 @@ export default function App() {
   if (initLoading) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: 'var(--bg-void)', color: 'var(--text-muted)', gap: 12 }}>
-        <div className="spinner" style={{ width: 24, height: 24, borderWidth: 3 }} /> Verifying session...
+        <div className="spinner" style={{ width: 24, height: 24, borderWidth: 3 }} />
+        {loadingPhase === 'data'
+          ? 'Loading your data — large datasets can take a little while...'
+          : 'Verifying session...'}
       </div>
     );
   }
@@ -947,8 +960,18 @@ export default function App() {
     return <LoginScreen onLogin={async (user) => {
       setCurrentUser(user);
       setAuthed(true);
-      await restoreFromBackend();
+      setRestoringAfterLogin(true);
+      try { await restoreFromBackend(); } finally { setRestoringAfterLogin(false); }
     }} />;
+  }
+
+  if (restoringAfterLogin && !rawData) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: 'var(--bg-void)', color: 'var(--text-muted)', gap: 12 }}>
+        <div className="spinner" style={{ width: 24, height: 24, borderWidth: 3 }} />
+        Loading your data — large datasets can take a little while...
+      </div>
+    );
   }
 
   if (!rawData && restoreError) {
