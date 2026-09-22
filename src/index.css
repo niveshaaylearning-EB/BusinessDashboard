@@ -48,6 +48,20 @@
   --shadow-glow-cyan: 0 0 20px rgba(0, 212, 255, 0.2);
   --shadow-glow-gold: 0 0 20px rgba(251, 191, 36, 0.2);
 
+  /* Recessed-panel backgrounds (nested boxes, accordion rows, badge chips)
+     — a black tint at these opacities reads as "slightly darker than the
+     card" against the near-black dark theme, but the SAME opacities against
+     a white light-theme card produce a pale gray whose contrast against
+     --text-muted/--text-secondary is too low to read. Themed separately so
+     both keep the same "one step darker than the surrounding card" effect
+     at readable contrast. */
+  --bg-inset-1: rgba(0, 0, 0, 0.12);
+  --bg-inset-2: rgba(0, 0, 0, 0.15);
+  --bg-inset-3: rgba(0, 0, 0, 0.2);
+  --bg-inset-4: rgba(0, 0, 0, 0.25);
+  --bg-inset-5: rgba(0, 0, 0, 0.3);
+  --bg-inset-6: rgba(0, 0, 0, 0.35);
+
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 14px;
@@ -74,6 +88,16 @@
   --text-secondary: #475569;
   --text-muted: #8899a8;
   --text-bright: #0f172a;
+
+  /* Same "one step darker" recessed-panel effect as dark theme, at opacities
+     low enough to stay readable against a white card instead of washing out
+     --text-muted/--text-secondary into near-invisibility. */
+  --bg-inset-1: rgba(0, 0, 0, 0.025);
+  --bg-inset-2: rgba(0, 0, 0, 0.035);
+  --bg-inset-3: rgba(0, 0, 0, 0.045);
+  --bg-inset-4: rgba(0, 0, 0, 0.06);
+  --bg-inset-5: rgba(0, 0, 0, 0.07);
+  --bg-inset-6: rgba(0, 0, 0, 0.08);
 
   --accent-cyan: #0284c7;
   --accent-cyan-dim: rgba(2, 132, 199, 0.1);
@@ -935,11 +959,11 @@ body {
   padding: 0.75rem;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-dim);
-  background: rgba(0,0,0,0.2);
+  background: var(--bg-inset-3);
   transition: border-color 0.15s, background-color 0.15s;
 }
 
-.insight-item:hover { border-color: var(--border-default); background: rgba(0,0,0,0.3); }
+.insight-item:hover { border-color: var(--border-default); background: var(--bg-inset-5); }
 
 .insight-emoji { font-size: 1.2rem; line-height: 1; flex-shrink: 0; margin-top: 1px; }
 .insight-content { flex: 1; }
@@ -960,7 +984,7 @@ body {
 
 .insight-cat-toggle {
   width: 100%; display: flex; align-items: center; gap: 10px;
-  padding: 0.65rem 1rem; background: rgba(0,0,0,0.25);
+  padding: 0.65rem 1rem; background: var(--bg-inset-4);
   border: none; cursor: pointer; text-align: left;
   transition: background 0.15s;
 }
@@ -971,7 +995,7 @@ body {
 .insight-cat-count { font-size: 0.68rem; color: var(--text-muted); background: var(--bg-elevated); padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
 .insight-cat-chevron { font-size: 1.1rem; color: var(--text-muted); transition: transform 0.2s; display: block; line-height: 1; }
 
-.insight-sublist { background: rgba(0,0,0,0.15); border-top: 1px solid var(--border-dim); }
+.insight-sublist { background: var(--bg-inset-2); border-top: 1px solid var(--border-dim); }
 
 .insight-sub-item { border-bottom: 1px solid var(--border-dim); }
 .insight-sub-item:last-child { border-bottom: none; }
@@ -988,7 +1012,7 @@ body {
 .insight-sub-detail {
   padding: 0.5rem 1.2rem 0.65rem 1.5rem;
   font-size: 0.74rem; color: var(--text-secondary); line-height: 1.55;
-  border-top: 1px solid var(--border-dim); background: rgba(0,0,0,0.12);
+  border-top: 1px solid var(--border-dim); background: var(--bg-inset-1);
 }
 
 /* ─── FAQ SECTION ────────────────────────────────────────────────────────── */
@@ -1027,7 +1051,7 @@ body {
 
 .faq-question {
   width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 10px;
-  padding: 0.65rem 1rem; background: rgba(0,0,0,0.25);
+  padding: 0.65rem 1rem; background: var(--bg-inset-4);
   border: none; cursor: pointer; text-align: left;
   transition: background 0.15s;
 }
@@ -1039,7 +1063,7 @@ body {
 .faq-answer {
   padding: 0.65rem 1.1rem 0.8rem 1.1rem;
   font-size: 0.78rem; color: var(--text-secondary); line-height: 1.6;
-  border-top: 1px solid var(--border-dim); background: rgba(0,0,0,0.15);
+  border-top: 1px solid var(--border-dim); background: var(--bg-inset-2);
   white-space: pre-line;
 }
 

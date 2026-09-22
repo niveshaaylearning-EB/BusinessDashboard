@@ -160,7 +160,7 @@ export default memo(function Tab02Movement({ monthly, insights, filters, setFilt
         category: 'Growth Trend (Last 3M vs Prior 3M)',
         title: trendAccel ? 'Growth is Accelerating' : trendFlat ? 'Growth is Flat' : 'Growth is Decelerating',
         detail: `Last 3M net: ${lastNet >= 0 ? '+' : ''}${lastNet.toLocaleString('en-IN')} vs prior 3M: ${priorNet >= 0 ? '+' : ''}${priorNet.toLocaleString('en-IN')}`,
-        color: trendAccel ? '#22c55e' : trendFlat ? '#94a3b8' : '#f87171',
+        color: trendAccel ? '#22c55e' : trendFlat ? '#64748b' : '#f87171',
       },
       {
         icon: streakPositive ? '🔥' : '❄️',

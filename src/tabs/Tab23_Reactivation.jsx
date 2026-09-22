@@ -9,7 +9,7 @@ const PRIORITY_META = {
     tooltip: 'Score of 4-5 on the same formula (exit P&L, net worth, exit reason, cycles completed, days since exit) — good potential, worth a personalized outreach.' },
   Possible: { color: '#fbbf24', bg: 'rgba(251,191,36,0.15)', icon: '💡', desc: 'Worth a targeted campaign or offer',
     tooltip: 'Score of 2-3 — some positive signals but a weaker case for reactivation; worth including in a broader win-back campaign.' },
-  Cold:     { color: '#94a3b8', bg: 'rgba(148,163,184,0.1)',  icon: '❄️',  desc: 'Low reactivation likelihood — low priority',
+  Cold:     { color: '#64748b', bg: 'rgba(148,163,184,0.15)',  icon: '❄️',  desc: 'Low reactivation likelihood — low priority',
     tooltip: 'Score below 2, often from an exit tied to poor performance or losses — least likely to return, low priority for outreach.' },
 };
 

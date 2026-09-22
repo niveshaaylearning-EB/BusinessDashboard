@@ -84,7 +84,7 @@ const PL_BUCKET_COLORS = {
   '< -5L':      '#991b1b',
   '-5L to -1L': '#dc2626',
   '-1L to 0':   '#f87171',
-  'Break-even': '#94a3b8',
+  'Break-even': '#64748b',
   '0 to 1L':    '#34d399',
   '1L to 5L':   '#22c55e',
   '> 5L':       '#15803d',
@@ -235,8 +235,8 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
         </div>
         <div style={{ width: 110, padding: '0 8px', textAlign: 'center' }}>
           <span style={{ fontSize: 10, padding: '2px 6px', borderRadius: 8, fontWeight: 600,
-            background: isActive ? '#22c55e22' : '#94a3b822',
-            color: isActive ? '#22c55e' : '#94a3b8',
+            background: isActive ? '#22c55e22' : '#64748b22',
+            color: isActive ? '#22c55e' : '#64748b',
           }}>
             {isActive ? '✅ Active' : '🚪 Exited'}
           </span>
@@ -289,7 +289,7 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
       items.push({
         icon: diff > 10 ? '⚠️' : diff < -10 ? '✅' : '📊',
         category: 'Exit Trend',
-        color: diff > 10 ? '#f87171' : diff < -10 ? '#22c55e' : '#94a3b8',
+        color: diff > 10 ? '#f87171' : diff < -10 ? '#22c55e' : '#64748b',
         title: `Monthly exits are ${label} (${diff > 0 ? '+' : ''}${diff}% vs prior 3 months)`,
         detail: `Last 3 months: ${last3.toLocaleString('en-IN')} exits vs ${prev3.toLocaleString('en-IN')} in the 3 months before.`,
       });
@@ -602,7 +602,7 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
           {/* Footer diff */}
           <div style={{
             gridColumn: '1 / -1', padding: '8px 18px',
-            background: 'rgba(0,0,0,0.2)', borderTop: '1px solid var(--border-dim)',
+            background: 'var(--bg-inset-3)', borderTop: '1px solid var(--border-dim)',
             fontSize: 12, color: 'var(--text-muted)', display: 'flex', gap: 24,
           }}>
             <span>Difference: <strong style={{ color: '#fbbf24' }}>
@@ -916,7 +916,7 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
             <div style={{ display: 'flex', gap: 16, fontSize: 12 }}>
               <span style={{ color: '#22c55e' }}>● Profit: {plAnalysis.pctPositive}%</span>
               <span style={{ color: '#f87171' }}>● Loss: {plAnalysis.pctNegative}%</span>
-              <span style={{ color: '#94a3b8' }}>● Break-even: {((plAnalysis.zeroCount || 0) / (kpis.totalExits || 1) * 100).toFixed(1)}%</span>
+              <span style={{ color: '#64748b' }}>● Break-even: {((plAnalysis.zeroCount || 0) / (kpis.totalExits || 1) * 100).toFixed(1)}%</span>
             </div>
           </div>
 
@@ -937,7 +937,7 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
                       return (
                         <div style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-bright)', borderRadius: 8, padding: '10px 14px', fontSize: 12 }}>
                           <div style={{ color: 'var(--text-secondary)', marginBottom: 4 }}>{label}</div>
-                          <div style={{ color: PL_BUCKET_COLORS[label] || '#94a3b8', fontWeight: 700 }}>
+                          <div style={{ color: PL_BUCKET_COLORS[label] || '#64748b', fontWeight: 700 }}>
                             {count.toLocaleString('en-IN')} exits ({pct}%)
                           </div>
                         </div>
@@ -946,7 +946,7 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
                   />
                   <Bar dataKey="count" name="Exits" radius={[4,4,0,0]}>
                     {(plAnalysis.byBucket || []).map((b, i) => (
-                      <Cell key={i} fill={PL_BUCKET_COLORS[b.label] || '#94a3b8'} />
+                      <Cell key={i} fill={PL_BUCKET_COLORS[b.label] || '#64748b'} />
                     ))}
                   </Bar>
                 </BarChart>
@@ -1022,8 +1022,8 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
                       <td>
                         <span style={{
                           fontSize: 11, padding: '2px 8px', borderRadius: 10, fontWeight: 600,
-                          background: d.avgPL > 0 ? '#22c55e22' : d.avgPL < 0 ? '#f8717122' : '#94a3b822',
-                          color: d.avgPL > 0 ? '#22c55e' : d.avgPL < 0 ? '#f87171' : '#94a3b8',
+                          background: d.avgPL > 0 ? '#22c55e22' : d.avgPL < 0 ? '#f8717122' : '#64748b22',
+                          color: d.avgPL > 0 ? '#22c55e' : d.avgPL < 0 ? '#f87171' : '#64748b',
                         }}>
                           {d.avgPL > 0 ? '▲ Profit' : d.avgPL < 0 ? '▼ Loss' : '─ Neutral'}
                         </span>
@@ -1054,7 +1054,7 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
             <div style={{ display: 'flex', gap: 16, fontSize: 12 }}>
               <span style={{ color: '#22c55e' }}>● Profit: {uniqueClientPL.pctPositive}%</span>
               <span style={{ color: '#f87171' }}>● Loss: {uniqueClientPL.pctNegative}%</span>
-              <span style={{ color: '#94a3b8' }}>● Break-even: {uniqueClientPL.totalClients > 0 ? ((uniqueClientPL.zeroCount / uniqueClientPL.totalClients) * 100).toFixed(1) : 0}%</span>
+              <span style={{ color: '#64748b' }}>● Break-even: {uniqueClientPL.totalClients > 0 ? ((uniqueClientPL.zeroCount / uniqueClientPL.totalClients) * 100).toFixed(1) : 0}%</span>
             </div>
           </div>
 
@@ -1094,14 +1094,14 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
                   <Tooltip content={({ active, payload, label }) => active && payload?.length ? (
                     <div style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-bright)', borderRadius: 8, padding: '10px 14px', fontSize: 12 }}>
                       <div style={{ color: 'var(--text-secondary)', marginBottom: 4 }}>{label}</div>
-                      <div style={{ color: PL_BUCKET_COLORS[label] || '#94a3b8', fontWeight: 700 }}>
+                      <div style={{ color: PL_BUCKET_COLORS[label] || '#64748b', fontWeight: 700 }}>
                         {payload[0].value.toLocaleString('en-IN')} investors
                       </div>
                     </div>
                   ) : null} />
                   <Bar dataKey="count" name="Investors" radius={[4,4,0,0]}>
                     {(uniqueClientPL.byBucket || []).map((b, i) => (
-                      <Cell key={i} fill={PL_BUCKET_COLORS[b.label] || '#94a3b8'} />
+                      <Cell key={i} fill={PL_BUCKET_COLORS[b.label] || '#64748b'} />
                     ))}
                   </Bar>
                 </BarChart>
@@ -1179,8 +1179,8 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
                       <td>
                         <span style={{
                           fontSize: 11, padding: '2px 8px', borderRadius: 10, fontWeight: 600,
-                          background: c.totalPL > 0 ? '#22c55e22' : c.totalPL < 0 ? '#f8717122' : '#94a3b822',
-                          color: c.totalPL > 0 ? '#22c55e' : c.totalPL < 0 ? '#f87171' : '#94a3b8',
+                          background: c.totalPL > 0 ? '#22c55e22' : c.totalPL < 0 ? '#f8717122' : '#64748b22',
+                          color: c.totalPL > 0 ? '#22c55e' : c.totalPL < 0 ? '#f87171' : '#64748b',
                         }}>
                           {c.totalPL > 0 ? '▲ Profit' : c.totalPL < 0 ? '▼ Loss' : '─ Neutral'}
                         </span>

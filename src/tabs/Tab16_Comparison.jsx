@@ -21,7 +21,7 @@ const A_COLOR  = '#00d4ff';  // cyan  — Period A
 const B_COLOR  = '#f97316';  // orange — Period B
 const UP_CLR   = '#22c55e';
 const DOWN_CLR = '#f87171';
-const NEUT_CLR = '#94a3b8';
+const NEUT_CLR = '#64748b';
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 const toInput  = (d) => (d instanceof Date ? d.toISOString().slice(0, 10) : '');

@@ -213,7 +213,7 @@ function RetentionContent({ cohorts: allCohorts, currentMaster, insights, filter
         category: 'Trend Analysis',
         title: `M1 Trend: ${improving ? '+' : ''}${delta}pp vs Prior Period`,
         detail: `Recent 3-cohort avg M1 retention is ${Math.round(recentAvgM1)}% vs ${Math.round(prevAvgM1)}% in the preceding 3 cohorts. ${improving ? 'Early retention is improving — recent acquisitions are sticking.' : flat ? 'Early retention is unchanged.' : 'Early retention is declining — investigate recent cohort quality.'}`,
-        color: improving ? '#22c55e' : flat ? '#94a3b8' : '#f87171',
+        color: improving ? '#22c55e' : flat ? '#64748b' : '#f87171',
       });
     }
 

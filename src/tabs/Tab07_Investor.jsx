@@ -13,7 +13,7 @@ import TabDateFilter from '../components/TabDateFilter';
 import DrilldownModal, { useDrilldown } from '../components/DrilldownModal';
 
 const NW_COLORS = ['#475569', '#0ea5e9', '#22c55e', '#fbbf24', '#f97316'];
-const PNL_COLORS = ['#f87171', '#94a3b8', '#22c55e', '#fbbf24'];
+const PNL_COLORS = ['#f87171', '#64748b', '#22c55e', '#fbbf24'];
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;

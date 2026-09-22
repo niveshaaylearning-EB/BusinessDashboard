@@ -5,7 +5,7 @@ import FAQSection from '../components/FAQSection';
 
 const ACTION_COLORS = {
   login:            '#22c55e',
-  logout:           '#94a3b8',
+  logout:           '#64748b',
   login_failed:     '#f87171',
   account_locked:   '#f87171',
   register:         '#00d4ff',
@@ -207,8 +207,8 @@ export default memo(function Tab15AuditLog({ currentUser, refreshUser }) {
                       <td>
                         <span style={{
                           fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 10,
-                          background: `${ACTION_COLORS[log.action] || '#94a3b8'}22`,
-                          color: ACTION_COLORS[log.action] || '#94a3b8',
+                          background: `${ACTION_COLORS[log.action] || '#64748b'}22`,
+                          color: ACTION_COLORS[log.action] || '#64748b',
                           whiteSpace: 'nowrap',
                         }}>
                           {ACTION_LABELS[log.action] || log.action}

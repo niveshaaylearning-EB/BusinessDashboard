@@ -175,7 +175,7 @@ export default memo(function Tab17SubscriberFlow({ monthly, currentMaster, filte
       const l3rr = rr(last3), p3rr = rr(prev3);
       const rrDir = l3rr > p3rr ? 'rising' : l3rr < p3rr ? 'falling' : 'stable';
       items.push({
-        icon: '♻️', category: 'Renewal Trend', color: l3rr > p3rr ? '#22c55e' : l3rr === p3rr ? '#94a3b8' : '#fbbf24',
+        icon: '♻️', category: 'Renewal Trend', color: l3rr > p3rr ? '#22c55e' : l3rr === p3rr ? '#64748b' : '#fbbf24',
         title: `Renewal rate ${rrDir}: ${l3rr}% last 3M vs ${p3rr}% prior 3M`,
         detail: `A rising renewal rate means more subscribers are repeat-paying customers — a strong retention signal.`,
       });

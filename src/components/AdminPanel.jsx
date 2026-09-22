@@ -1,14 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
 import { api } from '../api';
 
-const ROLE_COLORS = { admin: '#f87171', operations: '#fbbf24', editor: '#34d399', viewer: '#94a3b8' };
+const ROLE_COLORS = { admin: '#f87171', operations: '#fbbf24', editor: '#34d399', viewer: '#64748b' };
 const ROLE_OPTIONS = ['admin', 'operations', 'editor', 'viewer'];
 
 function RoleBadge({ role }) {
   return (
     <span style={{
       fontSize: '0.65rem', fontWeight: 700, padding: '2px 8px', borderRadius: 10,
-      background: 'rgba(0,0,0,0.35)', color: ROLE_COLORS[role] || '#94a3b8',
+      background: 'var(--bg-inset-6)', color: ROLE_COLORS[role] || 'var(--text-muted)',
       textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap',
     }}>
       {role}

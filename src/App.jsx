@@ -1023,7 +1023,7 @@ export default function App() {
   />;
 }
 
-const ROLE_COLORS = { admin: '#f87171', operations: '#fbbf24', editor: '#34d399', viewer: '#94a3b8' };
+const ROLE_COLORS = { admin: '#f87171', operations: '#fbbf24', editor: '#34d399', viewer: '#64748b' };
 const CAN_UPLOAD  = ['admin', 'operations', 'editor'];
 
 // ─── DATA FRESHNESS BANNER ────────────────────────────────────────────────────
@@ -1468,7 +1468,7 @@ function Dashboard({ rawData, fileName, savedAt, currentUser, activeTab, setActi
             👤 {currentUser?.username}
             <span style={{
               fontSize: '0.65rem', fontWeight: 700, padding: '1px 6px',
-              borderRadius: 10, background: 'rgba(0,0,0,0.3)',
+              borderRadius: 10, background: 'var(--bg-inset-5)',
               color: ROLE_COLORS[currentUser?.role] || 'var(--text-muted)',
               textTransform: 'uppercase', letterSpacing: '0.05em',
             }}>
