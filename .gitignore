@@ -1,7 +1,10 @@
 node_modules
 dist
 .env
-backend.log
+.env.*
+!.env.example
+!backend/.env.example
+*.log
 src_backup_*/
 backend/venv/
 backend/__pycache__/
@@ -14,3 +17,15 @@ backend/backups/
 *.db-journal
 *.sqlite
 *.sqlite3
+
+# Keys/certs — defense in depth, none currently exist in this repo
+*.pem
+*.key
+*.p12
+*.pfx
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
