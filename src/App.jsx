@@ -810,7 +810,7 @@ function UploadModal({ onClose, onDataLoaded }) {
           <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '1.2rem' }}>✕</button>
         </div>
         <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
-          Upload a new Excel/CSV file. This will replace the current dataset and persist until the next update.
+          Upload a new Excel/CSV file. It's added to the current data: rows in the new file update the matching existing ones, and nothing already loaded is removed.
         </div>
         <div
           style={{ border: '2px dashed var(--border-bright)', borderRadius: 10, padding: '1.5rem', textAlign: 'center', cursor: 'pointer', marginBottom: '1rem' }}
