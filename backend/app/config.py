@@ -20,6 +20,14 @@ class Settings(BaseSettings):
     from_email: str = "communication@niveshaay.com"
     from_name: str = "NIA Antigravity"
 
+    # WhatsApp OTP (DoubleTick) — same account, sender number and approved
+    # Authentication template as the PF Performance dashboard. Leave the API key
+    # empty to turn WhatsApp off entirely (login falls back to email only and
+    # nobody is asked to add a number).
+    doubletick_api_key: str = ""
+    doubletick_from_number: str = "+917859870559"
+    whatsapp_otp_template: str = "otp_login_pf_dashboard"
+
     class Config:
         env_file = ".env"
         extra = "ignore"

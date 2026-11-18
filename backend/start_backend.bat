@@ -1,12 +1,12 @@
 @echo off
-title NIA Antigravity — Backend API (Port 8000)
+title NIA Antigravity — Backend API (Port 8001)
 cd /d "%~dp0"
 
 echo.
 echo  NIA Antigravity Backend
 echo  =======================
-echo  Port : 8000
-echo  Docs : http://localhost:8000/docs
+echo  Port : 8001
+echo  Docs : http://localhost:8001/docs
 echo.
 
 if not exist ".env" (
@@ -27,7 +27,7 @@ if exist "venv\Scripts\activate.bat" (
 
 echo  Starting server... ^(Keep this window open^)
 echo.
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+uvicorn app.main:app --host 0.0.0.0 --port 8001 --reload
 
 echo.
 echo  Server stopped.

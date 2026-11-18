@@ -166,6 +166,7 @@ function LoginScreen({ onLogin }) {
   const [username,    setUsername]    = useState('');
   const [tempToken,   setTempToken]   = useState('');
   const [maskedEmail, setMaskedEmail] = useState('');
+  const [maskedPhone, setMaskedPhone] = useState('');
 
   // Register state
   const [regFirst,    setRegFirst]    = useState('');
@@ -195,6 +196,7 @@ function LoginScreen({ onLogin }) {
       if (res.requires_otp) {
         setTempToken(res.temp_token);
         setMaskedEmail(res.masked_email);
+        setMaskedPhone(res.masked_phone || '');
         setView('login-otp');
       }
     } catch (err) {
@@ -331,13 +333,14 @@ function LoginScreen({ onLogin }) {
           <div className="login-title">Two-Factor Verification</div>
           <div className="login-desc">
             An OTP has been sent to <strong style={{ color: 'var(--accent-cyan)' }}>{maskedEmail}</strong>
+            {maskedPhone && <> and on WhatsApp to <strong style={{ color: 'var(--accent-cyan)' }}>{maskedPhone}</strong></>}
           </div>
 
           <div className="login-field">
             <label className="login-label" style={{ textAlign: 'center', display: 'block' }}>Enter 6-digit OTP</label>
             <OTPInput value={otp} onChange={v => { setOtp(v); setError(''); }} autoFocus />
             <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 6, textAlign: 'center' }}>
-              Valid for 5 minutes · Check your Niveshaay inbox
+              Valid for 5 minutes · Check your Niveshaay inbox{maskedPhone && ' or WhatsApp'}
             </div>
           </div>
 
@@ -468,6 +471,115 @@ function LoginScreen({ onLogin }) {
 }
 
 // ─── UPLOAD SCREEN ────────────────────────────────────────────────────────────
+// ─── WHATSAPP NUMBER (required after login until one is verified) ────────────
+// Mirrors the PF Performance dashboard: once a number is verified, every login
+// code is sent there as well as to email, so a delayed email never locks anyone
+// out. The verified number is saved on the account, so this only appears while
+// none is on file. There's no skip — the only ways out are verifying a number
+// or logging out (the header's Logout button is hidden behind this overlay).
+// With onCancel it's the header's "change number" dialog instead: closable, and
+// the old number keeps working until the new one is verified.
+function WhatsAppVerifyModal({ currentUser, onVerified, onLogout, onCancel }) {
+  const isChange = !!onCancel;
+  const [step,    setStep]    = useState('phone'); // 'phone' | 'otp'
+  const [mobile,  setMobile]  = useState(
+    (currentUser?.whatsapp_phone || '').replace(/^\+91/, '') || currentUser?.mobile || '');
+  const [otp,     setOtp]     = useState('');
+  const [info,    setInfo]    = useState('');
+  const [error,   setError]   = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const sendCode = async (e) => {
+    e.preventDefault();
+    setError(''); setInfo('');
+    if (mobile.length !== 10) { setError('WhatsApp number must be exactly 10 digits.'); return; }
+    setLoading(true);
+    try {
+      const res = await api.whatsappSendOTP(mobile);
+      setInfo(res.message || 'Code sent on WhatsApp.');
+      setOtp('');
+      setStep('otp');
+    } catch (err) {
+      setError(err.message || 'Could not send the code. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const verify = async (e) => {
+    e.preventDefault();
+    if (otp.length !== 6) { setError('Enter the 6-digit code.'); return; }
+    setError('');
+    setLoading(true);
+    try {
+      onVerified(await api.whatsappVerify(otp));
+    } catch (err) {
+      setError(err.message || 'Incorrect code. Please try again.');
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, background: 'var(--overlay)', zIndex: 2000,
+      display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
+      <form className="login-card" onSubmit={step === 'phone' ? sendCode : verify} autoComplete="off">
+        <div className="login-title">{isChange ? 'Change WhatsApp number' : 'Add your WhatsApp number'}</div>
+        <div className="login-desc">
+          {isChange
+            ? <>Codes currently go to <strong>{currentUser?.whatsapp_phone}</strong>. Enter the new number — it replaces the old one once you verify it.</>
+            : 'Your sign-in code will also be sent here, so you can still log in if the email is slow or goes missing.'}
+        </div>
+
+        {step === 'phone' ? (
+          <div className="login-field">
+            <label className="login-label">WhatsApp Number</label>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <span className="login-input" style={{ width: 'auto', flexShrink: 0, color: 'var(--text-muted)' }}>+91</span>
+              <input className="login-input" type="tel" value={mobile} autoFocus
+                maxLength={10} inputMode="numeric"
+                onChange={e => { setMobile(e.target.value.replace(/\D/g, '').slice(0, 10)); setError(''); }}
+                placeholder="10-digit WhatsApp number" />
+            </div>
+          </div>
+        ) : (
+          <div className="login-field">
+            {info && <div style={{ color: 'var(--accent-green)', fontSize: 13, marginBottom: 10 }}>✓ {info}</div>}
+            <label className="login-label" style={{ textAlign: 'center', display: 'block' }}>Enter 6-digit code</label>
+            <OTPInput value={otp} onChange={v => { setOtp(v); setError(''); }} autoFocus />
+          </div>
+        )}
+
+        {error && <div className="login-error"><span>⚠️</span> {error}</div>}
+
+        {step === 'phone' ? (
+          <button className="btn-primary" type="submit" disabled={mobile.length !== 10 || loading}>
+            {loading ? <><div className="spinner" style={{ width: 16, height: 16, borderWidth: 2 }} /> Sending code...</> : '→ Send code on WhatsApp'}
+          </button>
+        ) : (
+          <>
+            <button className="btn-primary" type="submit" disabled={otp.length !== 6 || loading}>
+              {loading ? <><div className="spinner" style={{ width: 16, height: 16, borderWidth: 2 }} /> Verifying...</> : '✓ Verify & Save'}
+            </button>
+            <div style={{ textAlign: 'center', marginTop: 12, fontSize: 13 }}>
+              <button type="button" onClick={() => { setError(''); setInfo(''); setStep('phone'); }}
+                style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: 13, padding: 0 }}>
+                ← Change number / Resend code
+              </button>
+            </div>
+          </>
+        )}
+
+        <div style={{ textAlign: 'center', marginTop: 12, fontSize: 13 }}>
+          <button type="button" onClick={isChange ? onCancel : onLogout}
+            style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: 13, padding: 0 }}>
+            {isChange ? 'Cancel — keep current number' : 'Not now — log out instead'}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
 function UploadScreen({ onDataLoaded, userName }) {
   const [file, setFile] = useState(null);
   const [dragging, setDragging] = useState(false);
@@ -786,6 +898,7 @@ export default function App() {
   // without this, the brief window before rawData is set would otherwise show
   // the "upload a file" screen, wrongly suggesting there's no data at all.
   const [restoringAfterLogin, setRestoringAfterLogin] = useState(false);
+  const [changingWhatsApp, setChangingWhatsApp] = useState(false);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -965,20 +1078,19 @@ export default function App() {
     }} />;
   }
 
+  let screen;
   if (restoringAfterLogin && !rawData) {
-    return (
+    screen = (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: 'var(--bg-void)', color: 'var(--text-muted)', gap: 12 }}>
         <div className="spinner" style={{ width: 24, height: 24, borderWidth: 3 }} />
         Loading your data — large datasets can take a little while...
       </div>
     );
-  }
-
-  if (!rawData && restoreError) {
+  } else if (!rawData && restoreError) {
     // The backend has data but this browser failed to load it (e.g. the response
     // was too large to parse) — show that plainly instead of the upload prompt,
     // which would wrongly suggest there's no data at all.
-    return (
+    screen = (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: 'var(--bg-void)', padding: '2rem' }}>
         <div style={{ maxWidth: 480, textAlign: 'center' }}>
           <div style={{ fontSize: '2rem', marginBottom: 12 }}>⚠️</div>
@@ -999,28 +1111,40 @@ export default function App() {
         </div>
       </div>
     );
+  } else if (!rawData) {
+    screen = <UploadScreen onDataLoaded={handleDataLoaded} userName={currentUser?.username} />;
+  } else {
+    screen = <Dashboard
+      rawData={rawData} fileName={fileName} savedAt={savedAt}
+      currentUser={currentUser} activeTab={activeTab} setActiveTab={setActiveTab}
+      filters={filters} setFilters={setFilters}
+      filtersOpen={filtersOpen} setFiltersOpen={setFiltersOpen}
+      onLogout={handleLogout}
+      onDataLoaded={handleDataLoaded}
+      showUploadModal={showUploadModal} setShowUploadModal={setShowUploadModal}
+      refreshUser={refreshUser}
+      onChangeWhatsApp={() => setChangingWhatsApp(true)}
+      backendSynced={backendSynced}
+      onGoToLogin={() => setAuthed(false)}
+      theme={theme} setTheme={setTheme}
+      onSyncToBackend={async () => {
+        try { await api.uploadData(rawData, fileName); setBackendSynced(true); } catch {}
+      }}
+    />;
   }
 
-  if (!rawData) {
-    return <UploadScreen onDataLoaded={handleDataLoaded} userName={currentUser?.username} />;
-  }
-
-  return <Dashboard
-    rawData={rawData} fileName={fileName} savedAt={savedAt}
-    currentUser={currentUser} activeTab={activeTab} setActiveTab={setActiveTab}
-    filters={filters} setFilters={setFilters}
-    filtersOpen={filtersOpen} setFiltersOpen={setFiltersOpen}
-    onLogout={handleLogout}
-    onDataLoaded={handleDataLoaded}
-    showUploadModal={showUploadModal} setShowUploadModal={setShowUploadModal}
-    refreshUser={refreshUser}
-    backendSynced={backendSynced}
-    onGoToLogin={() => setAuthed(false)}
-    theme={theme} setTheme={setTheme}
-    onSyncToBackend={async () => {
-      try { await api.uploadData(rawData, fileName); setBackendSynced(true); } catch {}
-    }}
-  />;
+  return (
+    <>
+      {screen}
+      {currentUser?.whatsapp_required ? (
+        <WhatsAppVerifyModal currentUser={currentUser} onVerified={setCurrentUser} onLogout={handleLogout} />
+      ) : changingWhatsApp && (
+        <WhatsAppVerifyModal currentUser={currentUser}
+          onVerified={user => { setCurrentUser(user); setChangingWhatsApp(false); }}
+          onCancel={() => setChangingWhatsApp(false)} />
+      )}
+    </>
+  );
 }
 
 const ROLE_COLORS = { admin: 'var(--accent-red)', operations: 'var(--accent-gold)', editor: 'var(--accent-teal)', viewer: 'var(--text-neutral)' };
@@ -1243,7 +1367,7 @@ function DraggableTabNav({ activeTab, setActiveTab }) {
 // ─── DASHBOARD (split out to keep useMemo stable) ────────────────────────────
 function Dashboard({ rawData, fileName, savedAt, currentUser, activeTab, setActiveTab, filters, setFilters,
   filtersOpen, setFiltersOpen, onLogout, onDataLoaded, showUploadModal, setShowUploadModal, refreshUser,
-  backendSynced, onSyncToBackend, onGoToLogin, theme, setTheme }) {
+  onChangeWhatsApp, backendSynced, onSyncToBackend, onGoToLogin, theme, setTheme }) {
 
   const [showAdminPanel, setShowAdminPanel] = useState(false);
   const [goal, setGoal] = useState(() => Number(localStorage.getItem('nia_goal')) || 0);
@@ -1476,7 +1600,13 @@ function Dashboard({ rawData, fileName, savedAt, currentUser, activeTab, setActi
               {currentUser?.role}
             </span>
           </div>
-          <button className="btn-icon" style={{ color: '#f87171', borderColor: '#f87171' }}
+          {currentUser?.whatsapp_phone && (
+            <button className="btn-icon" onClick={onChangeWhatsApp}
+              title={`Login codes also go to WhatsApp ${currentUser.whatsapp_phone} — click to change the number`}>
+              📱 <span className="btn-label">••••{currentUser.whatsapp_phone.slice(-4)}</span>
+            </button>
+          )}
+          <button className="btn-icon" style={{ color: 'var(--accent-red)', borderColor: 'var(--accent-red)' }}
             onClick={() => { if (window.confirm('Log out of Equity Business Dashboard?')) onLogout(); }}
             title="Log out">
             🚪 <span className="btn-label">Logout</span>

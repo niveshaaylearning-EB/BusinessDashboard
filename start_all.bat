@@ -9,9 +9,9 @@ echo  ============================================================
 echo.
 
 REM ── Backend: start silently in background, logs go to backend.log ─────────────
-echo  [1/2] Starting backend on port 8000...
+echo  [1/2] Starting backend on port 8001...
 pushd backend
-start /b cmd /c "call venv\Scripts\activate.bat && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload > ..\backend.log 2>&1"
+start /b cmd /c "call venv\Scripts\activate.bat && uvicorn app.main:app --host 0.0.0.0 --port 8001 --reload > ..\backend.log 2>&1"
 popd
 
 timeout /t 3 /nobreak >nul

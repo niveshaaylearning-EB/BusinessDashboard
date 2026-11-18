@@ -1,5 +1,5 @@
 import re
-from pydantic import BaseModel, field_validator, Field
+from pydantic import BaseModel, field_validator, Field, computed_field
 from typing import Optional, Any, List
 from datetime import datetime
 
@@ -32,8 +32,17 @@ class UserOut(BaseModel):
     is_active:  bool
     created_at: datetime
     last_login: Optional[datetime] = None
+    mobile:         Optional[str] = None
+    whatsapp_phone: Optional[str] = None
 
     model_config = {"from_attributes": True}
+
+    @computed_field
+    @property
+    def whatsapp_required(self) -> bool:
+        """True when the user must verify a WhatsApp number before continuing."""
+        from app.whatsapp_service import whatsapp_enabled
+        return whatsapp_enabled() and not self.whatsapp_phone
 
 
 class TokenResponse(BaseModel):
@@ -147,9 +156,30 @@ class RegisterVerifyRequest(BaseModel):
 class LoginChallengeResponse(BaseModel):
     requires_otp: bool = True
     masked_email: str
+    masked_phone: Optional[str] = None   # set when the code also went to WhatsApp
     temp_token:   str
 
 
 class VerifyLoginOTPRequest(BaseModel):
     temp_token: str
     otp:        str = Field(..., min_length=6, max_length=6)
+
+
+# ── WhatsApp number verification ─────────────────────────────────────────────
+
+class WhatsAppSendOTPRequest(BaseModel):
+    mobile: str
+
+    @field_validator("mobile")
+    @classmethod
+    def must_be_10_digits(cls, v: str) -> str:
+        digits = re.sub(r"\D", "", v.strip())
+        if len(digits) == 12 and digits.startswith("91"):
+            digits = digits[2:]
+        if len(digits) != 10:
+            raise ValueError("WhatsApp number must be exactly 10 digits")
+        return digits
+
+
+class WhatsAppVerifyRequest(BaseModel):
+    otp: str = Field(..., min_length=6, max_length=6)

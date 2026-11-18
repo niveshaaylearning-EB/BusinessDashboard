@@ -10,6 +10,7 @@ from app.schemas import (
     LoginRequest, TokenResponse, UserOut, PasswordChangeRequest,
     RegisterSendOTPRequest, RegisterVerifyRequest,
     LoginChallengeResponse, VerifyLoginOTPRequest,
+    WhatsAppSendOTPRequest, WhatsAppVerifyRequest,
 )
 from app.auth import (
     create_access_token, get_current_user, get_password_hash,
@@ -17,6 +18,9 @@ from app.auth import (
     create_login_challenge_token, decode_login_challenge_token,
 )
 from app.email_service import send_otp_email, mask_email
+from app.whatsapp_service import (
+    whatsapp_enabled, mask_phone, send_whatsapp_otp, send_whatsapp_otp_quietly,
+)
 from app.limiter import limiter
 
 router  = APIRouter()
@@ -24,6 +28,7 @@ _bearer = HTTPBearer()
 
 OTP_EXPIRY_REGISTER = 10  # minutes
 OTP_EXPIRY_LOGIN    = 5   # minutes
+OTP_EXPIRY_WHATSAPP = 10  # minutes
 OTP_MAX_ATTEMPTS    = 3
 
 
@@ -208,11 +213,20 @@ async def login(request: Request, body: LoginRequest, background_tasks: Backgrou
     db.commit()
 
     temp_token = create_login_challenge_token(str(user.id))
+
+    # Same code also goes to the user's verified WhatsApp number, so a delayed
+    # or missed email doesn't block sign-in. Queued first and non-raising —
+    # background tasks run in order and a failing email task would otherwise
+    # stop the WhatsApp send exactly when it's needed most.
+    send_to_whatsapp = bool(user.whatsapp_phone) and whatsapp_enabled()
+    if send_to_whatsapp:
+        background_tasks.add_task(send_whatsapp_otp_quietly, user.whatsapp_phone, otp)
     background_tasks.add_task(send_otp_email, user.email, user.full_name or user.username, otp, "login")
 
     return LoginChallengeResponse(
         requires_otp=True,
         masked_email=mask_email(user.email),
+        masked_phone=mask_phone(user.whatsapp_phone) if send_to_whatsapp else None,
         temp_token=temp_token,
     )
 
@@ -317,6 +331,97 @@ async def logout(
 
 @router.get("/me", response_model=UserOut)
 async def me(current_user: User = Depends(get_current_user)):
+    return UserOut.model_validate(current_user)
+
+
+# ── WhatsApp number (add/change, verified by a code sent to that number) ─────
+
+@router.post("/me/whatsapp/send-otp")
+@limiter.limit("3/minute")
+async def whatsapp_send_otp(
+    request: Request,
+    body: WhatsAppSendOTPRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    if not whatsapp_enabled():
+        raise HTTPException(503, "WhatsApp codes are not set up on this server yet.")
+
+    phone = f"+91{body.mobile}"
+    db.query(PendingOTP).filter(
+        PendingOTP.user_id == current_user.id,
+        PendingOTP.purpose == "whatsapp",
+    ).delete()
+
+    otp, otp_hash = generate_otp()
+    db.add(PendingOTP(
+        email      = current_user.email or current_user.username,
+        otp_hash   = otp_hash,
+        purpose    = "whatsapp",
+        user_id    = current_user.id,
+        meta       = {"phone": phone},
+        expires_at = datetime.utcnow() + timedelta(minutes=OTP_EXPIRY_WHATSAPP),
+    ))
+    db.commit()
+
+    # Sent inline (not as a background task) so a wrong or non-WhatsApp number
+    # is reported straight away instead of leaving the user waiting for nothing.
+    try:
+        await send_whatsapp_otp(phone, otp)
+    except Exception:
+        raise HTTPException(502, "Couldn't send the code on WhatsApp. Check the number is on WhatsApp and try again.")
+
+    return {"message": f"Code sent on WhatsApp to {mask_phone(phone)}. Valid for {OTP_EXPIRY_WHATSAPP} minutes."}
+
+
+@router.post("/me/whatsapp/verify", response_model=UserOut)
+@limiter.limit("10/minute")
+async def whatsapp_verify(
+    request: Request,
+    body: WhatsAppVerifyRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    pending = (
+        db.query(PendingOTP)
+        .filter(
+            PendingOTP.user_id == current_user.id,
+            PendingOTP.purpose == "whatsapp",
+            PendingOTP.used    == False,
+        )
+        .order_by(PendingOTP.created_at.desc())
+        .first()
+    )
+
+    if not pending:
+        raise HTTPException(400, "No active code found. Please request a new one.")
+
+    if pending.expires_at < datetime.utcnow():
+        db.delete(pending)
+        db.commit()
+        raise HTTPException(400, "Code has expired. Please request a new one.")
+
+    pending.attempts += 1
+    if pending.attempts > OTP_MAX_ATTEMPTS:
+        db.delete(pending)
+        db.commit()
+        raise HTTPException(400, "Too many incorrect attempts. Please request a new code.")
+
+    if not verify_otp_hash(body.otp.strip(), pending.otp_hash):
+        db.commit()
+        remaining = OTP_MAX_ATTEMPTS - pending.attempts
+        raise HTTPException(400, f"Incorrect code. {remaining} attempt(s) remaining.")
+
+    phone = (pending.meta or {})["phone"]
+    pending.used                = True
+    current_user.whatsapp_phone = phone
+    db.add(AuditLog(
+        user_id=current_user.id, action="whatsapp_number_updated",
+        details={"phone": mask_phone(phone)},
+        ip_address=_ip(request), user_agent=request.headers.get("user-agent"),
+    ))
+    db.commit()
+    db.refresh(current_user)
     return UserOut.model_validate(current_user)
 
 

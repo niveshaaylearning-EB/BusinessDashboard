@@ -24,6 +24,10 @@ class User(Base):
     last_login       = Column(DateTime,    nullable=True)
 
     mobile = Column(String(15), nullable=True)
+    # Verified WhatsApp number in E.164 ("+919537407484") — login OTPs are sent
+    # here as well as to email. Only ever set after the user enters a code sent
+    # to this number, so it's proof they control it.
+    whatsapp_phone = Column(String(20), nullable=True)
 
     # Brute-force lockout: lock account for 15 min after 5 consecutive failures
     failed_login_count = Column(Integer,  default=0,    nullable=False)
@@ -93,9 +97,9 @@ class PendingOTP(Base):
     id         = Column(String(36), primary_key=True, default=_uuid)
     email      = Column(String(255), nullable=False, index=True)
     otp_hash   = Column(String(64),  nullable=False)           # SHA-256 hex of the 6-digit code
-    purpose    = Column(String(20),  nullable=False)           # 'register' | 'login'
+    purpose    = Column(String(20),  nullable=False)           # 'register' | 'login' | 'whatsapp'
     user_id    = Column(String(36),  nullable=True)    # set for login OTPs
-    meta       = Column(JSON,        nullable=True)            # registration: stores hashed user data
+    meta       = Column(JSON,        nullable=True)            # registration: hashed user data; whatsapp: the number being verified
     expires_at = Column(DateTime,    nullable=False, index=True)
     used       = Column(Boolean,     default=False, nullable=False)
     attempts   = Column(Integer,     default=0,     nullable=False)

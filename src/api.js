@@ -5,7 +5,7 @@ const BASE = import.meta.env.VITE_API_URL || (() => {
   if (import.meta.env.DEV) {
     const h = window.location.hostname;
     const isLocal = h === 'localhost' || h === '127.0.0.1';
-    return isLocal ? 'http://localhost:8000' : `${window.location.protocol}//${h}:8000`;
+    return isLocal ? 'http://localhost:8001' : `${window.location.protocol}//${h}:8001`;
   }
   // Production build (served by the nginx container from this repo's Dockerfile):
   // nginx.conf reverse-proxies /api/* to the backend container over Docker's
@@ -82,6 +82,8 @@ export const api = {
   getMe:            ()                      => request('GET',  '/auth/me'),
   getMeSilent:      ()                      => request('GET',  '/auth/me', undefined, 5000, { skipReloadOn401: true }),
   changePassword:   (password)              => request('PUT',  '/auth/me/password',        { password }),
+  whatsappSendOTP:  (mobile)                => request('POST', '/auth/me/whatsapp/send-otp', { mobile }, 20000),
+  whatsappVerify:   (otp)                   => request('POST', '/auth/me/whatsapp/verify',   { otp }),
 
   // ── Data ──────────────────────────────────────────────────────────────────
   uploadData:       (rows, fileName)        => request('POST', '/data/upload',             { rows, file_name: fileName }, 30000),

@@ -18,7 +18,7 @@ Bloomberg Terminal dark — `#040914` void, `#00d4ff` cyan, `#fbbf24` gold. CSS 
 
 **Step 1 — Start backend (required first)**
 ```
-backend\start_backend.bat   ← starts FastAPI on http://localhost:8000
+backend\start_backend.bat   ← starts FastAPI on http://localhost:8001
 ```
 
 **Step 2 — Start frontend**

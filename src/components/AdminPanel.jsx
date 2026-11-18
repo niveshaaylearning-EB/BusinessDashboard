@@ -252,6 +252,7 @@ export default function AdminPanel({ currentUser, onClose }) {
                 <tr>
                   <th style={s.th}>User</th>
                   <th style={s.th}>Email</th>
+                  <th style={s.th}>WhatsApp</th>
                   <th style={s.th}>Role</th>
                   <th style={s.th}>Registered</th>
                   <th style={s.th}>Last Login</th>
@@ -267,6 +268,11 @@ export default function AdminPanel({ currentUser, onClose }) {
                     </td>
                     <td style={s.td}>
                       <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{u.email || '—'}</span>
+                    </td>
+                    <td style={s.td}>
+                      {u.whatsapp_phone
+                        ? <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>✓ {u.whatsapp_phone}</span>
+                        : <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Not added</span>}
                     </td>
                     <td style={s.td}>
                       {isMe(u.id) ? (

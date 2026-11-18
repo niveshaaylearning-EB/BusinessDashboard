@@ -5,6 +5,8 @@ from fastapi.responses import JSONResponse
 from slowapi.middleware import SlowAPIMiddleware
 from slowapi.errors import RateLimitExceeded
 
+from sqlalchemy import inspect, text
+
 from app.config import settings
 from app.database import engine, Base
 from app.limiter import limiter
@@ -15,6 +17,18 @@ from app.routers.admin import router as admin_router
 
 # Auto-create all tables on startup (idempotent — safe to run repeatedly)
 Base.metadata.create_all(bind=engine)
+
+# create_all never adds columns to a table that already exists — add any
+# introduced after the first deploy here (idempotent).
+_NEW_USER_COLUMNS = {"whatsapp_phone": "VARCHAR(20)"}
+_existing = {c["name"] for c in inspect(engine).get_columns("users")}
+for _col, _type in _NEW_USER_COLUMNS.items():
+    if _col not in _existing:
+        try:
+            with engine.begin() as _conn:
+                _conn.execute(text(f"ALTER TABLE users ADD COLUMN {_col} {_type}"))
+        except Exception:
+            pass  # another worker added it first
 
 # ─── App ──────────────────────────────────────────────────────────────────────
 app = FastAPI(
@@ -61,7 +75,7 @@ async def add_security_headers(request: Request, call_next):
         "style-src 'self' 'unsafe-inline'; "    # Inline styles used by Recharts/UI
         "img-src 'self' data:; "
         "font-src 'self'; "
-        "connect-src 'self' http://localhost:8000 https://localhost:8000; "
+        "connect-src 'self' http://localhost:8001 https://localhost:8001; "
         "frame-ancestors 'none';"
     )
     return response
