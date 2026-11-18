@@ -28,6 +28,13 @@ class Settings(BaseSettings):
     doubletick_from_number: str = "+917859870559"
     whatsapp_otp_template: str = "otp_login_pf_dashboard"
 
+    # Dashboard assistant (admin-only chat widget). Leave the key empty to turn
+    # it off. The monthly cap is a local estimate from token counts; once this
+    # month's spend reaches it, questions are refused until the 1st.
+    anthropic_api_key: str = ""
+    assistant_model: str = "claude-haiku-5-5"
+    assistant_monthly_cap_usd: float = 15.0
+
     class Config:
         env_file = ".env"
         extra = "ignore"

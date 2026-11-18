@@ -85,6 +85,11 @@ export const api = {
   whatsappSendOTP:  (mobile)                => request('POST', '/auth/me/whatsapp/send-otp', { mobile }, 20000),
   whatsappVerify:   (otp)                   => request('POST', '/auth/me/whatsapp/verify',   { otp }),
 
+  // ── Assistant (admin-only) ────────────────────────────────────────────────
+  assistantStatus:  ()                      => request('GET',  '/assistant/status', undefined, 10000),
+  // Several data lookups can run per question, so allow plenty of time
+  assistantAsk:     (question, history)     => request('POST', '/assistant/ask', { question, history }, 150000),
+
   // ── Data ──────────────────────────────────────────────────────────────────
   uploadData:       (rows, fileName)        => request('POST', '/data/upload',             { rows, file_name: fileName }, 30000),
   // Large datasets take a while server-side (gzip-compressing a 200MB+ JSON

@@ -14,6 +14,7 @@ from app.routers.auth  import router as auth_router
 from app.routers.data  import router as data_router
 from app.routers.audit import router as audit_router
 from app.routers.admin import router as admin_router
+from app.routers.assistant import router as assistant_router
 
 # Auto-create all tables on startup (idempotent — safe to run repeatedly)
 Base.metadata.create_all(bind=engine)
@@ -100,6 +101,7 @@ app.include_router(auth_router,  prefix="/auth",  tags=["Authentication"])
 app.include_router(data_router,  prefix="/data",  tags=["Data"])
 app.include_router(audit_router, prefix="/audit", tags=["Audit"])
 app.include_router(admin_router, prefix="/admin", tags=["Admin"])
+app.include_router(assistant_router, prefix="/assistant", tags=["Assistant"])
 
 
 # ─── Health ───────────────────────────────────────────────────────────────────

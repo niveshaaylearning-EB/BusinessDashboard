@@ -2,6 +2,7 @@ import React, { useState, useMemo, useCallback, useRef, useEffect, lazy, Suspens
 import * as XLSX from 'xlsx';
 import { api } from './api';
 import AdminPanel from './components/AdminPanel';
+import AssistantWidget from './components/AssistantWidget';
 import {
   buildCurrentSubscriptionMaster,
   getFilterOptions, applyFilters, getSummaryKPIs, getMonthlyMovement,
@@ -1136,6 +1137,7 @@ export default function App() {
   return (
     <>
       {screen}
+      {currentUser?.role === 'admin' && rawData && !currentUser?.whatsapp_required && <AssistantWidget />}
       {currentUser?.whatsapp_required ? (
         <WhatsAppVerifyModal currentUser={currentUser} onVerified={setCurrentUser} onLogout={handleLogout} />
       ) : changingWhatsApp && (
