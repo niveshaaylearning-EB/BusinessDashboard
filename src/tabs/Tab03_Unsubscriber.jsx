@@ -78,16 +78,16 @@ const CustomTooltip = ({ active, payload, label }) => {
   );
 };
 
-const PRODUCT_COLORS = ['#f87171','#fb923c','#fbbf24','#a3e635','#34d399','#22d3ee','#818cf8','#e879f9'];
+const PRODUCT_COLORS = ['var(--accent-red)','var(--accent-orange)','var(--accent-gold)','var(--chart-10)','var(--accent-teal)','var(--accent-sky)','var(--chart-9)','var(--accent-pink)'];
 
 const PL_BUCKET_COLORS = {
-  '< -5L':      '#991b1b',
-  '-5L to -1L': '#dc2626',
-  '-1L to 0':   '#f87171',
-  'Break-even': '#64748b',
-  '0 to 1L':    '#34d399',
-  '1L to 5L':   '#22c55e',
-  '> 5L':       '#15803d',
+  '< -5L':      'var(--accent-red-deep)',
+  '-5L to -1L': 'var(--accent-red)',
+  '-1L to 0':   'var(--accent-red)',
+  'Break-even': 'var(--text-neutral)',
+  '0 to 1L':    'var(--accent-teal)',
+  '1L to 5L':   'var(--accent-green)',
+  '> 5L':       'var(--accent-green)',
 };
 
 export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
@@ -205,12 +205,12 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
 
   const VirtualRow = useCallback(({ index, style }) => {
     const row = sorted[index];
-    const pnlColor = row.pnl > 0 ? '#22c55e' : row.pnl < 0 ? '#f87171' : 'var(--text-muted)';
+    const pnlColor = row.pnl > 0 ? 'var(--accent-green)' : row.pnl < 0 ? 'var(--accent-red)' : 'var(--text-muted)';
     const isActive = row.currentStatus === 'Active';
     return (
       <div style={{ ...style, display: 'flex', alignItems: 'center', width: TABLE_WIDTH,
         borderBottom: '1px solid var(--border-dim)',
-        background: index % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.015)',
+        background: index % 2 === 0 ? 'transparent' : 'color-mix(in srgb, var(--text-primary) 1.5%, transparent)',
       }}>
         <div style={{ width: 160, padding: '0 8px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: 12, color: 'var(--text-primary)', fontWeight: 500 }}>
           {row.name || row.email || row.pan || '—'}
@@ -236,7 +236,7 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
         <div style={{ width: 110, padding: '0 8px', textAlign: 'center' }}>
           <span style={{ fontSize: 10, padding: '2px 6px', borderRadius: 8, fontWeight: 600,
             background: isActive ? '#22c55e22' : '#64748b22',
-            color: isActive ? '#22c55e' : '#64748b',
+            color: isActive ? 'var(--accent-green)' : 'var(--text-neutral)',
           }}>
             {isActive ? '✅ Active' : '🚪 Exited'}
           </span>
@@ -260,7 +260,7 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
 
   // P&L avg color
   const avgPL = plAnalysis.avgPLAtExit || 0;
-  const avgPLColor = avgPL > 0 ? 'var(--accent-green)' : avgPL < 0 ? '#f87171' : 'var(--text-muted)';
+  const avgPLColor = avgPL > 0 ? 'var(--accent-green)' : avgPL < 0 ? 'var(--accent-red)' : 'var(--text-muted)';
 
   // AI Insights — derived from all unsubscriber dimensions
   const unsubInsights = useMemo(() => {
@@ -272,7 +272,7 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
     if (byProduct.length > 0) {
       const top = byProduct[0];
       items.push({
-        icon: '🎯', category: 'Top Exit Basket', color: '#f87171',
+        icon: '🎯', category: 'Top Exit Basket', color: 'var(--accent-red)',
         title: `"${top.product}" drives ${top.pct}% of all exits`,
         detail: `${top.count.toLocaleString('en-IN')} exit cycles from this basket alone.` +
                 (byProduct[1] ? ` Next highest: "${byProduct[1].product}" at ${byProduct[1].pct}%.` : ''),
@@ -289,7 +289,7 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
       items.push({
         icon: diff > 10 ? '⚠️' : diff < -10 ? '✅' : '📊',
         category: 'Exit Trend',
-        color: diff > 10 ? '#f87171' : diff < -10 ? '#22c55e' : '#64748b',
+        color: diff > 10 ? 'var(--accent-red)' : diff < -10 ? 'var(--accent-green)' : 'var(--text-neutral)',
         title: `Monthly exits are ${label} (${diff > 0 ? '+' : ''}${diff}% vs prior 3 months)`,
         detail: `Last 3 months: ${last3.toLocaleString('en-IN')} exits vs ${prev3.toLocaleString('en-IN')} in the 3 months before.`,
       });
@@ -299,7 +299,7 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
     if (monthlyTrend.length > 0) {
       const peak = [...monthlyTrend].sort((a, b) => b.count - a.count)[0];
       items.push({
-        icon: '📅', category: 'Peak Exit Month', color: '#fbbf24',
+        icon: '📅', category: 'Peak Exit Month', color: 'var(--accent-gold)',
         title: `"${peak.label}" had the highest exits — ${peak.count.toLocaleString('en-IN')} unsubscriptions`,
         detail: `Cycle 1 exits: ${peak.c1.toLocaleString('en-IN')}, Cycle 2+ exits: ${peak.cPlus.toLocaleString('en-IN')}. ` +
                 (peak.c1 > peak.cPlus ? 'First-time exits dominated this spike.' : 'Returning subscribers drove this spike.'),
@@ -310,7 +310,7 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
     if (reasons.length > 0) {
       const top = reasons[0];
       items.push({
-        icon: '💬', category: 'Top Cancellation Reason', color: '#a78bfa',
+        icon: '💬', category: 'Top Cancellation Reason', color: 'var(--accent-purple)',
         title: `"${top.reason}" is cited by ${top.pct}% of subscribers as the exit reason`,
         detail: `${top.count.toLocaleString('en-IN')} subscribers gave this reason.` +
                 (reasons[1] ? ` Second most common: "${reasons[1].reason}" (${reasons[1].pct}%).` : ''),
@@ -323,7 +323,7 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
       items.push({
         icon: dominant === 'loss' ? '📉' : '📈',
         category: 'P&L at Exit',
-        color: dominant === 'loss' ? '#f87171' : '#22c55e',
+        color: dominant === 'loss' ? 'var(--accent-red)' : 'var(--accent-green)',
         title: `${kpis.pctNegativeExits}% exited in loss (avg ${fmtPLShort(kpis.avgNegativePL)}), ${kpis.pctPositiveExits}% exited in profit (avg ${fmtPLShort(kpis.avgPositivePL)})`,
         detail: `Overall avg P&L at exit: ${fmtPLShort(kpis.avgPLAtExit)}. ` +
                 (dominant === 'loss'
@@ -337,7 +337,7 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
       const worst = [...plAnalysis.byProduct].sort((a, b) => a.avgPL - b.avgPL)[0];
       if (worst.avgPL < 0) {
         items.push({
-          icon: '🚨', category: 'High-Loss Basket', color: '#991b1b',
+          icon: '🚨', category: 'High-Loss Basket', color: 'var(--accent-red-deep)',
           title: `"${worst.product}" has the worst avg exit P&L: ${fmtPLShort(worst.avgPL)}`,
           detail: `${worst.count.toLocaleString('en-IN')} exits from this basket averaged ${fmtPLShort(worst.avgPL)} P&L. ` +
                   'Subscribers leaving with heavy losses signal potential strategy underperformance.',
@@ -346,7 +346,7 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
       const best = plAnalysis.byProduct[0];
       if (best.avgPL > 0) {
         items.push({
-          icon: '💚', category: 'High-Profit Exit Basket', color: '#15803d',
+          icon: '💚', category: 'High-Profit Exit Basket', color: 'var(--accent-green)',
           title: `"${best.product}" exits had the best avg P&L: ${fmtPLShort(best.avgPL)}`,
           detail: `${best.count.toLocaleString('en-IN')} exits averaged ${fmtPLShort(best.avgPL)} P&L. ` +
                   'Subscribers may be profit-booking — consider retention nudges at milestone gains.',
@@ -359,7 +359,7 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
     items.push({
       icon: c1Rate > 60 ? '⚡' : '🔄',
       category: 'Cycle at Exit',
-      color: c1Rate > 60 ? '#fbbf24' : '#22d3ee',
+      color: c1Rate > 60 ? 'var(--accent-gold)' : 'var(--accent-sky)',
       title: c1Rate > 60
         ? `${c1Rate}% of exits happen on Cycle 1 — subscribers leaving before their first renewal`
         : `${(100 - c1Rate).toFixed(1)}% of exits are Cycle 2+ — subscribers who renewed at least once before leaving`,
@@ -372,7 +372,7 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
       const t = kpis.avgTenureMonths;
       const label = t < 3 ? 'very short (<3 months)' : t < 6 ? 'short (3–6 months)' : t < 12 ? 'moderate (6–12 months)' : `long (${t} months)`;
       items.push({
-        icon: '⏳', category: 'Tenure at Exit', color: '#a78bfa',
+        icon: '⏳', category: 'Tenure at Exit', color: 'var(--accent-purple)',
         title: `Avg tenure before exit: ${t} months — ${label} engagement`,
         detail: t < 6
           ? 'Early exits suggest onboarding or product-market fit issues. Focus on first 6-month experience.'
@@ -386,7 +386,7 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
     if (byBroker.length > 0) {
       const topB = byBroker[0];
       items.push({
-        icon: '🤝', category: 'Broker Exit Concentration', color: '#fb923c',
+        icon: '🤝', category: 'Broker Exit Concentration', color: 'var(--accent-orange)',
         title: `"${topB.broker}" accounts for ${topB.pct}% of all exits`,
         detail: `${topB.count.toLocaleString('en-IN')} exits via this broker.` +
                 (byBroker[1] ? ` Next: "${byBroker[1].broker}" (${byBroker[1].pct}%).` : '') +
@@ -399,7 +399,7 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
       const topS   = byState[0];
       const topPct = +((topS.count / n) * 100).toFixed(1);
       items.push({
-        icon: '🗺️', category: 'Geographic Exit Hotspot', color: '#22d3ee',
+        icon: '🗺️', category: 'Geographic Exit Hotspot', color: 'var(--accent-sky)',
         title: `${topS.state} is the top exit state with ${topPct}% of all exits (${topS.count.toLocaleString('en-IN')} exits)`,
         detail: byState[1]
           ? `#2: ${byState[1].state} (${+((byState[1].count / n) * 100).toFixed(1)}%). Geo concentration may reflect regional market conditions or distributor dynamics.`
@@ -410,7 +410,7 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
     // 11. Win-back
     if (kpis.winBacks > 0) {
       items.push({
-        icon: '🔄', category: 'Win-Back Signal', color: '#34d399',
+        icon: '🔄', category: 'Win-Back Signal', color: 'var(--accent-teal)',
         title: `${kpis.winBackRate}% of exited investors have returned after >30 days`,
         detail: `${kpis.winBacks.toLocaleString('en-IN')} subscribers re-subscribed. ` +
                 'This signals strong product value even after churn. Focus win-back campaigns on recent 3-month exits.',
@@ -437,11 +437,11 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
       tooltip: 'Average portfolio P&L across all exits, using the exit row\'s P&L or (if blank) the last known non-zero P&L for that subscriber. A negative average suggests losses are a factor in churn.' },
     { id: 'exitedInProfit',  label: 'Exited in Profit',        icon: '📈', accent: 'var(--accent-green)',  value: `${fmt(kpis.positiveExits)} (${kpis.pctPositiveExits}%)`, sub: 'Had positive P&L when they left',
       tooltip: 'Count and share of exits where the subscriber\'s P&L was positive at the time they left — they may have been profit-booking rather than dissatisfied.' },
-    { id: 'avgProfitPL',     label: 'Avg P&L — Profit Exits',  icon: '💰', accent: '#15803d',              value: fmtPLShort(kpis.avgPositivePL),  sub: `Avg gain across ${fmt(kpis.positiveExits)} profit exits`,
+    { id: 'avgProfitPL',     label: 'Avg P&L — Profit Exits',  icon: '💰', accent: 'var(--accent-green)',              value: fmtPLShort(kpis.avgPositivePL),  sub: `Avg gain across ${fmt(kpis.positiveExits)} profit exits`,
       tooltip: 'Average gain, counting only the exits that were in profit — shows how much winners typically banked before leaving.' },
-    { id: 'exitedInLoss',    label: 'Exited in Loss',          icon: '📉', accent: '#f87171',              value: `${fmt(kpis.negativeExits)} (${kpis.pctNegativeExits}%)`, sub: 'Had negative P&L when they left',
+    { id: 'exitedInLoss',    label: 'Exited in Loss',          icon: '📉', accent: 'var(--accent-red)',              value: `${fmt(kpis.negativeExits)} (${kpis.pctNegativeExits}%)`, sub: 'Had negative P&L when they left',
       tooltip: 'Count and share of exits where the subscriber\'s P&L was negative at the time they left — a signal that poor returns may be driving these departures.' },
-    { id: 'avgLossPL',       label: 'Avg P&L — Loss Exits',    icon: '🩸', accent: '#991b1b',              value: fmtPLShort(kpis.avgNegativePL),  sub: `Avg loss across ${fmt(kpis.negativeExits)} loss exits`,
+    { id: 'avgLossPL',       label: 'Avg P&L — Loss Exits',    icon: '🩸', accent: 'var(--accent-red-deep)',              value: fmtPLShort(kpis.avgNegativePL),  sub: `Avg loss across ${fmt(kpis.negativeExits)} loss exits`,
       tooltip: 'Average loss, counting only the exits that were underwater — shows how deep the losses were for subscribers who left in the red.' },
     { id: 'winBacks',        label: 'Win-Backs',               icon: '🔄', accent: 'var(--accent-green)',  value: fmt(l3mWinBacks),              sub: `of ${fmt(l3mExitedPANs)} exited (last 3 months) · >30d gap`,
       tooltip: 'Among investors who exited in the last 3 months, how many have since come back and re-subscribed after a gap of more than 30 days (a shorter gap is treated as a cycle renewal, not a true win-back).' },
@@ -537,12 +537,12 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
           {/* Header */}
           <div style={{
             gridColumn: '1 / -1', padding: '10px 18px',
-            background: 'rgba(251,191,36,0.08)', borderBottom: '1px solid var(--border-bright)',
+            background: 'color-mix(in srgb, var(--accent-gold) 8%, transparent)', borderBottom: '1px solid var(--border-bright)',
             display: 'flex', alignItems: 'center', gap: 10,
           }}>
             <span style={{ fontSize: 16 }}>⚡</span>
             <div>
-              <span style={{ fontWeight: 700, fontSize: 13, color: '#fbbf24' }}>
+              <span style={{ fontWeight: 700, fontSize: 13, color: 'var(--accent-gold)' }}>
                 Short-Return Impact
               </span>
               <span style={{ fontSize: 12, color: 'var(--text-muted)', marginLeft: 10 }}>
@@ -553,7 +553,7 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
 
           {/* View A — Inclusive */}
           <div style={{ padding: '16px 20px', borderRight: '1px solid var(--border-bright)', background: 'var(--bg-card)' }}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: '#f87171', marginBottom: 8, letterSpacing: '0.04em' }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--accent-red)', marginBottom: 8, letterSpacing: '0.04em' }}>
               📊 INCLUSIVE VIEW &nbsp;<span style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 400 }}>(current dashboard)</span>
             </div>
             <div style={{ display: 'flex', gap: 32, marginBottom: 12 }}>
@@ -577,7 +577,7 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
 
           {/* View B — Exclusive / Continuity */}
           <div style={{ padding: '16px 20px', background: 'var(--bg-card)' }}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: '#34d399', marginBottom: 8, letterSpacing: '0.04em' }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--accent-teal)', marginBottom: 8, letterSpacing: '0.04em' }}>
               🔄 CONTINUITY VIEW &nbsp;<span style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 400 }}>(excluding short returns)</span>
             </div>
             <div style={{ display: 'flex', gap: 32, marginBottom: 12 }}>
@@ -605,9 +605,9 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
             background: 'var(--bg-inset-3)', borderTop: '1px solid var(--border-dim)',
             fontSize: 12, color: 'var(--text-muted)', display: 'flex', gap: 24,
           }}>
-            <span>Difference: <strong style={{ color: '#fbbf24' }}>
+            <span>Difference: <strong style={{ color: 'var(--accent-gold)' }}>
               {(kpis.totalExits - kpis.totalExitsExclShort)} exit cycles
-            </strong> and <strong style={{ color: '#fbbf24' }}>
+            </strong> and <strong style={{ color: 'var(--accent-gold)' }}>
               {kpis.shortReturnCount} investors
             </strong> affected</span>
             <span style={{ marginLeft: 'auto' }}>Gap threshold: ≤ 30 days between exit and re-subscription</span>
@@ -646,8 +646,8 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
               <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 10 }} />
               <Tooltip content={<CustomTooltip />} />
               <Legend wrapperStyle={{ fontSize: 11 }} />
-              <Bar dataKey="c1"    name="Cycle 1 Exits"   fill="#f87171" radius={[0,0,0,0]} stackId="a" />
-              <Bar dataKey="cPlus" name="Cycle 2+ Exits"  fill="#fb923c" radius={[3,3,0,0]} stackId="a" />
+              <Bar dataKey="c1"    name="Cycle 1 Exits"   fill="var(--accent-red)" radius={[0,0,0,0]} stackId="a" />
+              <Bar dataKey="cPlus" name="Cycle 2+ Exits"  fill="var(--accent-orange)" radius={[3,3,0,0]} stackId="a" />
             </BarChart>
           </ResponsiveContainer>
           <div className="chart-clickable-hint">💡 Click any bar to see all exits in that month</div>
@@ -706,10 +706,10 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
                 return (
                   <tr key={i}>
                     <td className="td-name" style={{ whiteSpace: 'nowrap' }}>{m.label}</td>
-                    <td style={{ textAlign: 'right', color: '#f87171', fontFamily: 'monospace' }}>
+                    <td style={{ textAlign: 'right', color: 'var(--accent-red)', fontFamily: 'monospace' }}>
                       {(m.c1 || 0).toLocaleString('en-IN')}
                     </td>
-                    <td style={{ textAlign: 'right', color: '#fb923c', fontFamily: 'monospace' }}>
+                    <td style={{ textAlign: 'right', color: 'var(--accent-orange)', fontFamily: 'monospace' }}>
                       {(m.cPlus || 0).toLocaleString('en-IN')}
                     </td>
                     <td style={{ textAlign: 'right', fontWeight: 600, fontFamily: 'monospace' }}>
@@ -728,10 +728,10 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
             <tfoot>
               <tr style={{ borderTop: '1px solid var(--border-bright)', fontWeight: 700 }}>
                 <td>Total</td>
-                <td style={{ textAlign: 'right', color: '#f87171', fontFamily: 'monospace' }}>
+                <td style={{ textAlign: 'right', color: 'var(--accent-red)', fontFamily: 'monospace' }}>
                   {monthlyTrend.reduce((s, m) => s + (m.c1 || 0), 0).toLocaleString('en-IN')}
                 </td>
-                <td style={{ textAlign: 'right', color: '#fb923c', fontFamily: 'monospace' }}>
+                <td style={{ textAlign: 'right', color: 'var(--accent-orange)', fontFamily: 'monospace' }}>
                   {monthlyTrend.reduce((s, m) => s + (m.cPlus || 0), 0).toLocaleString('en-IN')}
                 </td>
                 <td style={{ textAlign: 'right', fontFamily: 'monospace' }}>
@@ -770,7 +770,7 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
               <XAxis type="number" tick={{ fill: 'var(--text-muted)', fontSize: 10 }} />
               <YAxis dataKey="product" type="category" width={115} tick={<YAxisTick maxChars={14} />} />
               <Tooltip content={<CustomTooltip />} />
-              <Bar dataKey="count" name="Exit Cycles" fill="#f87171" radius={[0,4,4,0]} />
+              <Bar dataKey="count" name="Exit Cycles" fill="var(--accent-red)" radius={[0,4,4,0]} />
             </BarChart>
           </ResponsiveContainer>
           <div className="chart-clickable-hint">💡 Click any bar to see the list of unsubscribed investors for that product</div>
@@ -799,7 +799,7 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
               <XAxis type="number" tick={{ fill: 'var(--text-muted)', fontSize: 10 }} />
               <YAxis dataKey="broker" type="category" width={115} tick={<YAxisTick maxChars={14} />} />
               <Tooltip content={<CustomTooltip />} />
-              <Bar dataKey="count" name="Exit Cycles" fill="#fb923c" radius={[0,4,4,0]} />
+              <Bar dataKey="count" name="Exit Cycles" fill="var(--accent-orange)" radius={[0,4,4,0]} />
             </BarChart>
           </ResponsiveContainer>
           <div className="chart-clickable-hint">💡 Click any bar to see the list of unsubscribed investors for that broker</div>
@@ -848,7 +848,7 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
                   <XAxis type="number" tick={{ fill: 'var(--text-muted)', fontSize: 10 }} />
                   <YAxis dataKey="reason" type="category" tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} width={130} />
                   <Tooltip content={<CustomTooltip />} />
-                  <Bar dataKey="count" name="Count" fill="#8b5cf6" radius={[0,4,4,0]} />
+                  <Bar dataKey="count" name="Count" fill="var(--accent-purple)" radius={[0,4,4,0]} />
                 </BarChart>
               </ResponsiveContainer>
               <div className="chart-clickable-hint">💡 Click any bar to see investors who gave that cancellation reason</div>
@@ -888,7 +888,7 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
                   <XAxis type="number" tick={{ fill: 'var(--text-muted)', fontSize: 10 }} />
                   <YAxis dataKey="state" type="category" tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} width={100} />
                   <Tooltip content={<CustomTooltip />} />
-                  <Bar dataKey="count" name="Exits" fill="#22d3ee" radius={[0,4,4,0]} />
+                  <Bar dataKey="count" name="Exits" fill="var(--accent-sky)" radius={[0,4,4,0]} />
                 </BarChart>
               </ResponsiveContainer>
               <div className="chart-clickable-hint">💡 Click any bar to see exits from that state</div>
@@ -914,9 +914,9 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
             </div>
             <div className="section-divider" />
             <div style={{ display: 'flex', gap: 16, fontSize: 12 }}>
-              <span style={{ color: '#22c55e' }}>● Profit: {plAnalysis.pctPositive}%</span>
-              <span style={{ color: '#f87171' }}>● Loss: {plAnalysis.pctNegative}%</span>
-              <span style={{ color: '#64748b' }}>● Break-even: {((plAnalysis.zeroCount || 0) / (kpis.totalExits || 1) * 100).toFixed(1)}%</span>
+              <span style={{ color: 'var(--accent-green)' }}>● Profit: {plAnalysis.pctPositive}%</span>
+              <span style={{ color: 'var(--accent-red)' }}>● Loss: {plAnalysis.pctNegative}%</span>
+              <span style={{ color: 'var(--text-neutral)' }}>● Break-even: {((plAnalysis.zeroCount || 0) / (kpis.totalExits || 1) * 100).toFixed(1)}%</span>
             </div>
           </div>
 
@@ -937,7 +937,7 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
                       return (
                         <div style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-bright)', borderRadius: 8, padding: '10px 14px', fontSize: 12 }}>
                           <div style={{ color: 'var(--text-secondary)', marginBottom: 4 }}>{label}</div>
-                          <div style={{ color: PL_BUCKET_COLORS[label] || '#64748b', fontWeight: 700 }}>
+                          <div style={{ color: PL_BUCKET_COLORS[label] || 'var(--text-neutral)', fontWeight: 700 }}>
                             {count.toLocaleString('en-IN')} exits ({pct}%)
                           </div>
                         </div>
@@ -946,7 +946,7 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
                   />
                   <Bar dataKey="count" name="Exits" radius={[4,4,0,0]}>
                     {(plAnalysis.byBucket || []).map((b, i) => (
-                      <Cell key={i} fill={PL_BUCKET_COLORS[b.label] || '#64748b'} />
+                      <Cell key={i} fill={PL_BUCKET_COLORS[b.label] || 'var(--text-neutral)'} />
                     ))}
                   </Bar>
                 </BarChart>
@@ -969,7 +969,7 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
                       return (
                         <div style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-bright)', borderRadius: 8, padding: '10px 14px', fontSize: 12 }}>
                           <div style={{ color: 'var(--text-secondary)', marginBottom: 4 }}>{label}</div>
-                          <div style={{ color: d?.avgPL >= 0 ? '#22c55e' : '#f87171', fontWeight: 700 }}>
+                          <div style={{ color: d?.avgPL >= 0 ? 'var(--accent-green)' : 'var(--accent-red)', fontWeight: 700 }}>
                             Avg P&L: {fmtPL(d?.avgPL)}
                           </div>
                           <div style={{ color: 'var(--text-muted)', fontSize: 11, marginTop: 2 }}>
@@ -981,7 +981,7 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
                   />
                   <Bar dataKey="avgPL" name="Avg P&L" radius={[0,3,3,0]}>
                     {(plAnalysis.byProduct || []).map((d, i) => (
-                      <Cell key={i} fill={d.avgPL >= 0 ? '#22c55e' : '#f87171'} />
+                      <Cell key={i} fill={d.avgPL >= 0 ? 'var(--accent-green)' : 'var(--accent-red)'} />
                     ))}
                   </Bar>
                 </BarChart>
@@ -1012,7 +1012,7 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
                       <td style={{ color: 'var(--text-muted)', fontSize: 11 }}>{i + 1}</td>
                       <td className="td-name" style={{ fontSize: 12 }}>{d.product}</td>
                       <td style={{ textAlign: 'right', fontFamily: 'monospace', fontWeight: 700, fontSize: 13,
-                        color: d.avgPL > 0 ? '#22c55e' : d.avgPL < 0 ? '#f87171' : 'var(--text-muted)' }}>
+                        color: d.avgPL > 0 ? 'var(--accent-green)' : d.avgPL < 0 ? 'var(--accent-red)' : 'var(--text-muted)' }}>
                         {fmtPL(d.avgPL)}
                       </td>
                       <td className="td-num">{d.count.toLocaleString('en-IN')}</td>
@@ -1023,7 +1023,7 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
                         <span style={{
                           fontSize: 11, padding: '2px 8px', borderRadius: 10, fontWeight: 600,
                           background: d.avgPL > 0 ? '#22c55e22' : d.avgPL < 0 ? '#f8717122' : '#64748b22',
-                          color: d.avgPL > 0 ? '#22c55e' : d.avgPL < 0 ? '#f87171' : '#64748b',
+                          color: d.avgPL > 0 ? 'var(--accent-green)' : d.avgPL < 0 ? 'var(--accent-red)' : 'var(--text-neutral)',
                         }}>
                           {d.avgPL > 0 ? '▲ Profit' : d.avgPL < 0 ? '▼ Loss' : '─ Neutral'}
                         </span>
@@ -1045,16 +1045,16 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
               <div className="section-title" style={{ fontSize: 15 }}>👤 Unique Exit Investor P&L</div>
               <div className="section-subtitle">
                 One P&L per unique investor (PAN) — total P&L summed across all their exit subscriptions
-                <span style={{ marginLeft: 10, color: uniqueClientPL.avgPL > 0 ? 'var(--accent-green)' : uniqueClientPL.avgPL < 0 ? '#f87171' : 'var(--text-muted)', fontWeight: 600 }}>
+                <span style={{ marginLeft: 10, color: uniqueClientPL.avgPL > 0 ? 'var(--accent-green)' : uniqueClientPL.avgPL < 0 ? 'var(--accent-red)' : 'var(--text-muted)', fontWeight: 600 }}>
                   · Avg: {fmtPLShort(uniqueClientPL.avgPL)} per investor
                 </span>
               </div>
             </div>
             <div className="section-divider" />
             <div style={{ display: 'flex', gap: 16, fontSize: 12 }}>
-              <span style={{ color: '#22c55e' }}>● Profit: {uniqueClientPL.pctPositive}%</span>
-              <span style={{ color: '#f87171' }}>● Loss: {uniqueClientPL.pctNegative}%</span>
-              <span style={{ color: '#64748b' }}>● Break-even: {uniqueClientPL.totalClients > 0 ? ((uniqueClientPL.zeroCount / uniqueClientPL.totalClients) * 100).toFixed(1) : 0}%</span>
+              <span style={{ color: 'var(--accent-green)' }}>● Profit: {uniqueClientPL.pctPositive}%</span>
+              <span style={{ color: 'var(--accent-red)' }}>● Loss: {uniqueClientPL.pctNegative}%</span>
+              <span style={{ color: 'var(--text-neutral)' }}>● Break-even: {uniqueClientPL.totalClients > 0 ? ((uniqueClientPL.zeroCount / uniqueClientPL.totalClients) * 100).toFixed(1) : 0}%</span>
             </div>
           </div>
 
@@ -1063,15 +1063,15 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
             {[
               { label: 'Unique Investors',  value: uniqueClientPL.totalClients.toLocaleString('en-IN'),  color: 'var(--accent-cyan)',   icon: '👤',
                 tooltip: 'Distinct PANs among exited investors, one row per person with P&L summed across every product they exited.' },
-              { label: 'Exited in Profit',  value: `${uniqueClientPL.positiveCount.toLocaleString('en-IN')} (${uniqueClientPL.pctPositive}%)`, color: '#22c55e', icon: '📈',
+              { label: 'Exited in Profit',  value: `${uniqueClientPL.positiveCount.toLocaleString('en-IN')} (${uniqueClientPL.pctPositive}%)`, color: 'var(--accent-green)', icon: '📈',
                 tooltip: 'Investors whose combined total P&L across all their exited subscriptions was positive at the time they left.' },
-              { label: 'Exited in Loss',    value: `${uniqueClientPL.negativeCount.toLocaleString('en-IN')} (${uniqueClientPL.pctNegative}%)`, color: '#f87171', icon: '📉',
+              { label: 'Exited in Loss',    value: `${uniqueClientPL.negativeCount.toLocaleString('en-IN')} (${uniqueClientPL.pctNegative}%)`, color: 'var(--accent-red)', icon: '📉',
                 tooltip: 'Investors whose combined total P&L across all their exited subscriptions was negative at the time they left.' },
-              { label: 'Avg P&L / Investor',value: fmtPLShort(uniqueClientPL.avgPL), color: uniqueClientPL.avgPL >= 0 ? '#22c55e' : '#f87171', icon: '💹',
+              { label: 'Avg P&L / Investor',value: fmtPLShort(uniqueClientPL.avgPL), color: uniqueClientPL.avgPL >= 0 ? 'var(--accent-green)' : 'var(--accent-red)', icon: '💹',
                 tooltip: 'Average total P&L per unique exited investor, summed across all products they held — the overall financial outcome per departing client, not per exit event.' },
-              { label: 'Avg Profit (winners)', value: fmtPLShort(uniqueClientPL.avgPositivePL), color: '#15803d', icon: '💰',
+              { label: 'Avg Profit (winners)', value: fmtPLShort(uniqueClientPL.avgPositivePL), color: 'var(--accent-green)', icon: '💰',
                 tooltip: 'Average total P&L among only the investors who left with an overall gain across all their exited subscriptions.' },
-              { label: 'Avg Loss (losers)',  value: fmtPLShort(uniqueClientPL.avgNegativePL),  color: '#991b1b', icon: '🩸',
+              { label: 'Avg Loss (losers)',  value: fmtPLShort(uniqueClientPL.avgNegativePL),  color: 'var(--accent-red-deep)', icon: '🩸',
                 tooltip: 'Average total P&L among only the investors who left with an overall loss across all their exited subscriptions.' },
             ].map(c => (
               <div key={c.label} className="kpi-card" style={{ '--kpi-accent': c.color }} title={c.tooltip}>
@@ -1094,14 +1094,14 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
                   <Tooltip content={({ active, payload, label }) => active && payload?.length ? (
                     <div style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-bright)', borderRadius: 8, padding: '10px 14px', fontSize: 12 }}>
                       <div style={{ color: 'var(--text-secondary)', marginBottom: 4 }}>{label}</div>
-                      <div style={{ color: PL_BUCKET_COLORS[label] || '#64748b', fontWeight: 700 }}>
+                      <div style={{ color: PL_BUCKET_COLORS[label] || 'var(--text-neutral)', fontWeight: 700 }}>
                         {payload[0].value.toLocaleString('en-IN')} investors
                       </div>
                     </div>
                   ) : null} />
                   <Bar dataKey="count" name="Investors" radius={[4,4,0,0]}>
                     {(uniqueClientPL.byBucket || []).map((b, i) => (
-                      <Cell key={i} fill={PL_BUCKET_COLORS[b.label] || '#64748b'} />
+                      <Cell key={i} fill={PL_BUCKET_COLORS[b.label] || 'var(--text-neutral)'} />
                     ))}
                   </Bar>
                 </BarChart>
@@ -1113,24 +1113,24 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
               tooltip="The 10 exited investors with the most negative and the 10 with the most positive total P&L (summed across all products they exited) — the extreme ends of the outcome spectrum, not a representative sample.">
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', height: 240, overflowY: 'auto' }}>
                 <div>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: '#f87171', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>▼ Top Losers</div>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--accent-red)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>▼ Top Losers</div>
                   {(uniqueClientPL.topLosers || []).filter(c => c.totalPL < 0).map((c, i) => (
                     <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, padding: '3px 0', borderBottom: '1px solid var(--border-dim)' }}>
                       <span style={{ color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 100 }} title={c.name || c.pan}>
                         {c.name || c.pan || '—'}
                       </span>
-                      <span style={{ color: '#f87171', fontFamily: 'monospace', fontWeight: 600, flexShrink: 0 }}>{fmtPLShort(c.totalPL)}</span>
+                      <span style={{ color: 'var(--accent-red)', fontFamily: 'monospace', fontWeight: 600, flexShrink: 0 }}>{fmtPLShort(c.totalPL)}</span>
                     </div>
                   ))}
                 </div>
                 <div>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: '#22c55e', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>▲ Top Gainers</div>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--accent-green)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>▲ Top Gainers</div>
                   {(uniqueClientPL.topGainers || []).filter(c => c.totalPL > 0).map((c, i) => (
                     <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, padding: '3px 0', borderBottom: '1px solid var(--border-dim)' }}>
                       <span style={{ color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 100 }} title={c.name || c.pan}>
                         {c.name || c.pan || '—'}
                       </span>
-                      <span style={{ color: '#22c55e', fontFamily: 'monospace', fontWeight: 600, flexShrink: 0 }}>{fmtPLShort(c.totalPL)}</span>
+                      <span style={{ color: 'var(--accent-green)', fontFamily: 'monospace', fontWeight: 600, flexShrink: 0 }}>{fmtPLShort(c.totalPL)}</span>
                     </div>
                   ))}
                 </div>
@@ -1167,7 +1167,7 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
                         <div style={{ fontSize: 10, color: 'var(--text-muted)', fontFamily: 'monospace' }}>{c.pan}</div>
                       </td>
                       <td style={{ textAlign: 'right', fontFamily: 'monospace', fontWeight: 700,
-                        color: c.totalPL > 0 ? '#22c55e' : c.totalPL < 0 ? '#f87171' : 'var(--text-muted)' }}>
+                        color: c.totalPL > 0 ? 'var(--accent-green)' : c.totalPL < 0 ? 'var(--accent-red)' : 'var(--text-muted)' }}>
                         {fmtPL(c.totalPL)}
                       </td>
                       <td style={{ textAlign: 'right', fontSize: 11 }}>
@@ -1180,7 +1180,7 @@ export default memo(function Tab03Unsubscriber({ unsubData, rawData }) {
                         <span style={{
                           fontSize: 11, padding: '2px 8px', borderRadius: 10, fontWeight: 600,
                           background: c.totalPL > 0 ? '#22c55e22' : c.totalPL < 0 ? '#f8717122' : '#64748b22',
-                          color: c.totalPL > 0 ? '#22c55e' : c.totalPL < 0 ? '#f87171' : '#64748b',
+                          color: c.totalPL > 0 ? 'var(--accent-green)' : c.totalPL < 0 ? 'var(--accent-red)' : 'var(--text-neutral)',
                         }}>
                           {c.totalPL > 0 ? '▲ Profit' : c.totalPL < 0 ? '▼ Loss' : '─ Neutral'}
                         </span>

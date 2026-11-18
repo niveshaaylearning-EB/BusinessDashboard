@@ -17,11 +17,11 @@ const INTERVAL_LABELS = { 0: 'M0', 1: 'M1', 3: 'M3', 6: 'M6', 12: 'M12', 24: 'M2
 
 const getColor = (pct) => {
   if (pct === null || pct === undefined) return 'transparent';
-  if (pct >= 80) return 'rgba(34,197,94,0.7)';
-  if (pct >= 60) return 'rgba(34,197,94,0.45)';
-  if (pct >= 40) return 'rgba(251,191,36,0.5)';
-  if (pct >= 20) return 'rgba(251,115,36,0.5)';
-  return 'rgba(248,113,113,0.55)';
+  if (pct >= 80) return 'color-mix(in srgb, var(--accent-green) 70%, transparent)';
+  if (pct >= 60) return 'color-mix(in srgb, var(--accent-green) 45%, transparent)';
+  if (pct >= 40) return 'color-mix(in srgb, var(--accent-gold) 50%, transparent)';
+  if (pct >= 20) return 'color-mix(in srgb, var(--accent-orange) 50%, transparent)';
+  return 'color-mix(in srgb, var(--accent-red) 55%, transparent)';
 };
 
 const CustomTooltip = ({ active, payload, label, unit = '%' }) => {
@@ -145,7 +145,7 @@ function RetentionContent({ cohorts: allCohorts, currentMaster, insights, filter
         category: 'Retention Champion',
         title: `Best M12: ${bestM12.cohort}`,
         detail: `${bestM12.m12}% of ${bestM12.size.toLocaleString('en-IN')} subscribers still active at 12 months — strongest cohort retention on record.`,
-        color: '#22c55e',
+        color: 'var(--accent-green)',
       });
     }
     if (worstM12) {
@@ -154,7 +154,7 @@ function RetentionContent({ cohorts: allCohorts, currentMaster, insights, filter
         category: 'Attention Required',
         title: `Weakest M12: ${worstM12.cohort}`,
         detail: `Only ${worstM12.m12}% retained at 12 months (${worstM12.size.toLocaleString('en-IN')} subs). Investigate product or pricing changes around that cohort.`,
-        color: '#f87171',
+        color: 'var(--accent-red)',
       });
     }
 
@@ -168,7 +168,7 @@ function RetentionContent({ cohorts: allCohorts, currentMaster, insights, filter
         category: 'Early Retention',
         title: `Avg M1 Retention: ${avgM1}%`,
         detail: `Platform-wide first-month retention averages ${avgM1}% across ${m1vals.length} cohorts. ${avgM1 >= 70 ? 'Strong early engagement.' : avgM1 >= 50 ? 'Moderate early retention — room to improve onboarding.' : 'Early churn is high — onboarding needs urgent review.'}`,
-        color: avgM1 >= 70 ? '#22c55e' : avgM1 >= 50 ? '#fbbf24' : '#f87171',
+        color: avgM1 >= 70 ? 'var(--accent-green)' : avgM1 >= 50 ? 'var(--accent-gold)' : 'var(--accent-red)',
       });
     }
 
@@ -182,7 +182,7 @@ function RetentionContent({ cohorts: allCohorts, currentMaster, insights, filter
         category: '6-Month Survival',
         title: `Avg M6 Retention: ${avgM6}%`,
         detail: `On average ${avgM6}% of subscribers survive to 6 months across ${m6vals.length} cohorts. ${avgM6 >= 50 ? 'Healthy 6-month stickiness.' : 'Majority of churn happens before M6 — mid-cycle engagement is critical.'}`,
-        color: avgM6 >= 50 ? '#22c55e' : '#fbbf24',
+        color: avgM6 >= 50 ? 'var(--accent-green)' : 'var(--accent-gold)',
       });
     }
 
@@ -196,7 +196,7 @@ function RetentionContent({ cohorts: allCohorts, currentMaster, insights, filter
         category: '12-Month Survival',
         title: `Avg M12 Retention: ${avgM12}%`,
         detail: `1-year survival rate is ${avgM12}% across ${m12vals.length} cohorts. ${avgM12 >= 40 ? 'Above-average long-term loyalty.' : 'Less than half survive year one — long-term retention strategies needed.'}`,
-        color: avgM12 >= 40 ? '#22c55e' : '#f87171',
+        color: avgM12 >= 40 ? 'var(--accent-green)' : 'var(--accent-red)',
       });
     }
 
@@ -213,7 +213,7 @@ function RetentionContent({ cohorts: allCohorts, currentMaster, insights, filter
         category: 'Trend Analysis',
         title: `M1 Trend: ${improving ? '+' : ''}${delta}pp vs Prior Period`,
         detail: `Recent 3-cohort avg M1 retention is ${Math.round(recentAvgM1)}% vs ${Math.round(prevAvgM1)}% in the preceding 3 cohorts. ${improving ? 'Early retention is improving — recent acquisitions are sticking.' : flat ? 'Early retention is unchanged.' : 'Early retention is declining — investigate recent cohort quality.'}`,
-        color: improving ? '#22c55e' : flat ? '#64748b' : '#f87171',
+        color: improving ? 'var(--accent-green)' : flat ? 'var(--text-neutral)' : 'var(--accent-red)',
       });
     }
 
@@ -227,7 +227,7 @@ function RetentionContent({ cohorts: allCohorts, currentMaster, insights, filter
         category: 'Drop-off Alert',
         title: `Worst M1→M6 Drop: ${biggestDrop.cohort}`,
         detail: `Lost ${biggestDrop.drop.toFixed(1)}pp between M1 and M6 (${biggestDrop.size.toLocaleString('en-IN')} subs). Mid-cycle churn spike — check if a renewal event or fee change occurred around this cohort.`,
-        color: '#fb923c',
+        color: 'var(--accent-orange)',
       });
     }
 
@@ -238,7 +238,7 @@ function RetentionContent({ cohorts: allCohorts, currentMaster, insights, filter
         category: 'Acquisition Peak',
         title: `Largest Cohort: ${largestCohort.cohort}`,
         detail: `${largestCohort.size.toLocaleString('en-IN')} subscribers acquired — biggest single-month intake. ${largestCohort.m6 !== null ? `M6 retention for this cohort: ${largestCohort.m6}%.` : 'M6 data not yet available for this cohort.'}`,
-        color: '#22d3ee',
+        color: 'var(--accent-sky)',
       });
     }
 
@@ -301,7 +301,7 @@ function RetentionContent({ cohorts: allCohorts, currentMaster, insights, filter
             <button key={iv} onClick={() => toggleInterval(iv)}
               style={{ padding: '3px 10px', borderRadius: 12, fontSize: 11, cursor: 'pointer', fontWeight: 600,
                 background: intervalFilter.includes(iv) ? 'var(--accent-cyan)' : 'var(--bg-elevated)',
-                color: intervalFilter.includes(iv) ? '#000' : 'var(--text-muted)',
+                color: intervalFilter.includes(iv) ? 'var(--on-accent)' : 'var(--text-muted)',
                 border: '1px solid var(--border-default)' }}>
               M{iv}
             </button>
@@ -349,8 +349,8 @@ function RetentionContent({ cohorts: allCohorts, currentMaster, insights, filter
               <XAxis dataKey="label" tick={{ fill: 'var(--text-muted)', fontSize: 10 }} />
               <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 10 }} unit="%" domain={[0, 100]} />
               <Tooltip content={<CustomTooltip />} />
-              <ReferenceLine y={50} stroke="#fbbf24" strokeDasharray="4 4" />
-              <Line type="monotone" dataKey="Avg Retention" stroke="#00d4ff" strokeWidth={3} dot={{ fill: '#00d4ff', r: 5 }} />
+              <ReferenceLine y={50} stroke="var(--accent-gold)" strokeDasharray="4 4" />
+              <Line type="monotone" dataKey="Avg Retention" stroke="var(--accent-cyan)" strokeWidth={3} dot={{ fill: 'var(--accent-cyan)', r: 5 }} />
             </LineChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -363,7 +363,7 @@ function RetentionContent({ cohorts: allCohorts, currentMaster, insights, filter
               <XAxis dataKey="cohort" tick={{ fill: 'var(--text-muted)', fontSize: 9 }} interval="preserveStartEnd" />
               <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 10 }} />
               <Tooltip content={<CustomTooltip unit="" />} />
-              <Line type="monotone" dataKey="size" name="Cohort Size" stroke="#fbbf24" strokeWidth={2} dot={false} />
+              <Line type="monotone" dataKey="size" name="Cohort Size" stroke="var(--accent-gold)" strokeWidth={2} dot={false} />
             </LineChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -387,7 +387,7 @@ function RetentionContent({ cohorts: allCohorts, currentMaster, insights, filter
               {recentCohorts.map((c, ri) => (
                 <tr key={c.cohort} style={{ borderBottom: '1px solid var(--border-dim)', cursor: 'pointer', transition: 'background 0.12s' }}
                   onClick={() => handleCohortClick(c.cohort)}
-                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(0,212,255,0.05)'}
+                  onMouseEnter={e => e.currentTarget.style.background = 'color-mix(in srgb, var(--accent-cyan) 5%, transparent)'}
                   onMouseLeave={e => e.currentTarget.style.background = ''}>
                   <td style={{ padding: '5px 10px', color: 'var(--accent-cyan)', fontFamily: 'monospace', fontSize: '0.72rem', whiteSpace: 'nowrap', textDecoration: 'underline dotted' }}>{c.cohort}</td>
                   <td style={{ padding: '5px 6px', textAlign: 'center', color: 'var(--text-muted)', fontFamily: 'monospace', fontSize: '0.72rem' }}>{c.size}</td>
@@ -400,7 +400,7 @@ function RetentionContent({ cohorts: allCohorts, currentMaster, insights, filter
                             background: getColor(val),
                             borderRadius: 4,
                             padding: '4px 4px',
-                            color: 'white',
+                            color: 'var(--text-bright)',
                             fontFamily: 'monospace',
                             fontWeight: 600,
                             fontSize: '0.72rem',
@@ -426,8 +426,8 @@ function RetentionContent({ cohorts: allCohorts, currentMaster, insights, filter
                       <div style={{
                         background: getColor(avgRetention[interval]),
                         borderRadius: 4, padding: '4px',
-                        color: 'white', fontFamily: 'monospace', fontWeight: 700, fontSize: '0.72rem',
-                        border: '1px solid rgba(255,255,255,0.2)',
+                        color: 'var(--text-bright)', fontFamily: 'monospace', fontWeight: 700, fontSize: '0.72rem',
+                        border: '1px solid color-mix(in srgb, var(--text-primary) 20%, transparent)',
                       }}>{avgRetention[interval]}%</div>
                     ) : '—'}
                   </td>
@@ -452,7 +452,7 @@ function RetentionContent({ cohorts: allCohorts, currentMaster, insights, filter
                 <button key={iv} onClick={() => toggleInterval(iv)}
                   style={{ padding: '3px 10px', borderRadius: 12, fontSize: 11, cursor: 'pointer', fontWeight: 600,
                     background: intervalFilter.includes(iv) ? 'var(--accent-cyan)' : 'var(--bg-elevated)',
-                    color: intervalFilter.includes(iv) ? '#000' : 'var(--text-muted)',
+                    color: intervalFilter.includes(iv) ? 'var(--on-accent)' : 'var(--text-muted)',
                     border: '1px solid var(--border-default)' }}>
                   M{iv}
                 </button>

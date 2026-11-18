@@ -5,13 +5,13 @@ import ChartCard from '../components/ChartCard';
 import FAQSection from '../components/FAQSection';
 
 const RISK_META = {
-  Critical: { color: '#f87171', bg: 'rgba(248,113,113,0.15)', icon: '🔴',
+  Critical: { color: 'var(--accent-red)', bg: 'color-mix(in srgb, var(--accent-red) 15%, transparent)', icon: '🔴',
     tooltip: 'Score of 7+ on the churn formula (first-cycle subscriber +3, P&L below -20% +4, ≤15 days left in cycle +3, heavy discount dependency +2, new subscriber +1, gains above +10% subtract 2) — most likely to churn, needs immediate outreach.' },
-  High:     { color: '#fb923c', bg: 'rgba(251,146,60,0.15)',  icon: '🟠',
+  High:     { color: 'var(--accent-orange)', bg: 'color-mix(in srgb, var(--accent-orange) 15%, transparent)',  icon: '🟠',
     tooltip: 'Score of 5-6 on the same weighted formula (cycle stage, P&L, days left in cycle, discount dependency, tenure) — elevated churn risk, prioritize right after Critical.' },
-  Medium:   { color: '#fbbf24', bg: 'rgba(251,191,36,0.15)', icon: '🟡',
+  Medium:   { color: 'var(--accent-gold)', bg: 'color-mix(in srgb, var(--accent-gold) 15%, transparent)', icon: '🟡',
     tooltip: 'Score of 3-4 on the same formula — some risk factors present but not urgent; worth proactive monitoring.' },
-  Low:      { color: '#22c55e', bg: 'rgba(34,197,94,0.15)',   icon: '🟢',
+  Low:      { color: 'var(--accent-green)', bg: 'color-mix(in srgb, var(--accent-green) 15%, transparent)',   icon: '🟢',
     tooltip: 'Score below 3 (can go negative for profitable, loyal investors) — least likely to churn based on current cycle stage, P&L, and days remaining.' },
 };
 
@@ -48,7 +48,7 @@ function ChurnContent({ churnRisk }) {
       {/* Summary Tiles */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 10 }}>
         {Object.entries(RISK_META).map(([level, meta]) => (
-          <div key={level} title={meta.tooltip} style={{ background: meta.bg, border: `1px solid ${meta.color}40`, borderRadius: 12, padding: '1rem', cursor: 'pointer', outline: filter === level ? `2px solid ${meta.color}` : 'none' }}
+          <div key={level} title={meta.tooltip} style={{ background: meta.bg, border: `1px solid color-mix(in srgb, ${meta.color} 25%, transparent)`, borderRadius: 12, padding: '1rem', cursor: 'pointer', outline: filter === level ? `2px solid ${meta.color}` : 'none' }}
             onClick={() => setFilter(filter === level ? 'All' : level)}>
             <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>{meta.icon} {level} Risk</div>
             <div style={{ fontSize: '1.8rem', fontWeight: 700, color: meta.color }}>{byLevel[level] || 0}</div>
@@ -109,9 +109,9 @@ function ChurnContent({ churnRisk }) {
                     <td style={{ padding: '7px 10px', color: 'var(--text-muted)', fontFamily: 'monospace', fontSize: 11 }}>{r.pan}</td>
                     <td style={{ padding: '7px 10px', color: 'var(--text-secondary)' }}>{r.product}</td>
                     <td style={{ padding: '7px 10px', textAlign: 'right', color: 'var(--text-secondary)' }}>{r.cycle}</td>
-                    <td style={{ padding: '7px 10px', textAlign: 'right', color: r.daysLeft <= 30 ? '#f87171' : r.daysLeft <= 60 ? '#fbbf24' : 'var(--text-secondary)', fontWeight: r.daysLeft <= 30 ? 700 : 400 }}>{r.daysLeft}d</td>
-                    <td style={{ padding: '7px 10px', textAlign: 'right', color: r.pnlPct >= 0 ? '#22c55e' : '#f87171', fontWeight: 600 }}>{r.pnlPct > 0 ? '+' : ''}{r.pnlPct}%</td>
-                    <td style={{ padding: '7px 10px', textAlign: 'right', color: '#22c55e' }}>₹{r.planAmount.toLocaleString('en-IN')}</td>
+                    <td style={{ padding: '7px 10px', textAlign: 'right', color: r.daysLeft <= 30 ? 'var(--accent-red)' : r.daysLeft <= 60 ? 'var(--accent-gold)' : 'var(--text-secondary)', fontWeight: r.daysLeft <= 30 ? 700 : 400 }}>{r.daysLeft}d</td>
+                    <td style={{ padding: '7px 10px', textAlign: 'right', color: r.pnlPct >= 0 ? 'var(--accent-green)' : 'var(--accent-red)', fontWeight: 600 }}>{r.pnlPct > 0 ? '+' : ''}{r.pnlPct}%</td>
+                    <td style={{ padding: '7px 10px', textAlign: 'right', color: 'var(--accent-green)' }}>₹{r.planAmount.toLocaleString('en-IN')}</td>
                   </tr>
                 );
               })}

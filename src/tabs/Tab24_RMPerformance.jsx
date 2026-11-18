@@ -40,13 +40,13 @@ export default memo(function Tab24RMPerformance({ rmPerformance }) {
 
   const top5 = sorted.slice(0, 8);
   const kpiRows = [
-    { label: 'Total RMs', value: data.length, color: '#00d4ff',
+    { label: 'Total RMs', value: data.length, color: 'var(--accent-cyan)',
       tooltip: 'Count of distinct RM Email values with at least one assigned investor, deduplicated by PAN.' },
-    { label: 'Total Managed', value: formatNumber(data.reduce((s, r) => s + r.total, 0)), color: '#fbbf24',
+    { label: 'Total Managed', value: formatNumber(data.reduce((s, r) => s + r.total, 0)), color: 'var(--accent-gold)',
       tooltip: 'Sum of every investor (active and exited, deduplicated by PAN) across all RMs.' },
-    { label: 'Best Renewal Rate', value: data.length ? `${Math.max(...data.map(r => r.renewalRate))}%` : '—', color: '#22c55e',
+    { label: 'Best Renewal Rate', value: data.length ? `${Math.max(...data.map(r => r.renewalRate))}%` : '—', color: 'var(--accent-green)',
       tooltip: 'The highest renewal rate among all RMs — the share of that RM\'s active investors who are on cycle 2 or later.' },
-    { label: 'Total Revenue', value: `₹${formatNumber(data.reduce((s, r) => s + r.totalRevenue, 0))}`, color: '#a78bfa',
+    { label: 'Total Revenue', value: `₹${formatNumber(data.reduce((s, r) => s + r.totalRevenue, 0))}`, color: 'var(--accent-purple)',
       tooltip: 'Sum of Plan Amount across every investor (active and exited) ever assigned to an RM.' },
   ];
 
@@ -62,7 +62,7 @@ export default memo(function Tab24RMPerformance({ rmPerformance }) {
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12 }}>
         {kpiRows.map(k => (
-          <div key={k.label} title={k.tooltip} style={{ background: 'var(--bg-card)', border: `1px solid ${k.color}40`, borderRadius: 12, padding: '1rem' }}>
+          <div key={k.label} title={k.tooltip} style={{ background: 'var(--bg-card)', border: `1px solid color-mix(in srgb, ${k.color} 25%, transparent)`, borderRadius: 12, padding: '1rem' }}>
             <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>{k.label}</div>
             <div style={{ fontSize: '1.4rem', fontWeight: 700, color: k.color }}>{k.value}</div>
           </div>
@@ -78,7 +78,7 @@ export default memo(function Tab24RMPerformance({ rmPerformance }) {
               <XAxis type="number" tick={{ fontSize: 10, fill: 'var(--text-muted)' }} />
               <YAxis type="category" dataKey="rm" tick={{ fontSize: 10, fill: 'var(--text-muted)' }} width={120} />
               <Tooltip content={<Tip />} />
-              <Bar dataKey="active" name="Active" fill="#00d4ff" radius={[0, 4, 4, 0]} />
+              <Bar dataKey="active" name="Active" fill="var(--accent-cyan)" radius={[0, 4, 4, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -91,7 +91,7 @@ export default memo(function Tab24RMPerformance({ rmPerformance }) {
               <XAxis type="number" tick={{ fontSize: 10, fill: 'var(--text-muted)' }} domain={[0, 100]} />
               <YAxis type="category" dataKey="rm" tick={{ fontSize: 10, fill: 'var(--text-muted)' }} width={120} />
               <Tooltip content={<Tip />} />
-              <Bar dataKey="renewalRate" name="Renewal %" fill="#22c55e" radius={[0, 4, 4, 0]} />
+              <Bar dataKey="renewalRate" name="Renewal %" fill="var(--accent-green)" radius={[0, 4, 4, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -127,13 +127,13 @@ export default memo(function Tab24RMPerformance({ rmPerformance }) {
                 <tr key={r.rm} style={{ borderBottom: '1px solid var(--border-default)', background: i % 2 === 0 ? 'transparent' : 'var(--bg-elevated)' }}>
                   <td style={{ padding: '7px 10px', color: 'var(--text-primary)', fontWeight: 500, fontSize: 11 }}>{r.rm}</td>
                   <td style={{ padding: '7px 10px', textAlign: 'right', color: 'var(--text-secondary)' }}>{r.total}</td>
-                  <td style={{ padding: '7px 10px', textAlign: 'right', color: '#22c55e', fontWeight: 600 }}>{r.active}</td>
-                  <td style={{ padding: '7px 10px', textAlign: 'right', color: '#f87171' }}>{r.exited}</td>
+                  <td style={{ padding: '7px 10px', textAlign: 'right', color: 'var(--accent-green)', fontWeight: 600 }}>{r.active}</td>
+                  <td style={{ padding: '7px 10px', textAlign: 'right', color: 'var(--accent-red)' }}>{r.exited}</td>
                   <td style={{ padding: '7px 10px', textAlign: 'right', color: 'var(--text-secondary)' }}>{r.activeRate}%</td>
-                  <td style={{ padding: '7px 10px', textAlign: 'right', color: r.renewalRate >= 60 ? '#22c55e' : r.renewalRate >= 40 ? '#fbbf24' : '#f87171', fontWeight: 600 }}>{r.renewalRate}%</td>
+                  <td style={{ padding: '7px 10px', textAlign: 'right', color: r.renewalRate >= 60 ? 'var(--accent-green)' : r.renewalRate >= 40 ? 'var(--accent-gold)' : 'var(--accent-red)', fontWeight: 600 }}>{r.renewalRate}%</td>
                   <td style={{ padding: '7px 10px', textAlign: 'right', color: 'var(--text-secondary)' }}>{r.avgNetworth ? `₹${r.avgNetworth.toLocaleString('en-IN')}` : '—'}</td>
-                  <td style={{ padding: '7px 10px', textAlign: 'right', color: r.avgPnL >= 0 ? '#22c55e' : '#f87171' }}>{r.avgPnL !== 0 ? `${r.avgPnL >= 0 ? '+' : ''}₹${r.avgPnL.toLocaleString('en-IN')}` : '—'}</td>
-                  <td style={{ padding: '7px 10px', textAlign: 'right', color: '#fbbf24', fontWeight: 600 }}>₹{r.totalRevenue.toLocaleString('en-IN')}</td>
+                  <td style={{ padding: '7px 10px', textAlign: 'right', color: r.avgPnL >= 0 ? 'var(--accent-green)' : 'var(--accent-red)' }}>{r.avgPnL !== 0 ? `${r.avgPnL >= 0 ? '+' : ''}₹${r.avgPnL.toLocaleString('en-IN')}` : '—'}</td>
+                  <td style={{ padding: '7px 10px', textAlign: 'right', color: 'var(--accent-gold)', fontWeight: 600 }}>₹{r.totalRevenue.toLocaleString('en-IN')}</td>
                 </tr>
               ))}
             </tbody>

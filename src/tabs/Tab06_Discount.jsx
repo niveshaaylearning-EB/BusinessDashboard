@@ -32,7 +32,7 @@ const toRow = r => ({
   discount: r['Offer Discount'] || 0,
 });
 
-const COLORS = ['#00d4ff','#fbbf24','#22c55e','#a78bfa','#f87171','#fb923c','#2dd4bf','#f472b6'];
+const COLORS = ['var(--accent-cyan)','var(--accent-gold)','var(--accent-green)','var(--accent-purple)','var(--accent-red)','var(--accent-orange)','var(--accent-teal)','var(--accent-pink)'];
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
@@ -73,7 +73,7 @@ function DiscountContent({ discountSummary, discountByProduct, discountByBroker,
     const avgDisc = summary.avgDiscount ?? 0;
 
     const utilLabel = util > 60 ? 'High' : util > 30 ? 'Moderate' : 'Low';
-    const utilColor = util > 60 ? '#f87171' : util > 30 ? '#fbbf24' : '#22c55e';
+    const utilColor = util > 60 ? 'var(--accent-red)' : util > 30 ? 'var(--accent-gold)' : 'var(--accent-green)';
 
     const topProductByDiscount = products.length > 0
       ? [...products].sort((a, b) => (b.totalDiscount ?? 0) - (a.totalDiscount ?? 0))[0]
@@ -92,7 +92,7 @@ function DiscountContent({ discountSummary, discountByProduct, discountByBroker,
       : null;
 
     const avgDiscLabel = avgDisc > 5000 ? 'High' : avgDisc > 2000 ? 'Moderate' : 'Low';
-    const avgDiscColor = avgDisc > 5000 ? '#f87171' : avgDisc > 2000 ? '#fbbf24' : '#22c55e';
+    const avgDiscColor = avgDisc > 5000 ? 'var(--accent-red)' : avgDisc > 2000 ? 'var(--accent-gold)' : 'var(--accent-green)';
 
     const result = [];
 
@@ -113,7 +113,7 @@ function DiscountContent({ discountSummary, discountByProduct, discountByBroker,
       category: 'Total Spend',
       title: `Total Discount Issued: ${fmtAmt(totalDisc)}`,
       detail: `Across ${(summary.withDiscountCount ?? 0).toLocaleString('en-IN')} discounted subscriptions out of ${(summary.totalCount ?? 0).toLocaleString('en-IN')} total.`,
-      color: '#fb923c',
+      color: 'var(--accent-orange)',
     });
 
     if (topProductByDiscount) {
@@ -122,7 +122,7 @@ function DiscountContent({ discountSummary, discountByProduct, discountByBroker,
         category: 'Top Product',
         title: `${topProductByDiscount.name} leads discount spend`,
         detail: `${fmtAmt(topProductByDiscount.totalDiscount)} total discounted; avg discount ${fmtAmt(topProductByDiscount.avgDiscount)} across ${(topProductByDiscount.count ?? 0).toLocaleString('en-IN')} subs.`,
-        color: '#22d3ee',
+        color: 'var(--accent-sky)',
       });
     }
 
@@ -135,7 +135,7 @@ function DiscountContent({ discountSummary, discountByProduct, discountByBroker,
         detail: pUtil > 70
           ? `Nearly all buyers of this product receive a discount — full-price conversion is rare.`
           : `${pUtil}% of this product's subscribers used a discount. Review pricing floor.`,
-        color: pUtil > 70 ? '#f87171' : '#fbbf24',
+        color: pUtil > 70 ? 'var(--accent-red)' : 'var(--accent-gold)',
       });
     }
 
@@ -145,7 +145,7 @@ function DiscountContent({ discountSummary, discountByProduct, discountByBroker,
         category: 'Offer Codes',
         title: `"${topCode.code}" is the most-used offer code`,
         detail: `Used by ${(topCode.count ?? 0).toLocaleString('en-IN')} subscribers; total discount ${fmtAmt(topCode.totalDiscount)}, avg ${fmtAmt(topCode.avgDiscount)} per use.`,
-        color: '#a78bfa',
+        color: 'var(--accent-purple)',
       });
     }
 
@@ -156,7 +156,7 @@ function DiscountContent({ discountSummary, discountByProduct, discountByBroker,
         category: 'Broker Discounting',
         title: `${topBrokerByUtil.broker || topBrokerByUtil.name} grants most discounts (${bUtil}%)`,
         detail: `${bUtil}% of this broker's subscribers received a discount — may indicate aggressive acquisition pricing.`,
-        color: bUtil > 60 ? '#f87171' : '#fbbf24',
+        color: bUtil > 60 ? 'var(--accent-red)' : 'var(--accent-gold)',
       });
     }
 
@@ -178,7 +178,7 @@ function DiscountContent({ discountSummary, discountByProduct, discountByBroker,
         category: 'Margin Risk',
         title: `Margin Risk: Discount utilization exceeds 50%`,
         detail: `Over half your subscriber base is on discounted pricing. Consider tiered loyalty pricing to reduce blanket discounting.`,
-        color: '#f87171',
+        color: 'var(--accent-red)',
       });
     }
 
@@ -265,7 +265,7 @@ function DiscountContent({ discountSummary, discountByProduct, discountByBroker,
               <Tooltip content={<CustomTooltip />} />
               <Bar dataKey="discountUtilization" name="Utilization %" radius={[0, 4, 4, 0]}>
                 {topByUtil.map((p, i) => (
-                  <Cell key={i} fill={p.discountUtilization > 70 ? '#f87171' : p.discountUtilization > 40 ? '#fbbf24' : '#22c55e'} />
+                  <Cell key={i} fill={p.discountUtilization > 70 ? 'var(--accent-red)' : p.discountUtilization > 40 ? 'var(--accent-gold)' : 'var(--accent-green)'} />
                 ))}
               </Bar>
             </BarChart>
@@ -295,8 +295,8 @@ function DiscountContent({ discountSummary, discountByProduct, discountByBroker,
             <YAxis yAxisId="right" orientation="right" tick={{ fill: 'var(--text-muted)', fontSize: 10 }} tickFormatter={v => formatCurrency(v, true)} />
             <Tooltip content={<CustomTooltip />} />
             <Legend wrapperStyle={{ fontSize: 11 }} />
-            <Bar yAxisId="left" dataKey="count" name="Subscriptions" fill="#00d4ff" radius={[3, 3, 0, 0]} />
-            <Bar yAxisId="right" dataKey="totalDiscount" name="Total Discount ₹" fill="#fbbf24" radius={[3, 3, 0, 0]} />
+            <Bar yAxisId="left" dataKey="count" name="Subscriptions" fill="var(--accent-cyan)" radius={[3, 3, 0, 0]} />
+            <Bar yAxisId="right" dataKey="totalDiscount" name="Total Discount ₹" fill="var(--accent-gold)" radius={[3, 3, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
         <div className="chart-clickable-hint">Click a bar to see subscribers who used that offer code</div>

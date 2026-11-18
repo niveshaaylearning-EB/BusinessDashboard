@@ -352,7 +352,7 @@ export default memo(function Tab01Executive({ kpis, prevKpis, monthly, retention
                       color: 'var(--text-primary)', outline: 'none' }} />
                   <button onClick={() => { setGoal(Number(goalInput) || 0); setEditingGoal(false); }}
                     style={{ background: 'var(--accent-cyan)', border: 'none', borderRadius: 6,
-                      color: '#000', cursor: 'pointer', fontSize: 11, padding: '4px 12px', fontWeight: 600 }}>Save</button>
+                      color: 'var(--on-accent)', cursor: 'pointer', fontSize: 11, padding: '4px 12px', fontWeight: 600 }}>Save</button>
                   <button onClick={() => setEditingGoal(false)}
                     style={{ background: 'none', border: '1px solid var(--border-default)', borderRadius: 6,
                       color: 'var(--text-muted)', cursor: 'pointer', fontSize: 11, padding: '4px 10px' }}>Cancel</button>
@@ -363,7 +363,7 @@ export default memo(function Tab01Executive({ kpis, prevKpis, monthly, retention
               <div style={{ background: 'var(--bg-elevated)', borderRadius: 6, height: 10, overflow: 'hidden' }}>
                 <div style={{
                   height: '100%', width: `${goalPct}%`,
-                  background: goalPct >= 100 ? '#22c55e' : goalPct >= 75 ? '#00d4ff' : goalPct >= 50 ? '#fbbf24' : '#f87171',
+                  background: goalPct >= 100 ? 'var(--accent-green)' : goalPct >= 75 ? 'var(--accent-cyan)' : goalPct >= 50 ? 'var(--accent-gold)' : 'var(--accent-red)',
                   transition: 'width 0.6s ease', borderRadius: 6,
                 }} />
               </div>
@@ -379,7 +379,7 @@ export default memo(function Tab01Executive({ kpis, prevKpis, monthly, retention
       {/* Period comparison banner */}
       {prevKpis && (
         <div style={{
-          background: 'rgba(0,212,255,0.05)', border: '1px solid rgba(0,212,255,0.2)',
+          background: 'color-mix(in srgb, var(--accent-cyan) 5%, transparent)', border: '1px solid color-mix(in srgb, var(--accent-cyan) 20%, transparent)',
           borderRadius: 8, padding: '7px 14px', marginBottom: '0.75rem',
           fontSize: 12, color: 'var(--accent-cyan)', display: 'flex', alignItems: 'center', gap: 8,
         }}>
@@ -420,8 +420,8 @@ export default memo(function Tab01Executive({ kpis, prevKpis, monthly, retention
               <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 10 }} />
               <Tooltip content={<CustomTooltip />} />
               <Legend wrapperStyle={{ fontSize: 11 }} />
-              <Bar dataKey="newUnique" name="New Unique" fill="#22c55e" stackId="a" radius={[0, 0, 0, 0]} />
-              <Bar dataKey="renewals" name="Renewals" fill="#00d4ff" stackId="a" radius={[3, 3, 0, 0]} />
+              <Bar dataKey="newUnique" name="New Unique" fill="var(--accent-green)" stackId="a" radius={[0, 0, 0, 0]} />
+              <Bar dataKey="renewals" name="Renewals" fill="var(--accent-cyan)" stackId="a" radius={[3, 3, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
           <div className="chart-clickable-hint">💡 Click any bar to see subscriber details</div>
@@ -440,9 +440,9 @@ export default memo(function Tab01Executive({ kpis, prevKpis, monthly, retention
               <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 10 }} />
               <Tooltip content={<CustomTooltip />} />
               <ReferenceLine y={0} stroke="var(--border-bright)" />
-              <Bar dataKey="new" name="New" fill="#22c55e" radius={[0, 0, 0, 0]} />
-              <Bar dataKey="exited" name="Exited" fill="#f87171" radius={[0, 0, 0, 0]} />
-              <Bar dataKey="net" name="Net" fill="#fbbf24" radius={[3, 3, 0, 0]} />
+              <Bar dataKey="new" name="New" fill="var(--accent-green)" radius={[0, 0, 0, 0]} />
+              <Bar dataKey="exited" name="Exited" fill="var(--accent-red)" radius={[0, 0, 0, 0]} />
+              <Bar dataKey="net" name="Net" fill="var(--accent-gold)" radius={[3, 3, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
           <div className="chart-clickable-hint">💡 Click any bar to see subscriber details</div>
@@ -457,15 +457,15 @@ export default memo(function Tab01Executive({ kpis, prevKpis, monthly, retention
             <AreaChart data={last24}>
               <defs>
                 <linearGradient id="gradClose" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#00d4ff" stopOpacity={0.25} />
-                  <stop offset="95%" stopColor="#00d4ff" stopOpacity={0} />
+                  <stop offset="5%" stopColor="var(--accent-cyan)" stopOpacity={0.25} />
+                  <stop offset="95%" stopColor="var(--accent-cyan)" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border-dim)" />
               <XAxis dataKey="month" tick={{ fill: 'var(--text-muted)', fontSize: 10 }} interval="preserveStartEnd" />
               <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 10 }} />
               <Tooltip content={<CustomTooltip />} />
-              <Area type="monotone" dataKey="closing" name="Active Subs" stroke="#00d4ff" fill="url(#gradClose)" strokeWidth={2} dot={false} />
+              <Area type="monotone" dataKey="closing" name="Active Subs" stroke="var(--accent-cyan)" fill="url(#gradClose)" strokeWidth={2} dot={false} />
             </AreaChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -490,8 +490,8 @@ export default memo(function Tab01Executive({ kpis, prevKpis, monthly, retention
                 <YAxis dataKey="product" type="category" width={120} tick={<YAxisTick formatter={basketLabel} fontSize={11} />} />
                 <Tooltip content={<CustomTooltip />} />
                 <Legend wrapperStyle={{ fontSize: 11 }} />
-                <Bar dataKey="active" name="Active" stackId="a" fill="#00d4ff" />
-                <Bar dataKey="exited" name="Exited" stackId="a" fill="#f87171" radius={[0, 4, 4, 0]} />
+                <Bar dataKey="active" name="Active" stackId="a" fill="var(--accent-cyan)" />
+                <Bar dataKey="exited" name="Exited" stackId="a" fill="var(--accent-red)" radius={[0, 4, 4, 0]} />
               </BarChart>
             </ResponsiveContainer>
             <div className="chart-clickable-hint">💡 Click any bar to see subscriber details</div>
@@ -512,7 +512,7 @@ export default memo(function Tab01Executive({ kpis, prevKpis, monthly, retention
                 <XAxis type="number" tick={{ fill: 'var(--text-muted)', fontSize: 10 }} unit="%" domain={[0, 100]} />
                 <YAxis dataKey="product" type="category" width={120} tick={<YAxisTick formatter={basketLabel} fontSize={11} />} />
                 <Tooltip content={<CustomTooltip />} />
-                <Bar dataKey="renewalRate" name="Renewal %" fill="#22c55e" radius={[0, 4, 4, 0]} />
+                <Bar dataKey="renewalRate" name="Renewal %" fill="var(--accent-green)" radius={[0, 4, 4, 0]} />
               </BarChart>
             </ResponsiveContainer>
             <div className="chart-clickable-hint">💡 Click any bar to see subscriber details</div>

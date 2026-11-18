@@ -1,57 +1,48 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   NIA ANTIGRAVITY — SUBSCRIPTION INTELLIGENCE PLATFORM
-   Bloomberg Terminal Dark Theme
+   EQUITY BUSINESS DASHBOARD — Niveshaay brand theme
+   Palette taken from the Niveshaay brandbook: cream / beige grounds, mustard,
+   terracotta, forest green, royal blue and navy, near-black ink.
+   Accent variable names (cyan, purple, …) are kept for compatibility; their
+   values are the brand colors noted beside each one.
    ═══════════════════════════════════════════════════════════════════════════ */
 
+/* ─── DARK THEME (brand navy #133767) ────────────────────────────────────── */
 :root {
-  --bg-void: #040914;
-  --bg-base: #060d1f;
-  --bg-surface: #0b1630;
-  --bg-card: #0e1c3a;
-  --bg-card-hover: #102040;
-  --bg-elevated: #132248;
+  --bg-void: #071428;
+  --bg-base: #0a1a33;
+  --bg-surface: #0d2040;
+  --bg-card: #10264a;
+  --bg-card-hover: #132d57;
+  --bg-elevated: #133767;
 
-  --border-dim: #1a2d4a;
-  --border-default: #1e3755;
-  --border-bright: #2a4f7c;
+  --border-dim: #1c3a66;
+  --border-default: #27497a;
+  --border-bright: #3d64a0;
 
-  --text-primary: #e2e8f0;
-  --text-secondary: #94a3b8;
-  --text-muted: #475569;
-  --text-bright: #f8fafc;
+  --text-primary: #ffefd8;   /* brand cream */
+  --text-secondary: #d9cdae;
+  --text-muted: #a9a08a;
+  --text-bright: #fff7ea;
+  --text-neutral: #a9a08a;   /* "flat / no change" indicator */
+  --on-accent: #0a1a33;      /* text placed on a solid accent fill */
+  --overlay: rgba(4, 12, 26, 0.85);
 
-  --accent-cyan: #00d4ff;
-  --accent-cyan-dim: rgba(0, 212, 255, 0.15);
-  --accent-gold: #fbbf24;
-  --accent-gold-dim: rgba(251, 191, 36, 0.15);
-  --accent-green: #22c55e;
-  --accent-green-dim: rgba(34, 197, 94, 0.15);
-  --accent-red: #f87171;
-  --accent-red-dim: rgba(248, 113, 113, 0.15);
-  --accent-orange: #fb923c;
-  --accent-purple: #a78bfa;
-  --accent-teal: #2dd4bf;
-  --accent-pink: #f472b6;
-
-  --chart-1: #00d4ff;
-  --chart-2: #fbbf24;
-  --chart-3: #22c55e;
-  --chart-4: #a78bfa;
-  --chart-5: #f87171;
-  --chart-6: #fb923c;
-  --chart-7: #2dd4bf;
-  --chart-8: #f472b6;
-  --chart-9: #818cf8;
-  --chart-10: #86efac;
-
-  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.4);
-  --shadow-glow-cyan: 0 0 20px rgba(0, 212, 255, 0.2);
-  --shadow-glow-gold: 0 0 20px rgba(251, 191, 36, 0.2);
+  --accent-cyan: #8db8ec;    /* royal blue, lifted for navy */
+  --accent-gold: #f0c257;    /* brand mustard */
+  --accent-green: #93c275;   /* brand green, lifted */
+  --accent-red: #e8836f;     /* brand terracotta, lifted */
+  --accent-red-deep: #c9604c;
+  --accent-orange: #ee9f5e;
+  --accent-purple: #cfe3ed;  /* brand light blue */
+  --accent-teal: #b6d49a;
+  --accent-pink: #f0d88e;    /* brand light mustard */
+  --accent-sky: #5f9be8;
+  --chart-10: #c9b98a;
 
   /* Recessed-panel backgrounds (nested boxes, accordion rows, badge chips)
      — a black tint at these opacities reads as "slightly darker than the
-     card" against the near-black dark theme, but the SAME opacities against
-     a white light-theme card produce a pale gray whose contrast against
+     card" against the dark theme, but the SAME opacities against a light
+     card produce a muddy tone whose contrast against
      --text-muted/--text-secondary is too low to read. Themed separately so
      both keep the same "one step darker than the surrounding card" effect
      at readable contrast. */
@@ -68,83 +59,92 @@
   --radius-xl: 20px;
 
   --font-mono: 'SF Mono', 'Fira Code', 'Consolas', monospace;
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  /* Brand headline face is LT Serif (licensed); Instrument Serif is the
+     closest free match for the thin, condensed display serif. */
+  --font-display: 'Instrument Serif', Georgia, serif;
 }
 
-/* ─── LIGHT THEME OVERRIDES ──────────────────────────────────────────────── */
+/* Derived tokens — declared on every theme root so they resolve against
+   that theme's accents rather than inheriting the dark values. */
+:root, [data-theme] {
+  --chart-1: var(--accent-cyan);
+  --chart-2: var(--accent-gold);
+  --chart-3: var(--accent-green);
+  --chart-4: var(--accent-purple);
+  --chart-5: var(--accent-red);
+  --chart-6: var(--accent-orange);
+  --chart-7: var(--accent-teal);
+  --chart-8: var(--accent-pink);
+  --chart-9: var(--accent-sky);
+
+  --accent-cyan-dim: color-mix(in srgb, var(--accent-cyan) 15%, transparent);
+  --accent-gold-dim: color-mix(in srgb, var(--accent-gold) 15%, transparent);
+  --accent-green-dim: color-mix(in srgb, var(--accent-green) 15%, transparent);
+  --accent-red-dim: color-mix(in srgb, var(--accent-red) 15%, transparent);
+
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.35);
+  --shadow-glow-cyan: 0 0 20px color-mix(in srgb, var(--accent-cyan) 15%, transparent);
+  --shadow-glow-gold: 0 0 20px color-mix(in srgb, var(--accent-gold) 15%, transparent);
+}
+
+/* ─── LIGHT THEME (brand cream #FFEFD8) ──────────────────────────────────── */
 [data-theme="light"] {
-  --bg-void: #edf1f7;
-  --bg-base: #f1f5f9;
-  --bg-surface: #ffffff;
-  --bg-card: #ffffff;
-  --bg-card-hover: #eef6ff;
-  --bg-elevated: #e8f0fb;
+  --bg-void: #f0e2ba;        /* brand beige */
+  --bg-base: #ffefd8;        /* brand cream */
+  --bg-surface: #fff8ec;
+  --bg-card: #fff8ec;
+  --bg-card-hover: #fff2dc;
+  --bg-elevated: #f0ebdf;    /* brand stone */
 
-  --border-dim: #d4dfe9;
-  --border-default: #b5cad9;
-  --border-bright: #6ea8cc;
+  --border-dim: #ecdcb6;
+  --border-default: #dcc794;
+  --border-bright: #c4a866;
 
-  --text-primary: #1e293b;
-  --text-secondary: #475569;
-  --text-muted: #8899a8;
-  --text-bright: #0f172a;
+  --text-primary: #1e1e1e;   /* brand ink */
+  --text-secondary: #4a4337;
+  --text-muted: #6d6a61;     /* brand warm gray */
+  --text-bright: #1b1d1a;
+  --text-neutral: #6d6a61;
+  --on-accent: #fff7ea;
+  --overlay: rgba(58, 11, 1, 0.45);
 
   /* Same "one step darker" recessed-panel effect as dark theme, at opacities
-     low enough to stay readable against a white card instead of washing out
-     --text-muted/--text-secondary into near-invisibility. */
-  --bg-inset-1: rgba(0, 0, 0, 0.025);
-  --bg-inset-2: rgba(0, 0, 0, 0.035);
-  --bg-inset-3: rgba(0, 0, 0, 0.045);
-  --bg-inset-4: rgba(0, 0, 0, 0.06);
-  --bg-inset-5: rgba(0, 0, 0, 0.07);
-  --bg-inset-6: rgba(0, 0, 0, 0.08);
+     low enough to stay readable against a cream card. */
+  --bg-inset-1: rgba(90, 60, 10, 0.03);
+  --bg-inset-2: rgba(90, 60, 10, 0.04);
+  --bg-inset-3: rgba(90, 60, 10, 0.05);
+  --bg-inset-4: rgba(90, 60, 10, 0.065);
+  --bg-inset-5: rgba(90, 60, 10, 0.075);
+  --bg-inset-6: rgba(90, 60, 10, 0.09);
 
-  --accent-cyan: #0284c7;
-  --accent-cyan-dim: rgba(2, 132, 199, 0.1);
-  --accent-gold: #b45309;
-  --accent-gold-dim: rgba(180, 83, 9, 0.1);
-  --accent-green: #15803d;
-  --accent-green-dim: rgba(21, 128, 61, 0.1);
-  --accent-red: #dc2626;
-  --accent-red-dim: rgba(220, 38, 38, 0.1);
-  --accent-orange: #c2410c;
-  --accent-purple: #6d28d9;
-  --accent-teal: #0f766e;
-  --accent-pink: #be185d;
+  --accent-cyan: #014cae;    /* brand royal blue */
+  --accent-gold: #8c6209;    /* brand mustard, deepened to read on cream */
+  --accent-green: #456233;   /* brand forest green */
+  --accent-red: #ad4c3c;     /* brand terracotta */
+  --accent-red-deep: #3a0b01; /* brand deep brown */
+  --accent-orange: #a8501a;
+  --accent-purple: #133767;  /* brand navy */
+  --accent-teal: #62864c;    /* brand mid green */
+  --accent-pink: #6b2a16;
+  --accent-sky: #3f7cc8;
+  --chart-10: #6e7f3e;
 
-  --shadow-card: 0 2px 16px rgba(0, 0, 0, 0.07);
-  --shadow-glow-cyan: 0 0 20px rgba(2, 132, 199, 0.1);
-  --shadow-glow-gold: 0 0 20px rgba(180, 83, 9, 0.08);
+  --shadow-card: 0 2px 16px rgba(58, 11, 1, 0.06);
 }
 
 [data-theme="light"] .filter-date { color-scheme: light; }
 
 [data-theme="light"] .kpi-card:hover {
-  box-shadow: 0 6px 24px rgba(0,0,0,0.1), 0 0 0 1px var(--kpi-accent, var(--border-bright));
+  box-shadow: 0 6px 24px rgba(58, 11, 1, 0.08), 0 0 0 1px var(--kpi-accent, var(--border-bright));
 }
 
 [data-theme="light"] .chart-card:hover {
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-}
-
-[data-theme="light"] .chart-card::before {
-  background: linear-gradient(90deg, transparent 0%, rgba(2,132,199,0.2) 50%, transparent 100%);
+  box-shadow: 0 4px 20px rgba(58, 11, 1, 0.07);
 }
 
 [data-theme="light"] .login-card {
-  box-shadow: 0 8px 40px rgba(0,0,0,0.1), 0 0 0 1px rgba(2,132,199,0.06);
-}
-
-[data-theme="light"] .drilldown-overlay {
-  background: rgba(15,23,42,0.5);
-}
-
-[data-theme="light"] ::-webkit-scrollbar-track { background: var(--bg-base); }
-[data-theme="light"] ::-webkit-scrollbar-thumb { background: var(--border-bright); }
-[data-theme="light"] ::-webkit-scrollbar-thumb:hover { background: #4a90b8; }
-
-[data-theme="light"] .upload-screen::before {
-  background: radial-gradient(ellipse at center, rgba(2, 132, 199, 0.06) 0%, transparent 70%);
+  box-shadow: 0 8px 40px rgba(58, 11, 1, 0.08);
 }
 
 [data-theme="light"] .recharts-tooltip-wrapper .recharts-default-tooltip {
@@ -216,7 +216,7 @@ body {
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: var(--bg-base); }
 ::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #3a6fa8; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent-cyan); }
 
 /* ─── UPLOAD SCREEN ──────────────────────────────────────────────────────── */
 .upload-screen {
@@ -237,7 +237,7 @@ body {
   top: -200px; left: 50%;
   transform: translateX(-50%);
   width: 800px; height: 800px;
-  background: radial-gradient(ellipse at center, rgba(0, 212, 255, 0.06) 0%, transparent 70%);
+  background: radial-gradient(ellipse at center, color-mix(in srgb, var(--accent-cyan) 6%, transparent) 0%, transparent 70%);
   pointer-events: none;
 }
 
@@ -246,7 +246,7 @@ body {
   position: absolute;
   bottom: -200px; right: -100px;
   width: 600px; height: 600px;
-  background: radial-gradient(ellipse at center, rgba(251, 191, 36, 0.04) 0%, transparent 70%);
+  background: radial-gradient(ellipse at center, color-mix(in srgb, var(--accent-gold) 4%, transparent) 0%, transparent 70%);
   pointer-events: none;
 }
 
@@ -275,12 +275,11 @@ body {
 }
 
 .brand-name {
-  font-size: 1.8rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, var(--text-bright), var(--accent-cyan));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  letter-spacing: -0.02em;
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  font-weight: 400;
+  color: var(--text-bright);
+  letter-spacing: -0.01em;
 }
 
 .brand-subtitle {
@@ -302,8 +301,9 @@ body {
 }
 
 .upload-title {
-  font-size: 1.3rem;
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  font-weight: 400;
   color: var(--text-bright);
   margin-bottom: 0.5rem;
 }
@@ -321,7 +321,7 @@ body {
   text-align: center;
   cursor: pointer;
   transition: all 0.25s ease;
-  background: rgba(0, 212, 255, 0.02);
+  background: color-mix(in srgb, var(--accent-cyan) 2%, transparent);
   margin-bottom: 1.5rem;
 }
 
@@ -342,7 +342,7 @@ body {
 
 .file-selected {
   background: var(--accent-green-dim);
-  border: 1px solid rgba(34, 197, 94, 0.3);
+  border: 1px solid color-mix(in srgb, var(--accent-green) 30%, transparent);
   border-radius: var(--radius-md);
   padding: 0.75rem 1rem;
   display: flex;
@@ -356,8 +356,8 @@ body {
 .btn-primary {
   width: 100%;
   padding: 0.875rem 1.5rem;
-  background: linear-gradient(135deg, #0ea5e9, #00d4ff);
-  color: #060d1f;
+  background: var(--accent-cyan);
+  color: var(--on-accent);
   font-weight: 700;
   font-size: 0.95rem;
   border: none;
@@ -373,14 +373,14 @@ body {
 
 .btn-primary:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 8px 24px rgba(0, 212, 255, 0.35);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--accent-cyan) 35%, transparent);
 }
 
 .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
 .error-banner {
   background: var(--accent-red-dim);
-  border: 1px solid rgba(248, 113, 113, 0.3);
+  border: 1px solid color-mix(in srgb, var(--accent-red) 30%, transparent);
   border-radius: var(--radius-md);
   padding: 0.75rem 1rem;
   color: var(--accent-red);
@@ -432,23 +432,33 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
+  /* Never shrinks or wraps — the header is a fixed 56px row, so wrapped text
+     spills over the banners below it. The breakpoints under RESPONSIVE make
+     room by hiding less important parts instead. */
+  flex-shrink: 0;
+  margin-right: 1rem;
 }
+
+.header-brand-title { white-space: nowrap; }
 
 .header-brand-icon {
   width: 34px; height: 34px;
+  flex-shrink: 0;
   background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
   border-radius: 8px;
   display: flex; align-items: center; justify-content: center;
   font-size: 16px;
 }
 
-.header-brand-text { font-size: 1rem; font-weight: 700; color: var(--text-bright); }
+.header-brand-text { font-family: var(--font-display); font-size: 1.3rem; font-weight: 400; color: var(--text-bright); line-height: 1; }
 .header-brand-sep { color: var(--text-muted); margin: 0 4px; }
 .header-brand-sub { font-size: 0.8rem; color: var(--text-secondary); }
 
 .header-meta {
   display: flex;
   align-items: center;
+  flex-shrink: 0;
+  white-space: nowrap;
   gap: 1rem;
   font-size: 0.78rem;
   color: var(--text-secondary);
@@ -466,7 +476,7 @@ body {
 
 .header-stat .hs-val { color: var(--accent-cyan); font-weight: 600; font-family: var(--font-mono); }
 
-.header-actions { display: flex; gap: 0.5rem; }
+.header-actions { display: flex; gap: 0.5rem; flex-shrink: 0; margin-left: 1rem; white-space: nowrap; }
 
 .btn-icon {
   background: var(--bg-card);
@@ -517,7 +527,7 @@ body {
 .tab-btn.active {
   color: var(--accent-cyan);
   border-bottom-color: var(--accent-cyan);
-  background: rgba(0, 212, 255, 0.05);
+  background: color-mix(in srgb, var(--accent-cyan) 5%, transparent);
 }
 
 .tab-num {
@@ -531,8 +541,8 @@ body {
 }
 
 .tab-btn.active .tab-num {
-  background: rgba(0, 212, 255, 0.2);
-  border-color: rgba(0, 212, 255, 0.4);
+  background: color-mix(in srgb, var(--accent-cyan) 20%, transparent);
+  border-color: color-mix(in srgb, var(--accent-cyan) 40%, transparent);
   color: var(--accent-cyan);
 }
 
@@ -593,8 +603,8 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  background: rgba(0, 212, 255, 0.15);
-  border: 1px solid rgba(0, 212, 255, 0.3);
+  background: color-mix(in srgb, var(--accent-cyan) 15%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent-cyan) 30%, transparent);
   border-radius: 20px;
   padding: 2px 8px;
   font-size: 0.75rem;
@@ -602,12 +612,12 @@ body {
   cursor: pointer;
 }
 
-.filter-chip:hover { background: rgba(0, 212, 255, 0.25); }
+.filter-chip:hover { background: color-mix(in srgb, var(--accent-cyan) 25%, transparent); }
 .filter-chip .chip-x { color: var(--accent-cyan); opacity: 0.7; font-size: 0.9rem; }
 
 .btn-clear-filters {
-  background: rgba(248, 113, 113, 0.1);
-  border: 1px solid rgba(248, 113, 113, 0.2);
+  background: color-mix(in srgb, var(--accent-red) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent-red) 20%, transparent);
   border-radius: var(--radius-sm);
   color: var(--accent-red);
   padding: 4px 10px;
@@ -617,7 +627,7 @@ body {
   white-space: nowrap;
 }
 
-.btn-clear-filters:hover { background: rgba(248, 113, 113, 0.2); }
+.btn-clear-filters:hover { background: color-mix(in srgb, var(--accent-red) 20%, transparent); }
 
 /* ─── TAB CONTENT AREA ───────────────────────────────────────────────────── */
 .tab-content {
@@ -766,7 +776,7 @@ body {
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 2px;
-  background: linear-gradient(90deg, transparent 0%, rgba(0,212,255,0.4) 50%, transparent 100%);
+  background: linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--accent-cyan) 40%, transparent) 50%, transparent 100%);
 }
 
 .chart-card:hover {
@@ -800,8 +810,8 @@ body {
 .kpi-info:hover { opacity: 1; color: var(--accent-cyan); }
 
 .chart-badge {
-  background: rgba(0, 212, 255, 0.1);
-  border: 1px solid rgba(0, 212, 255, 0.2);
+  background: color-mix(in srgb, var(--accent-cyan) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent-cyan) 20%, transparent);
   border-radius: 20px;
   padding: 2px 10px;
   font-size: 0.7rem;
@@ -853,7 +863,7 @@ body {
   white-space: nowrap;
 }
 
-.data-table tr:hover td { background: rgba(255,255,255,0.025); color: var(--text-primary); }
+.data-table tr:hover td { background: color-mix(in srgb, var(--text-primary) 2.5%, transparent); color: var(--text-primary); }
 
 .data-table .td-rank {
   color: var(--text-muted);
@@ -891,10 +901,11 @@ body {
 .tab-content > .section-heading:first-child { margin-top: 0.25rem; }
 
 .section-title {
-  font-size: 1rem;
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 400;
   color: var(--text-bright);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
   white-space: nowrap;
 }
 
@@ -941,7 +952,7 @@ body {
 
 .insights-header-icon {
   width: 28px; height: 28px;
-  background: linear-gradient(135deg, rgba(0, 212, 255, 0.3), rgba(167, 139, 250, 0.3));
+  background: linear-gradient(135deg, color-mix(in srgb, var(--accent-cyan) 30%, transparent), color-mix(in srgb, var(--accent-purple) 30%, transparent));
   border-radius: 8px;
   display: flex; align-items: center; justify-content: center;
   font-size: 14px;
@@ -988,7 +999,7 @@ body {
   border: none; cursor: pointer; text-align: left;
   transition: background 0.15s;
 }
-.insight-cat-toggle:hover { background: rgba(0,212,255,0.07); }
+.insight-cat-toggle:hover { background: color-mix(in srgb, var(--accent-cyan) 7%, transparent); }
 
 .insight-cat-icon { font-size: 1rem; flex-shrink: 0; }
 .insight-cat-label { flex: 1; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
@@ -1005,7 +1016,7 @@ body {
   padding: 0.55rem 1.2rem 0.55rem 1.5rem; background: none;
   border: none; cursor: pointer; text-align: left; transition: background 0.15s;
 }
-.insight-sub-toggle:hover { background: rgba(0,212,255,0.05); }
+.insight-sub-toggle:hover { background: color-mix(in srgb, var(--accent-cyan) 5%, transparent); }
 .insight-sub-title { flex: 1; font-size: 0.8rem; color: var(--text-primary); font-weight: 500; line-height: 1.35; }
 .insight-sub-chevron { font-size: 1rem; color: var(--text-muted); transition: transform 0.2s; flex-shrink: 0; }
 
@@ -1036,7 +1047,7 @@ body {
 
 .faq-header-icon {
   width: 28px; height: 28px;
-  background: linear-gradient(135deg, rgba(251, 191, 36, 0.3), rgba(0, 212, 255, 0.3));
+  background: linear-gradient(135deg, color-mix(in srgb, var(--accent-gold) 30%, transparent), color-mix(in srgb, var(--accent-cyan) 30%, transparent));
   border-radius: 8px;
   display: flex; align-items: center; justify-content: center;
   font-size: 14px;
@@ -1055,7 +1066,7 @@ body {
   border: none; cursor: pointer; text-align: left;
   transition: background 0.15s;
 }
-.faq-question:hover { background: rgba(251,191,36,0.07); }
+.faq-question:hover { background: color-mix(in srgb, var(--accent-gold) 7%, transparent); }
 
 .faq-question-text { flex: 1; font-size: 0.82rem; font-weight: 600; color: var(--text-primary); line-height: 1.4; }
 .faq-chevron { font-size: 1.1rem; color: var(--text-muted); transition: transform 0.2s; flex-shrink: 0; line-height: 1; }
@@ -1070,7 +1081,7 @@ body {
 /* ─── DRILLDOWN MODAL ────────────────────────────────────────────────────── */
 .drilldown-overlay {
   position: fixed; inset: 0; z-index: 2000;
-  background: rgba(0,0,0,0.88);
+  background: var(--overlay);
   display: flex; align-items: center; justify-content: center;
   animation: fadeIn 0.12s ease;
 }
@@ -1230,7 +1241,7 @@ body {
 .badge-red { background: var(--accent-red-dim); color: var(--accent-red); }
 .badge-gold { background: var(--accent-gold-dim); color: var(--accent-gold); }
 .badge-cyan { background: var(--accent-cyan-dim); color: var(--accent-cyan); }
-.badge-dim { background: rgba(100,116,139,0.15); color: var(--text-muted); }
+.badge-dim { background: color-mix(in srgb, var(--text-neutral) 15%, transparent); color: var(--text-muted); }
 
 /* ─── PROGRESS BAR ───────────────────────────────────────────────────────── */
 .progress-bar {
@@ -1335,6 +1346,28 @@ body {
 .recharts-legend-item-text { color: var(--text-secondary) !important; font-size: 0.78rem !important; }
 
 /* ─── RESPONSIVE ─────────────────────────────────────────────────────────── */
+/* The full header needs ~2,220px, so it sheds the least important parts as
+   the screen narrows instead of squashing the title or pushing buttons
+   (Logout included) off the right edge. Widths measured, not guessed:
+   title 242px · tagline 147 · Dataset+Updated boxes ~430 · buttons 971
+   with labels, 499 icon-only (label shows on hover). */
+@media (max-width: 2239px) {
+  .header-brand-sep, .header-brand-sub { display: none; }
+}
+
+@media (max-width: 2099px) {
+  .header-stat-extra { display: none; }
+}
+
+@media (max-width: 1679px) {
+  .header-actions .btn-label { display: none; }
+  .header-actions .btn-icon { padding: 6px 9px; }
+}
+
+@media (max-width: 1199px) {
+  .header-meta { display: none; }
+}
+
 @media (max-width: 1200px) {
   .charts-grid-3 { grid-template-columns: 1fr 1fr; }
   .charts-grid-1-2 { grid-template-columns: 1fr; }
@@ -1359,8 +1392,8 @@ body {
   justify-content: center;
   padding: 2rem;
   background-image:
-    radial-gradient(ellipse at 20% 20%, rgba(0, 212, 255, 0.04) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 80%, rgba(251, 191, 36, 0.03) 0%, transparent 50%);
+    radial-gradient(ellipse at 20% 20%, color-mix(in srgb, var(--accent-cyan) 4%, transparent) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, color-mix(in srgb, var(--accent-gold) 3%, transparent) 0%, transparent 50%);
 }
 
 .login-brand {
@@ -1371,15 +1404,13 @@ body {
 .login-brand-icon {
   font-size: 3rem;
   margin-bottom: 0.5rem;
-  filter: drop-shadow(0 0 16px rgba(0, 212, 255, 0.4));
 }
 
 .login-brand-name {
-  font-size: 1.6rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  color: var(--accent-cyan);
-  text-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  font-weight: 400;
+  color: var(--text-bright);
 }
 
 .login-brand-sub {
@@ -1397,12 +1428,13 @@ body {
   padding: 2rem 2.25rem;
   width: 100%;
   max-width: 400px;
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(0, 212, 255, 0.05);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px color-mix(in srgb, var(--accent-cyan) 5%, transparent);
 }
 
 .login-title {
-  font-size: 1.2rem;
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 400;
   color: var(--text-bright);
   margin-bottom: 4px;
 }
@@ -1442,14 +1474,14 @@ body {
 
 .login-input:focus {
   border-color: var(--accent-cyan);
-  box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-cyan) 10%, transparent);
 }
 
 .login-input::placeholder { color: var(--text-muted); }
 
 .login-error {
-  background: rgba(248, 113, 113, 0.1);
-  border: 1px solid rgba(248, 113, 113, 0.25);
+  background: color-mix(in srgb, var(--accent-red) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent-red) 25%, transparent);
   border-radius: var(--radius-md);
   padding: 0.6rem 0.9rem;
   font-size: 0.8rem;

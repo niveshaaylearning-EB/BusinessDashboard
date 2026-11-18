@@ -123,28 +123,28 @@ export default memo(function Tab17SubscriberFlow({ monthly, currentMaster, filte
 
     const bestNew = [...filteredMonthly].sort((a, b) => (b.newUnique || 0) - (a.newUnique || 0))[0];
     if (bestNew?.newUnique > 0) items.push({
-      icon: '🚀', category: 'Peak Acquisition', color: '#22c55e',
+      icon: '🚀', category: 'Peak Acquisition', color: 'var(--accent-green)',
       title: `"${bestNew.month}" was the best acquisition month — ${fmt(bestNew.newUnique)} new subscribers`,
       detail: `Renewals that month: ${fmt(bestNew.renewals || 0)}. Total inflow: ${fmt((bestNew.newUnique || 0) + (bestNew.renewals || 0))}.`,
     });
 
     const bestRenewal = [...filteredMonthly].sort((a, b) => (b.renewals || 0) - (a.renewals || 0))[0];
     if (bestRenewal?.renewals > 0) items.push({
-      icon: '🔄', category: 'Peak Renewals', color: '#22d3ee',
+      icon: '🔄', category: 'Peak Renewals', color: 'var(--accent-sky)',
       title: `"${bestRenewal.month}" had the highest renewals — ${fmt(bestRenewal.renewals)} cycles renewed`,
       detail: `New subscriptions that month: ${fmt(bestRenewal.newUnique || 0)}. Exits: ${fmt(bestRenewal.exited || 0)}.`,
     });
 
     const worstExit = [...filteredMonthly].sort((a, b) => (b.exited || 0) - (a.exited || 0))[0];
     if (worstExit?.exited > 0) items.push({
-      icon: '⚠️', category: 'Peak Exits', color: '#f87171',
+      icon: '⚠️', category: 'Peak Exits', color: 'var(--accent-red)',
       title: `"${worstExit.month}" saw the most exits — ${fmt(worstExit.exited)} unsubscriptions`,
       detail: `Net flow that month: ${sign(worstExit.net || 0)}. New came in: ${fmt((worstExit.newUnique || 0) + (worstExit.renewals || 0))}.`,
     });
 
     const bestNet = [...filteredMonthly].sort((a, b) => (b.net || 0) - (a.net || 0))[0];
     if (bestNet) items.push({
-      icon: '📈', category: 'Best Net Month', color: '#a78bfa',
+      icon: '📈', category: 'Best Net Month', color: 'var(--accent-purple)',
       title: `"${bestNet.month}" had the best net growth: ${sign(bestNet.net || 0)} subscribers`,
       detail: `Inflow: ${fmt((bestNet.newUnique || 0) + (bestNet.renewals || 0))}. Exits: ${fmt(bestNet.exited || 0)}.`,
     });
@@ -152,7 +152,7 @@ export default memo(function Tab17SubscriberFlow({ monthly, currentMaster, filte
     items.push({
       icon: kpis.netFlow >= 0 ? '📊' : '📉',
       category: 'Overall Balance',
-      color: kpis.netFlow >= 0 ? '#22c55e' : '#f87171',
+      color: kpis.netFlow >= 0 ? 'var(--accent-green)' : 'var(--accent-red)',
       title: kpis.netFlow >= 0
         ? `Net positive: ${fmt(kpis.totalIn)} subscriptions in vs ${fmt(kpis.totalExits)} exits — net ${sign(kpis.netFlow)}`
         : `Net negative: ${fmt(kpis.totalExits)} exits exceeded ${fmt(kpis.totalIn)} inflows — net ${sign(kpis.netFlow)}`,
@@ -166,7 +166,7 @@ export default memo(function Tab17SubscriberFlow({ monthly, currentMaster, filte
       const p3net = prev3.reduce((s, m) => s + (m.net || 0), 0);
       const improving = l3net > p3net;
       items.push({
-        icon: improving ? '✅' : '⚡', category: 'Recent Trend', color: improving ? '#22c55e' : '#fbbf24',
+        icon: improving ? '✅' : '⚡', category: 'Recent Trend', color: improving ? 'var(--accent-green)' : 'var(--accent-gold)',
         title: `Net flow ${improving ? 'improving' : 'declining'}: last 3M net ${sign(l3net)} vs ${sign(p3net)} prior 3M`,
         detail: `${Math.abs(l3net - p3net).toLocaleString('en-IN')} subscriber difference between the two periods.`,
       });
@@ -175,7 +175,7 @@ export default memo(function Tab17SubscriberFlow({ monthly, currentMaster, filte
       const l3rr = rr(last3), p3rr = rr(prev3);
       const rrDir = l3rr > p3rr ? 'rising' : l3rr < p3rr ? 'falling' : 'stable';
       items.push({
-        icon: '♻️', category: 'Renewal Trend', color: l3rr > p3rr ? '#22c55e' : l3rr === p3rr ? '#64748b' : '#fbbf24',
+        icon: '♻️', category: 'Renewal Trend', color: l3rr > p3rr ? 'var(--accent-green)' : l3rr === p3rr ? 'var(--text-neutral)' : 'var(--accent-gold)',
         title: `Renewal rate ${rrDir}: ${l3rr}% last 3M vs ${p3rr}% prior 3M`,
         detail: `A rising renewal rate means more subscribers are repeat-paying customers — a strong retention signal.`,
       });
@@ -203,29 +203,29 @@ export default memo(function Tab17SubscriberFlow({ monthly, currentMaster, filte
   const pageRows = tableData.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   const kpiCards = [
-    { id:'totalNew',        label:'Total New Subscribers',  icon:'🆕', accent:'#22c55e',               value: fmt(kpis.totalNew),         sub:'First-time (Cycle 1) entries',
+    { id:'totalNew',        label:'Total New Subscribers',  icon:'🆕', accent:'var(--accent-green)',               value: fmt(kpis.totalNew),         sub:'First-time (Cycle 1) entries',
       tooltip: 'Count of first-time subscriptions (Cycle Number 1) that started within the selected period — genuinely new investors, not renewals of an existing subscription.' },
     { id:'totalRenewals',   label:'Total Renewals',         icon:'🔄', accent:'var(--accent-cyan)',     value: fmt(kpis.totalRenewals),    sub:'Cycle 2+ re-subscriptions',
       tooltip: 'Count of Cycle 2+ re-subscriptions within the period — existing investors renewing their plan rather than first-time signups.' },
-    { id:'totalIn',         label:'Total Subscriptions In', icon:'📥', accent:'#a78bfa',               value: fmt(kpis.totalIn),          sub:'New + Renewals combined',
+    { id:'totalIn',         label:'Total Subscriptions In', icon:'📥', accent:'var(--accent-purple)',               value: fmt(kpis.totalIn),          sub:'New + Renewals combined',
       tooltip: 'Every subscription event that added a paying cycle in this period — Total New plus Total Renewals combined, regardless of whether the investor was new or returning.' },
     { id:'totalExits',      label:'Total Exits',            icon:'🚪', accent:'var(--accent-red)',      value: fmt(kpis.totalExits),       sub:'Unsubscriptions (all cycles)',
       tooltip: 'Total unsubscriptions recorded in the period, across all cycles — both first-time cancellations and investors who chose not to renew.' },
-    { id:'netFlow',         label:'Net Flow',               icon:'⚖️', accent: kpis.netFlow>=0?'#22c55e':'#f87171', value: sign(kpis.netFlow), sub:'Total In minus Total Exits',
+    { id:'netFlow',         label:'Net Flow',               icon:'⚖️', accent: kpis.netFlow>=0?'var(--accent-green)':'var(--accent-red)', value: sign(kpis.netFlow), sub:'Total In minus Total Exits',
       tooltip: 'Total Subscriptions In minus Total Exits for the period. Positive means the subscriber base grew over this window; negative means more people left than joined.' },
-    { id:'renewalRate',     label:'Renewal Rate',           icon:'♻️', accent:'#22d3ee',               value: fmtPct(kpis.renewalRate),   sub:'Renewals ÷ Total Inflows',
+    { id:'renewalRate',     label:'Renewal Rate',           icon:'♻️', accent:'var(--accent-sky)',               value: fmtPct(kpis.renewalRate),   sub:'Renewals ÷ Total Inflows',
       tooltip: 'Renewals as a share of total inflows (New + Renewals). A higher rate means more of your growth is coming from existing investors renewing rather than fresh acquisition.' },
-    { id:'exitRate',        label:'Exit Rate',              icon:'📉', accent:'#fbbf24',               value: fmtPct(kpis.exitRate),      sub:'Exits ÷ Total Inflows',
+    { id:'exitRate',        label:'Exit Rate',              icon:'📉', accent:'var(--accent-gold)',               value: fmtPct(kpis.exitRate),      sub:'Exits ÷ Total Inflows',
       tooltip: 'Exits as a share of total inflows for the period — a rough churn-pressure gauge relative to how many subscriptions came in over the same window.' },
     { id:'latestActive',    label:'Active Subscribers',     icon:'✅', accent:'var(--accent-green)',    value: fmt(kpis.latestActive),     sub:'At end of selected period',
       tooltip: 'Active subscriber count (closing balance) at the end of the last month in the selected period.' },
-    { id:'avgNew',          label:'Avg Monthly New',        icon:'📊', accent:'#34d399',               value: fmt(kpis.avgMonthlyNew),    sub:'New subscribers per month',
+    { id:'avgNew',          label:'Avg Monthly New',        icon:'📊', accent:'var(--accent-teal)',               value: fmt(kpis.avgMonthlyNew),    sub:'New subscribers per month',
       tooltip: 'Total New Subscribers in the period divided by the number of months covered — the average pace of first-time acquisition per month.' },
-    { id:'avgRenewals',     label:'Avg Monthly Renewals',   icon:'🔁', accent:'#67e8f9',               value: fmt(kpis.avgMonthlyRenewals),sub:'Renewals per month',
+    { id:'avgRenewals',     label:'Avg Monthly Renewals',   icon:'🔁', accent:'var(--accent-sky)',               value: fmt(kpis.avgMonthlyRenewals),sub:'Renewals per month',
       tooltip: 'Total Renewals divided by the number of months in the period — the average pace of renewal activity per month.' },
-    { id:'avgExits',        label:'Avg Monthly Exits',      icon:'⚠️', accent:'#fb923c',               value: fmt(kpis.avgMonthlyExits),  sub:'Exits per month',
+    { id:'avgExits',        label:'Avg Monthly Exits',      icon:'⚠️', accent:'var(--accent-orange)',               value: fmt(kpis.avgMonthlyExits),  sub:'Exits per month',
       tooltip: 'Total Exits divided by the number of months in the period — the average monthly cancellation volume.' },
-    { id:'avgNet',          label:'Avg Monthly Net',        icon:'📈', accent: kpis.avgMonthlyNet>=0?'#22c55e':'#f87171', value: sign(kpis.avgMonthlyNet), sub:'Avg net subscribers per month',
+    { id:'avgNet',          label:'Avg Monthly Net',        icon:'📈', accent: kpis.avgMonthlyNet>=0?'var(--accent-green)':'var(--accent-red)', value: sign(kpis.avgMonthlyNet), sub:'Avg net subscribers per month',
       tooltip: 'Average of (Inflows − Exits) across the months in the period — the typical net subscriber gain or loss in a given month.' },
   ];
 
@@ -277,9 +277,9 @@ export default memo(function Tab17SubscriberFlow({ monthly, currentMaster, filte
               <YAxis tick={{ fill:'var(--text-muted)', fontSize:10 }} />
               <Tooltip content={<CustomTooltip />} />
               <Legend wrapperStyle={{ fontSize:11 }} />
-              <Bar dataKey="newUnique" name="New (C1)"    fill="#22c55e" stackId="in" radius={[0,0,0,0]} />
-              <Bar dataKey="renewals"  name="Renewals"    fill="#22d3ee" stackId="in" radius={[3,3,0,0]} />
-              <Bar dataKey="exited"    name="Exits"       fill="#f87171" radius={[3,3,0,0]} />
+              <Bar dataKey="newUnique" name="New (C1)"    fill="var(--accent-green)" stackId="in" radius={[0,0,0,0]} />
+              <Bar dataKey="renewals"  name="Renewals"    fill="var(--accent-sky)" stackId="in" radius={[3,3,0,0]} />
+              <Bar dataKey="exited"    name="Exits"       fill="var(--accent-red)" radius={[3,3,0,0]} />
             </BarChart>
           </ResponsiveContainer>
           <div className="chart-clickable-hint">💡 Click any bar/point to see details</div>
@@ -307,7 +307,7 @@ export default memo(function Tab17SubscriberFlow({ monthly, currentMaster, filte
               <ReferenceLine y={0} stroke="var(--border-bright)" strokeWidth={1} />
               <Bar dataKey="net" name="Net Flow" radius={[3,3,0,0]}>
                 {last24.map((m, i) => (
-                  <Cell key={i} fill={m.net >= 0 ? '#22c55e' : '#f87171'} />
+                  <Cell key={i} fill={m.net >= 0 ? 'var(--accent-green)' : 'var(--accent-red)'} />
                 ))}
               </Bar>
             </BarChart>
@@ -338,9 +338,9 @@ export default memo(function Tab17SubscriberFlow({ monthly, currentMaster, filte
               <YAxis tick={{ fill:'var(--text-muted)', fontSize:10 }} />
               <Tooltip content={<CustomTooltip />} />
               <Legend wrapperStyle={{ fontSize:11 }} />
-              <Line dataKey="cumIn"          name="Total In"      stroke="#22d3ee" dot={false} strokeWidth={2} />
-              <Line dataKey="cumExits"       name="Cum. Exits"    stroke="#f87171" dot={false} strokeWidth={2} />
-              <Line dataKey="netCumulative"  name="Net Total"     stroke="#22c55e" dot={false} strokeWidth={2} strokeDasharray="4 2" />
+              <Line dataKey="cumIn"          name="Total In"      stroke="var(--accent-sky)" dot={false} strokeWidth={2} />
+              <Line dataKey="cumExits"       name="Cum. Exits"    stroke="var(--accent-red)" dot={false} strokeWidth={2} />
+              <Line dataKey="netCumulative"  name="Net Total"     stroke="var(--accent-green)" dot={false} strokeWidth={2} strokeDasharray="4 2" />
             </LineChart>
           </ResponsiveContainer>
           <div className="chart-clickable-hint">💡 Click any bar/point to see details</div>
@@ -371,15 +371,15 @@ export default memo(function Tab17SubscriberFlow({ monthly, currentMaster, filte
                   return (
                     <div style={{ background:'var(--bg-elevated)', border:'1px solid var(--border-bright)', borderRadius:8, padding:'10px 14px', fontSize:12 }}>
                       <div style={{ color:'var(--text-secondary)', marginBottom:6 }}>{label}</div>
-                      <div style={{ color:'#22c55e' }}>New (C1): {d?.newPct}% ({fmt(d?.rawNew)})</div>
-                      <div style={{ color:'#22d3ee' }}>Renewals: {d?.renPct}% ({fmt(d?.rawRen)})</div>
+                      <div style={{ color:'var(--accent-green)' }}>New (C1): {d?.newPct}% ({fmt(d?.rawNew)})</div>
+                      <div style={{ color:'var(--accent-sky)' }}>Renewals: {d?.renPct}% ({fmt(d?.rawRen)})</div>
                     </div>
                   );
                 }}
               />
               <Legend wrapperStyle={{ fontSize:11 }} />
-              <Bar dataKey="newPct" name="New %" fill="#22c55e" stackId="pct" radius={[0,0,0,0]} />
-              <Bar dataKey="renPct" name="Renewal %" fill="#22d3ee" stackId="pct" radius={[3,3,0,0]} />
+              <Bar dataKey="newPct" name="New %" fill="var(--accent-green)" stackId="pct" radius={[0,0,0,0]} />
+              <Bar dataKey="renPct" name="Renewal %" fill="var(--accent-sky)" stackId="pct" radius={[3,3,0,0]} />
             </BarChart>
           </ResponsiveContainer>
           <div className="chart-clickable-hint">💡 Click any bar/point to see details</div>
@@ -401,10 +401,10 @@ export default memo(function Tab17SubscriberFlow({ monthly, currentMaster, filte
           <thead>
             <tr>
               <th>Month</th>
-              <th style={{ textAlign:'right', color:'#22c55e'  }}>New (C1)</th>
-              <th style={{ textAlign:'right', color:'#22d3ee'  }}>Renewals (C2+)</th>
-              <th style={{ textAlign:'right', color:'#a78bfa'  }}>Total In</th>
-              <th style={{ textAlign:'right', color:'#f87171'  }}>Exits</th>
+              <th style={{ textAlign:'right', color:'var(--accent-green)'  }}>New (C1)</th>
+              <th style={{ textAlign:'right', color:'var(--accent-sky)'  }}>Renewals (C2+)</th>
+              <th style={{ textAlign:'right', color:'var(--accent-purple)'  }}>Total In</th>
+              <th style={{ textAlign:'right', color:'var(--accent-red)'  }}>Exits</th>
               <th style={{ textAlign:'right' }}>Net</th>
               <th style={{ textAlign:'right' }}>Active (EOD)</th>
               <th style={{ textAlign:'right' }}>Renewal %</th>
@@ -420,11 +420,11 @@ export default memo(function Tab17SubscriberFlow({ monthly, currentMaster, filte
               return (
                 <tr key={i}>
                   <td className="td-name" style={{ whiteSpace:'nowrap', fontWeight:600 }}>{m.month}</td>
-                  <td style={{ textAlign:'right', color:'#22c55e',  fontFamily:'monospace' }}>{fmt(m.newUnique || 0)}</td>
-                  <td style={{ textAlign:'right', color:'#22d3ee',  fontFamily:'monospace' }}>{fmt(m.renewals  || 0)}</td>
-                  <td style={{ textAlign:'right', color:'#a78bfa',  fontFamily:'monospace', fontWeight:600 }}>{fmt(totalIn)}</td>
-                  <td style={{ textAlign:'right', color:'#f87171',  fontFamily:'monospace' }}>{fmt(m.exited   || 0)}</td>
-                  <td style={{ textAlign:'right', color: net >= 0 ? '#22c55e' : '#f87171', fontFamily:'monospace', fontWeight:600 }}>
+                  <td style={{ textAlign:'right', color:'var(--accent-green)',  fontFamily:'monospace' }}>{fmt(m.newUnique || 0)}</td>
+                  <td style={{ textAlign:'right', color:'var(--accent-sky)',  fontFamily:'monospace' }}>{fmt(m.renewals  || 0)}</td>
+                  <td style={{ textAlign:'right', color:'var(--accent-purple)',  fontFamily:'monospace', fontWeight:600 }}>{fmt(totalIn)}</td>
+                  <td style={{ textAlign:'right', color:'var(--accent-red)',  fontFamily:'monospace' }}>{fmt(m.exited   || 0)}</td>
+                  <td style={{ textAlign:'right', color: net >= 0 ? 'var(--accent-green)' : 'var(--accent-red)', fontFamily:'monospace', fontWeight:600 }}>
                     {net >= 0 ? '+' : ''}{fmt(net)}
                   </td>
                   <td style={{ textAlign:'right', fontFamily:'monospace' }}>{fmt(m.closing || 0)}</td>
@@ -441,11 +441,11 @@ export default memo(function Tab17SubscriberFlow({ monthly, currentMaster, filte
           <tfoot>
             <tr style={{ borderTop:'1px solid var(--border-bright)', fontWeight:700, background:'var(--bg-card)' }}>
               <td>Total</td>
-              <td style={{ textAlign:'right', color:'#22c55e', fontFamily:'monospace' }}>{fmt(kpis.totalNew)}</td>
-              <td style={{ textAlign:'right', color:'#22d3ee', fontFamily:'monospace' }}>{fmt(kpis.totalRenewals)}</td>
-              <td style={{ textAlign:'right', color:'#a78bfa', fontFamily:'monospace' }}>{fmt(kpis.totalIn)}</td>
-              <td style={{ textAlign:'right', color:'#f87171', fontFamily:'monospace' }}>{fmt(kpis.totalExits)}</td>
-              <td style={{ textAlign:'right', color: kpis.netFlow>=0?'#22c55e':'#f87171', fontFamily:'monospace' }}>
+              <td style={{ textAlign:'right', color:'var(--accent-green)', fontFamily:'monospace' }}>{fmt(kpis.totalNew)}</td>
+              <td style={{ textAlign:'right', color:'var(--accent-sky)', fontFamily:'monospace' }}>{fmt(kpis.totalRenewals)}</td>
+              <td style={{ textAlign:'right', color:'var(--accent-purple)', fontFamily:'monospace' }}>{fmt(kpis.totalIn)}</td>
+              <td style={{ textAlign:'right', color:'var(--accent-red)', fontFamily:'monospace' }}>{fmt(kpis.totalExits)}</td>
+              <td style={{ textAlign:'right', color: kpis.netFlow>=0?'var(--accent-green)':'var(--accent-red)', fontFamily:'monospace' }}>
                 {sign(kpis.netFlow)}
               </td>
               <td style={{ textAlign:'right', fontFamily:'monospace' }}>—</td>

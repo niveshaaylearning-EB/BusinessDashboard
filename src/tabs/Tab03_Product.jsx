@@ -26,7 +26,7 @@ function basketLabel(name) {
   return name.split(' ').slice(0, 3).join(' ');
 }
 
-const COLORS = ['#00d4ff','#fbbf24','#22c55e','#a78bfa','#f87171','#fb923c','#2dd4bf','#f472b6','#818cf8','#86efac'];
+const COLORS = ['var(--accent-cyan)','var(--accent-gold)','var(--accent-green)','var(--accent-purple)','var(--accent-red)','var(--accent-orange)','var(--accent-teal)','var(--accent-pink)','var(--chart-9)','var(--chart-10)'];
 
 const subCols = [
   { key: 'name', label: 'Name' },
@@ -96,28 +96,28 @@ export default memo(function Tab03Product({ products, insights, currentMaster, f
         category: 'Top Product by Active Subscribers',
         title: `${topActive.product} — ${topActive.active.toLocaleString('en-IN')} active`,
         detail: `Commands ${topActiveShare}% of total active subscriber base (${totalActive.toLocaleString('en-IN')} across all products)`,
-        color: '#22c55e',
+        color: 'var(--accent-green)',
       },
       {
         icon: '🔄',
         category: 'Best Retention (Renewal Rate)',
         title: `${bestRenewal.product} — ${bestRenewal.renewalRate}% renewal`,
         detail: `Highest subscriber loyalty; ${bestRenewal.active.toLocaleString('en-IN')} active of ${bestRenewal.total.toLocaleString('en-IN')} total`,
-        color: '#22c55e',
+        color: 'var(--accent-green)',
       },
       {
         icon: '⚠️',
         category: 'Highest Churn Risk (Lowest Renewal)',
         title: `${worstRenewal.product} — ${worstRenewal.renewalRate}% renewal`,
         detail: `Lowest retention rate; ${worstRenewal.exited.toLocaleString('en-IN')} of ${worstRenewal.total.toLocaleString('en-IN')} total subscribers have exited`,
-        color: '#f87171',
+        color: 'var(--accent-red)',
       },
       {
         icon: '💰',
         category: 'Highest Avg Networth Investors',
         title: `${topNW.product} — ₹${topNW.avgNetworth?.toLocaleString('en-IN')}`,
         detail: `Attracts the wealthiest investor profile; ${topNW.active.toLocaleString('en-IN')} active subscribers`,
-        color: '#fbbf24',
+        color: 'var(--accent-gold)',
       },
     ];
 
@@ -127,7 +127,7 @@ export default memo(function Tab03Product({ products, insights, currentMaster, f
         category: 'Best Avg PnL Product',
         title: `${bestPnL.product} — ₹${bestPnL.avgPnL.toLocaleString('en-IN')} avg PnL`,
         detail: `Highest average investor returns across ${bestPnL.active.toLocaleString('en-IN')} active subscribers`,
-        color: '#22c55e',
+        color: 'var(--accent-green)',
       });
     }
 
@@ -137,7 +137,7 @@ export default memo(function Tab03Product({ products, insights, currentMaster, f
         category: 'Worst Avg PnL Product',
         title: `${worstPnL.product} — ₹${worstPnL.avgPnL.toLocaleString('en-IN')} avg PnL`,
         detail: `Lowest average investor returns; may need strategy review or investor communication`,
-        color: '#f87171',
+        color: 'var(--accent-red)',
       });
     }
 
@@ -146,7 +146,7 @@ export default memo(function Tab03Product({ products, insights, currentMaster, f
       category: 'Most Top-Heavy Product (C1 Exits)',
       title: `${mostTopHeavy.product} — ${topHeavyRatio}% in Cycle 1`,
       detail: `${(mostTopHeavy.c1 || 0).toLocaleString('en-IN')} of ${mostTopHeavy.total.toLocaleString('en-IN')} subscribers are in Cycle 1 — highest first-cycle concentration`,
-      color: '#a78bfa',
+      color: 'var(--accent-purple)',
     });
 
     insights.push({
@@ -154,7 +154,7 @@ export default memo(function Tab03Product({ products, insights, currentMaster, f
       category: 'Total Active Across All Products',
       title: `${totalActive.toLocaleString('en-IN')} active subscribers`,
       detail: `Aggregated across ${products.length} products; average ${Math.round(totalActive / products.length).toLocaleString('en-IN')} active per product`,
-      color: '#22d3ee',
+      color: 'var(--accent-sky)',
     });
 
     return insights;
@@ -209,11 +209,11 @@ export default memo(function Tab03Product({ products, insights, currentMaster, f
           style={{ fill: COLORS[index % COLORS.length], stroke: 'var(--bg-base)', strokeWidth: 2, opacity: 0.85, cursor: 'pointer' }} />
         {width > 60 && height > 30 && (
           <>
-            <text x={x + 8} y={y + 18} fill="white" fontSize={11} fontWeight={600} style={{ pointerEvents: 'none' }}>
+            <text x={x + 8} y={y + 18} fill="var(--on-accent)" fontSize={11} fontWeight={600} style={{ pointerEvents: 'none' }}>
               {name?.length > 14 ? name.slice(0, 13) + '…' : name}
             </text>
             {height > 42 && (
-              <text x={x + 8} y={y + 32} fill="rgba(255,255,255,0.7)" fontSize={10} style={{ pointerEvents: 'none' }}>
+              <text x={x + 8} y={y + 32} fill="var(--on-accent)" fillOpacity={0.8} fontSize={10} style={{ pointerEvents: 'none' }}>
                 {value?.toLocaleString()}
               </text>
             )}
@@ -270,8 +270,8 @@ export default memo(function Tab03Product({ products, insights, currentMaster, f
             <YAxis dataKey="product" type="category" width={120} tick={<YAxisTick formatter={basketLabel} fontSize={11} />} />
             <Tooltip content={<CustomTooltip />} />
             <Legend wrapperStyle={{ fontSize: 12 }} />
-            <Bar dataKey="active" name="Active" fill="#22c55e" stackId="a" />
-            <Bar dataKey="exited" name="Exited" fill="#f87171" stackId="a" radius={[0, 4, 4, 0]} />
+            <Bar dataKey="active" name="Active" fill="var(--accent-green)" stackId="a" />
+            <Bar dataKey="exited" name="Exited" fill="var(--accent-red)" stackId="a" radius={[0, 4, 4, 0]} />
           </BarChart>
         </ResponsiveContainer>
         <div className="chart-clickable-hint">💡 Click any bar to see subscriber list</div>
@@ -292,7 +292,7 @@ export default memo(function Tab03Product({ products, insights, currentMaster, f
               <XAxis type="number" tick={{ fill: 'var(--text-muted)', fontSize: 10 }} unit="%" domain={[0, 100]} />
               <YAxis dataKey="product" type="category" width={120} tick={<YAxisTick formatter={basketLabel} />} />
               <Tooltip content={<CustomTooltip />} />
-              <Bar dataKey="renewalRate" name="Renewal %" fill="#22c55e" radius={[0, 4, 4, 0]}>
+              <Bar dataKey="renewalRate" name="Renewal %" fill="var(--accent-green)" radius={[0, 4, 4, 0]}>
                 {topByRenewal.map((_, i) => <Cell key={i} fill={`hsl(${140 + i * 10}, 70%, 50%)`} />)}
               </Bar>
             </BarChart>

@@ -15,11 +15,11 @@ import { formatNumber, parseExcelDate, isActive, getMonthlyMovement } from '../d
 import TabDateFilter from '../components/TabDateFilter';
 
 const TENURE_BUCKETS = [
-  { label: '<6 Months',  min: 0,  max: 6,        color: '#00d4ff' },
-  { label: '6–12 Months', min: 6,  max: 12,       color: '#22c55e' },
-  { label: '1–2 Years',  min: 12, max: 24,        color: '#fbbf24' },
-  { label: '2–3 Years',  min: 24, max: 36,        color: '#fb923c' },
-  { label: '3+ Years',   min: 36, max: Infinity,  color: '#a78bfa' },
+  { label: '<6 Months',  min: 0,  max: 6,        color: 'var(--accent-cyan)' },
+  { label: '6–12 Months', min: 6,  max: 12,       color: 'var(--accent-green)' },
+  { label: '1–2 Years',  min: 12, max: 24,        color: 'var(--accent-gold)' },
+  { label: '2–3 Years',  min: 24, max: 36,        color: 'var(--accent-orange)' },
+  { label: '3+ Years',   min: 36, max: Infinity,  color: 'var(--accent-purple)' },
 ];
 
 function fmtTenure(months) {
@@ -28,7 +28,7 @@ function fmtTenure(months) {
   return m > 0 ? `${y}y ${m}mo` : `${y}yr${y > 1 ? 's' : ''}`;
 }
 
-const COLORS = ['#00d4ff', '#fbbf24', '#22c55e', '#a78bfa', '#f87171'];
+const COLORS = ['var(--accent-cyan)', 'var(--accent-gold)', 'var(--accent-green)', 'var(--accent-purple)', 'var(--accent-red)'];
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
@@ -47,7 +47,7 @@ const CustomTooltip = ({ active, payload, label }) => {
 function FunnelChart({ data, onRowClick }) {
   if (!data?.length) return null;
   const max = Math.max(...data.map(d => d.count));
-  const FCOLORS = ['#00d4ff', '#22c55e', '#fbbf24', '#fb923c', '#a78bfa'];
+  const FCOLORS = ['var(--accent-cyan)', 'var(--accent-green)', 'var(--accent-gold)', 'var(--accent-orange)', 'var(--accent-purple)'];
 
   return (
     <div className="funnel-wrap">
@@ -56,11 +56,11 @@ function FunnelChart({ data, onRowClick }) {
         return (
           <div key={i} className="funnel-step" onClick={() => onRowClick?.(step.cycle)}
             style={{ cursor: onRowClick ? 'pointer' : 'default', transition: 'background 0.15s' }}
-            onMouseEnter={e => { if (onRowClick) e.currentTarget.style.background = 'rgba(0,212,255,0.06)'; }}
+            onMouseEnter={e => { if (onRowClick) e.currentTarget.style.background = 'color-mix(in srgb, var(--accent-cyan) 6%, transparent)'; }}
             onMouseLeave={e => { e.currentTarget.style.background = ''; }}>
             <div className="funnel-label">{step.cycle}</div>
             <div className="funnel-bar-container">
-              <div className="funnel-bar" style={{ width: `${Math.max(pct, 2)}%`, background: `linear-gradient(90deg, ${FCOLORS[i]}, ${FCOLORS[i]}88)` }}>
+              <div className="funnel-bar" style={{ width: `${Math.max(pct, 2)}%`, background: `linear-gradient(90deg, ${FCOLORS[i]}, color-mix(in srgb, ${FCOLORS[i]} 53%, transparent))` }}>
                 <span className="funnel-bar-text">{step.count > 0 ? step.count.toLocaleString() : ''}</span>
               </div>
             </div>
@@ -143,7 +143,7 @@ function RenewalContent({ renewalFunnel, renewalByProduct, currentMaster, insigh
       category: 'First Renewal',
       title: `C1→C2 Conversion: ${c1c2Rate}%`,
       detail: `${c2.toLocaleString('en-IN')} of ${c1.toLocaleString('en-IN')} first-cycle subscribers renewed. ${c1c2Rate >= 50 ? 'Strong first renewal — product is delivering initial value.' : c1c2Rate >= 30 ? 'Moderate first renewal — a targeted win-back campaign could recover lapsed C1 subscribers.' : 'Less than a third renew — first-renewal conversion is the top priority to fix.'}`,
-      color: c1c2Rate >= 50 ? '#22c55e' : c1c2Rate >= 30 ? '#fbbf24' : '#f87171',
+      color: c1c2Rate >= 50 ? 'var(--accent-green)' : c1c2Rate >= 30 ? 'var(--accent-gold)' : 'var(--accent-red)',
     });
 
     const transitions = [
@@ -163,7 +163,7 @@ function RenewalContent({ renewalFunnel, renewalByProduct, currentMaster, insigh
         category: 'Funnel Drop-off',
         title: `Steepest Drop: ${worst.label} (${worst.rate}% pass-through)`,
         detail: `${worst.lost.toLocaleString('en-IN')} subscribers are lost at the ${worst.label} transition — the single largest churn point in the renewal funnel. Intervening here has the highest leverage.`,
-        color: '#f87171',
+        color: 'var(--accent-red)',
       });
     }
 
@@ -173,7 +173,7 @@ function RenewalContent({ renewalFunnel, renewalByProduct, currentMaster, insigh
       category: 'Long-term Stickiness',
       title: `C5+ Stickiness: ${c5Rate}% of C1 reach Cycle 5+`,
       detail: `${c5.toLocaleString('en-IN')} subscribers have renewed 5 or more times out of ${c1.toLocaleString('en-IN')} who started at C1. ${c5Rate >= 20 ? 'Strong long-term loyalty base.' : c5Rate >= 10 ? 'Moderate loyalty cohort — nurture multi-year subscribers with exclusive benefits.' : 'Very few reach multi-year status — long-term retention programs are under-developed.'}`,
-      color: c5Rate >= 20 ? '#22c55e' : c5Rate >= 10 ? '#fbbf24' : '#f87171',
+      color: c5Rate >= 20 ? 'var(--accent-green)' : c5Rate >= 10 ? 'var(--accent-gold)' : 'var(--accent-red)',
     });
 
     const c1Share = c1 > 0 ? +((c1 / (c1 + c2 + c3 + c4 + c5)) * 100).toFixed(1) : 0;
@@ -182,7 +182,7 @@ function RenewalContent({ renewalFunnel, renewalByProduct, currentMaster, insigh
       category: 'Trial Cohort',
       title: `${c1Share}% of Active Base is C1`,
       detail: `${c1.toLocaleString('en-IN')} subscribers are still in their first cycle. ${c1Share >= 50 ? 'More than half the base is new — revenue is heavily dependent on first-renewal conversion.' : c1Share >= 30 ? 'Significant share in trial phase — first-renewal conversion strongly drives near-term revenue.' : 'Mature renewal base — most revenue comes from loyal repeat subscribers.'}`,
-      color: c1Share >= 50 ? '#fbbf24' : '#22d3ee',
+      color: c1Share >= 50 ? 'var(--accent-gold)' : 'var(--accent-sky)',
     });
 
     if (renewalByProduct?.length) {
@@ -195,7 +195,7 @@ function RenewalContent({ renewalFunnel, renewalByProduct, currentMaster, insigh
           category: 'Product Champion',
           title: `Best C1→C2: ${bestC1C2.product}`,
           detail: `${bestC1C2.c1c2Rate}% first-renewal rate on ${bestC1C2.c1.toLocaleString('en-IN')} C1 subscribers. Study what makes this product sticky and replicate across the portfolio.`,
-          color: '#22c55e',
+          color: 'var(--accent-green)',
         });
 
         const worstC1C2 = [...withRates].sort((a, b) => a.c1c2Rate - b.c1c2Rate)[0];
@@ -204,7 +204,7 @@ function RenewalContent({ renewalFunnel, renewalByProduct, currentMaster, insigh
           category: 'Renewal Risk',
           title: `Weakest C1→C2: ${worstC1C2.product}`,
           detail: `Only ${worstC1C2.c1c2Rate}% of ${worstC1C2.c1.toLocaleString('en-IN')} C1 subscribers renewed. Product-market fit or onboarding experience needs review.`,
-          color: '#f87171',
+          color: 'var(--accent-red)',
         });
 
         const withC3C4 = renewalByProduct.filter(p => p.c3 > 0 && p.c3c4Rate !== undefined && p.c3c4Rate !== null);
@@ -215,7 +215,7 @@ function RenewalContent({ renewalFunnel, renewalByProduct, currentMaster, insigh
             category: 'Loyalty Champion',
             title: `Best C3→C4: ${loyaltyChamp.product}`,
             detail: `${loyaltyChamp.c3c4Rate}% C3→C4 conversion — the strongest long-term loyalty rate in the portfolio. Subscribers at C3+ are deeply committed to this product.`,
-            color: '#a78bfa',
+            color: 'var(--accent-purple)',
           });
         }
       }
@@ -311,11 +311,11 @@ function RenewalContent({ renewalFunnel, renewalByProduct, currentMaster, insigh
       {periodRenewalRate !== null && (
         <div style={{
           display: 'flex', alignItems: 'center', gap: 16,
-          background: periodRenewalRate >= 60 ? 'rgba(34,197,94,0.12)' : periodRenewalRate >= 40 ? 'rgba(251,191,36,0.12)' : 'rgba(248,113,113,0.12)',
-          border: `1px solid ${periodRenewalRate >= 60 ? 'rgba(34,197,94,0.4)' : periodRenewalRate >= 40 ? 'rgba(251,191,36,0.4)' : 'rgba(248,113,113,0.4)'}`,
+          background: periodRenewalRate >= 60 ? 'color-mix(in srgb, var(--accent-green) 12%, transparent)' : periodRenewalRate >= 40 ? 'color-mix(in srgb, var(--accent-gold) 12%, transparent)' : 'color-mix(in srgb, var(--accent-red) 12%, transparent)',
+          border: `1px solid ${periodRenewalRate >= 60 ? 'color-mix(in srgb, var(--accent-green) 40%, transparent)' : periodRenewalRate >= 40 ? 'color-mix(in srgb, var(--accent-gold) 40%, transparent)' : 'color-mix(in srgb, var(--accent-red) 40%, transparent)'}`,
           borderRadius: 12, padding: '1rem 1.5rem', marginBottom: '1rem',
         }}>
-          <div style={{ fontSize: '2.2rem', fontWeight: 800, color: periodRenewalRate >= 60 ? '#22c55e' : periodRenewalRate >= 40 ? '#fbbf24' : '#f87171', letterSpacing: -1 }}>
+          <div style={{ fontSize: '2.2rem', fontWeight: 800, color: periodRenewalRate >= 60 ? 'var(--accent-green)' : periodRenewalRate >= 40 ? 'var(--accent-gold)' : 'var(--accent-red)', letterSpacing: -1 }}>
             {periodRenewalRate}%
           </div>
           <div>
@@ -373,9 +373,9 @@ function RenewalContent({ renewalFunnel, renewalByProduct, currentMaster, insigh
               <XAxis type="number" tick={{ fill: 'var(--text-muted)', fontSize: 10 }} unit="%" domain={[0, 100]} />
               <YAxis dataKey="product" type="category" width={115} tick={<YAxisTick maxChars={14} />} />
               <Tooltip content={<CustomTooltip />} />
-              <Bar dataKey="c1c2Rate" name="C1→C2 Rate %" fill="#22c55e" radius={[0, 4, 4, 0]}>
+              <Bar dataKey="c1c2Rate" name="C1→C2 Rate %" fill="var(--accent-green)" radius={[0, 4, 4, 0]}>
                 {topRenewalProds.map((p, i) => (
-                  <Cell key={i} fill={p.c1c2Rate >= 50 ? '#22c55e' : p.c1c2Rate >= 25 ? '#fbbf24' : '#f87171'} />
+                  <Cell key={i} fill={p.c1c2Rate >= 50 ? 'var(--accent-green)' : p.c1c2Rate >= 25 ? 'var(--accent-gold)' : 'var(--accent-red)'} />
                 ))}
               </Bar>
             </BarChart>
@@ -390,11 +390,11 @@ function RenewalContent({ renewalFunnel, renewalByProduct, currentMaster, insigh
               <YAxis dataKey="product" type="category" width={105} tick={<YAxisTick maxChars={13} fontSize={9} />} />
               <Tooltip content={<CustomTooltip />} />
               <Legend wrapperStyle={{ fontSize: 10 }} />
-              <Bar dataKey="c1" name="Cycle 1" stackId="a" fill="#00d4ff" />
-              <Bar dataKey="c2" name="Cycle 2" stackId="a" fill="#22c55e" />
-              <Bar dataKey="c3" name="Cycle 3" stackId="a" fill="#fbbf24" />
-              <Bar dataKey="c4" name="Cycle 4" stackId="a" fill="#fb923c" />
-              <Bar dataKey="c5" name="Cycle 5+" stackId="a" fill="#a78bfa" />
+              <Bar dataKey="c1" name="Cycle 1" stackId="a" fill="var(--accent-cyan)" />
+              <Bar dataKey="c2" name="Cycle 2" stackId="a" fill="var(--accent-green)" />
+              <Bar dataKey="c3" name="Cycle 3" stackId="a" fill="var(--accent-gold)" />
+              <Bar dataKey="c4" name="Cycle 4" stackId="a" fill="var(--accent-orange)" />
+              <Bar dataKey="c5" name="Cycle 5+" stackId="a" fill="var(--accent-purple)" />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -488,11 +488,11 @@ function RenewalContent({ renewalFunnel, renewalByProduct, currentMaster, insigh
                   <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 10 }} />
                   <Tooltip content={<CustomTooltip />} />
                   <Legend wrapperStyle={{ fontSize: 10 }} />
-                  <Bar dataKey="c1" name="Cycle 1" stackId="a" fill="#00d4ff" />
-                  <Bar dataKey="c2" name="Cycle 2" stackId="a" fill="#22c55e" />
-                  <Bar dataKey="c3" name="Cycle 3" stackId="a" fill="#fbbf24" />
-                  <Bar dataKey="c4" name="Cycle 4" stackId="a" fill="#fb923c" />
-                  <Bar dataKey="c5+" name="Cycle 5+" stackId="a" fill="#a78bfa" />
+                  <Bar dataKey="c1" name="Cycle 1" stackId="a" fill="var(--accent-cyan)" />
+                  <Bar dataKey="c2" name="Cycle 2" stackId="a" fill="var(--accent-green)" />
+                  <Bar dataKey="c3" name="Cycle 3" stackId="a" fill="var(--accent-gold)" />
+                  <Bar dataKey="c4" name="Cycle 4" stackId="a" fill="var(--accent-orange)" />
+                  <Bar dataKey="c5+" name="Cycle 5+" stackId="a" fill="var(--accent-purple)" />
                 </BarChart>
               </ResponsiveContainer>
             </ChartCard>

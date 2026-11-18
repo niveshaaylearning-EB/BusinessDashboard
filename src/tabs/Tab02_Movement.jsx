@@ -146,21 +146,21 @@ export default memo(function Tab02Movement({ monthly, insights, filters, setFilt
         category: 'Best Growth Month',
         title: `${best.month} — Net +${best.net.toLocaleString('en-IN')}`,
         detail: `Grew by ${bestNetPct}% on opening base of ${best.opening.toLocaleString('en-IN')} subscribers`,
-        color: '#22c55e',
+        color: 'var(--accent-green)',
       },
       {
         icon: '📉',
         category: 'Worst Exit Month',
         title: `${worstExit.month} — ${worstExit.exited.toLocaleString('en-IN')} exited`,
         detail: `Highest single-month churn; net impact was ${worstExit.net >= 0 ? '+' : ''}${worstExit.net.toLocaleString('en-IN')}`,
-        color: '#f87171',
+        color: 'var(--accent-red)',
       },
       {
         icon: trendAccel ? '⬆️' : trendFlat ? '➡️' : '⬇️',
         category: 'Growth Trend (Last 3M vs Prior 3M)',
         title: trendAccel ? 'Growth is Accelerating' : trendFlat ? 'Growth is Flat' : 'Growth is Decelerating',
         detail: `Last 3M net: ${lastNet >= 0 ? '+' : ''}${lastNet.toLocaleString('en-IN')} vs prior 3M: ${priorNet >= 0 ? '+' : ''}${priorNet.toLocaleString('en-IN')}`,
-        color: trendAccel ? '#22c55e' : trendFlat ? '#64748b' : '#f87171',
+        color: trendAccel ? 'var(--accent-green)' : trendFlat ? 'var(--text-neutral)' : 'var(--accent-red)',
       },
       {
         icon: streakPositive ? '🔥' : '❄️',
@@ -169,28 +169,28 @@ export default memo(function Tab02Movement({ monthly, insights, filters, setFilt
         detail: streakPositive
           ? `Unbroken growth run of ${streak} month${streak !== 1 ? 's' : ''} — momentum is sustained`
           : `${streak} month${streak !== 1 ? 's' : ''} of contraction — watch churn closely`,
-        color: streakPositive ? '#22c55e' : '#f87171',
+        color: streakPositive ? 'var(--accent-green)' : 'var(--accent-red)',
       },
       {
         icon: '📊',
         category: 'Best 3-Month Rolling Window',
         title: `${bestWindow} — cumulative net +${bestWindowNet.toLocaleString('en-IN')}`,
         detail: `Highest 3-month cumulative net addition across all overlapping windows`,
-        color: '#a78bfa',
+        color: 'var(--accent-purple)',
       },
       {
         icon: '🆕',
         category: 'Peak New Subscriber Month',
         title: `${topNew.month} — ${topNew.new.toLocaleString('en-IN')} new subscribers`,
         detail: `Highest single-month acquisition; net movement was ${topNew.net >= 0 ? '+' : ''}${topNew.net.toLocaleString('en-IN')}`,
-        color: '#22d3ee',
+        color: 'var(--accent-sky)',
       },
       {
         icon: '⚠️',
         category: 'Lowest Active Base Month',
         title: `${lowestClosing.month} — ${lowestClosing.closing.toLocaleString('en-IN')} closing subscribers`,
         detail: `Smallest month-end subscriber base on record — ${lowestClosing.closing.toLocaleString('en-IN')} active`,
-        color: '#fbbf24',
+        color: 'var(--accent-gold)',
       },
     ];
   }, [monthly]);
@@ -206,13 +206,13 @@ export default memo(function Tab02Movement({ monthly, insights, filters, setFilt
   const displayMonths = showAll ? monthly : monthly.slice(-24);
 
   const summaryKpis = [
-    { id: 'best_growth', label: 'Best Growth Month', value: topGrowthMonth?.month, sub: `+${topGrowthMonth?.new?.toLocaleString()} new`, accent: '#22c55e', icon: '📈',
+    { id: 'best_growth', label: 'Best Growth Month', value: topGrowthMonth?.month, sub: `+${topGrowthMonth?.new?.toLocaleString()} new`, accent: 'var(--accent-green)', icon: '📈',
       tooltip: 'The single calendar month with the highest count of brand-new Cycle 1 subscriptions (not net growth — a month can top this chart and still lose overall if exits were also high).' },
-    { id: 'highest_exit', label: 'Highest Exit Month', value: topExitMonth?.month, sub: `${topExitMonth?.exited?.toLocaleString()} exited`, accent: '#f87171', icon: '📉',
+    { id: 'highest_exit', label: 'Highest Exit Month', value: topExitMonth?.month, sub: `${topExitMonth?.exited?.toLocaleString()} exited`, accent: 'var(--accent-red)', icon: '📉',
       tooltip: 'The single calendar month with the highest number of subscriptions that ended (by Cycle End Date) and were not renewed within the 15-day grace window.' },
-    { id: 'best_net', label: 'Best Net Month', value: bestNetMonth?.month, sub: `Net +${bestNetMonth?.net?.toLocaleString()}`, accent: '#00d4ff', icon: '🏆',
+    { id: 'best_net', label: 'Best Net Month', value: bestNetMonth?.month, sub: `Net +${bestNetMonth?.net?.toLocaleString()}`, accent: 'var(--accent-cyan)', icon: '🏆',
       tooltip: 'The month with the largest gain in closing minus opening subscription count — the best month for overall base growth, combining new starts, renewals and exits together.' },
-    { id: 'worst_net', label: 'Worst Net Month', value: worstNetMonth?.month, sub: `Net ${worstNetMonth?.net?.toLocaleString()}`, accent: '#f87171', icon: '⚠️',
+    { id: 'worst_net', label: 'Worst Net Month', value: worstNetMonth?.month, sub: `Net ${worstNetMonth?.net?.toLocaleString()}`, accent: 'var(--accent-red)', icon: '⚠️',
       tooltip: 'The month with the largest drop in closing minus opening subscription count — the worst month for overall base growth (exits outpaced new starts and renewals by the widest margin).' },
   ];
 
@@ -243,10 +243,10 @@ export default memo(function Tab02Movement({ monthly, insights, filters, setFilt
             <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 10 }} />
             <Tooltip content={<CustomTooltip />} />
             <Legend wrapperStyle={{ fontSize: 11 }} />
-            <Bar dataKey="opening" name="Opening" fill="#475569" radius={[2, 2, 0, 0]} />
-            <Bar dataKey="new" name="New" fill="#22c55e" radius={[2, 2, 0, 0]} onClick={(d) => { openDrilldown(`New Subscribers — ${d.month}`, `Investors who first subscribed in ${d.month}`, (() => { const [yr, mo] = d.month.split('-').map(Number); const from = new Date(yr, mo-1, 1).getTime(), to = new Date(yr, mo, 0, 23, 59, 59).getTime(); return (currentMaster||[]).filter(r => { const dt = parseExcelDate(r['First Subscription Date'])||parseExcelDate(r['Subscription Start Date']); return dt && dt.getTime()>=from && dt.getTime()<=to; }).map(r => ({ name: r.Name||r.name||'—', pan: String(r.PAN||'').trim().toUpperCase(), product: r['Smallcase Name']||'—', broker: r['Broker Name']||r['Broker']||'—', date: (parseExcelDate(r['First Subscription Date'])||parseExcelDate(r['Subscription Start Date']))?.toLocaleDateString('en-IN')||'—', cycle: r['Cycle Number']||1 })); })(), [{ key:'name',label:'Name' },{ key:'pan',label:'PAN',cls:'td-name' },{ key:'product',label:'Product' },{ key:'broker',label:'Broker' },{ key:'date',label:'Date',align:'right' },{ key:'cycle',label:'Cycle',align:'right',cls:'td-num' }]); }} />
-            <Bar dataKey="exited" name="Exited" fill="#f87171" radius={[2, 2, 0, 0]} onClick={(d) => { openDrilldown(`Exited Subscribers — ${d.month}`, `Investors who unsubscribed in ${d.month}`, (() => { const [yr, mo] = d.month.split('-').map(Number); const from = new Date(yr, mo-1, 1).getTime(), to = new Date(yr, mo, 0, 23, 59, 59).getTime(); return (rawData||[]).filter(r => { const dt = parseExcelDate(r['Cycle End Date']||r['Exit Date']); const st = String(r['Latest Subscription Status']||r['Cycle Level Status']||'').toUpperCase(); return dt && dt.getTime()>=from && dt.getTime()<=to && st==='UNSUBSCRIBED'; }).map(r => ({ name: r.Name||r.name||'—', pan: String(r.PAN||'').trim().toUpperCase(), product: r['Smallcase Name']||'—', broker: r['Broker Name']||r['Broker']||'—', date: (parseExcelDate(r['Cycle End Date']||r['Exit Date']))?.toLocaleDateString('en-IN')||'—', cycle: r['Cycle Number']||'—' })); })(), [{ key:'name',label:'Name' },{ key:'pan',label:'PAN',cls:'td-name' },{ key:'product',label:'Product' },{ key:'broker',label:'Broker' },{ key:'date',label:'Exit Date',align:'right' },{ key:'cycle',label:'Last Cycle',align:'right',cls:'td-num' }]); }} />
-            <Bar dataKey="closing" name="Closing" fill="#00d4ff" radius={[2, 2, 0, 0]} />
+            <Bar dataKey="opening" name="Opening" fill="var(--text-neutral)" radius={[2, 2, 0, 0]} />
+            <Bar dataKey="new" name="New" fill="var(--accent-green)" radius={[2, 2, 0, 0]} onClick={(d) => { openDrilldown(`New Subscribers — ${d.month}`, `Investors who first subscribed in ${d.month}`, (() => { const [yr, mo] = d.month.split('-').map(Number); const from = new Date(yr, mo-1, 1).getTime(), to = new Date(yr, mo, 0, 23, 59, 59).getTime(); return (currentMaster||[]).filter(r => { const dt = parseExcelDate(r['First Subscription Date'])||parseExcelDate(r['Subscription Start Date']); return dt && dt.getTime()>=from && dt.getTime()<=to; }).map(r => ({ name: r.Name||r.name||'—', pan: String(r.PAN||'').trim().toUpperCase(), product: r['Smallcase Name']||'—', broker: r['Broker Name']||r['Broker']||'—', date: (parseExcelDate(r['First Subscription Date'])||parseExcelDate(r['Subscription Start Date']))?.toLocaleDateString('en-IN')||'—', cycle: r['Cycle Number']||1 })); })(), [{ key:'name',label:'Name' },{ key:'pan',label:'PAN',cls:'td-name' },{ key:'product',label:'Product' },{ key:'broker',label:'Broker' },{ key:'date',label:'Date',align:'right' },{ key:'cycle',label:'Cycle',align:'right',cls:'td-num' }]); }} />
+            <Bar dataKey="exited" name="Exited" fill="var(--accent-red)" radius={[2, 2, 0, 0]} onClick={(d) => { openDrilldown(`Exited Subscribers — ${d.month}`, `Investors who unsubscribed in ${d.month}`, (() => { const [yr, mo] = d.month.split('-').map(Number); const from = new Date(yr, mo-1, 1).getTime(), to = new Date(yr, mo, 0, 23, 59, 59).getTime(); return (rawData||[]).filter(r => { const dt = parseExcelDate(r['Cycle End Date']||r['Exit Date']); const st = String(r['Latest Subscription Status']||r['Cycle Level Status']||'').toUpperCase(); return dt && dt.getTime()>=from && dt.getTime()<=to && st==='UNSUBSCRIBED'; }).map(r => ({ name: r.Name||r.name||'—', pan: String(r.PAN||'').trim().toUpperCase(), product: r['Smallcase Name']||'—', broker: r['Broker Name']||r['Broker']||'—', date: (parseExcelDate(r['Cycle End Date']||r['Exit Date']))?.toLocaleDateString('en-IN')||'—', cycle: r['Cycle Number']||'—' })); })(), [{ key:'name',label:'Name' },{ key:'pan',label:'PAN',cls:'td-name' },{ key:'product',label:'Product' },{ key:'broker',label:'Broker' },{ key:'date',label:'Exit Date',align:'right' },{ key:'cycle',label:'Last Cycle',align:'right',cls:'td-num' }]); }} />
+            <Bar dataKey="closing" name="Closing" fill="var(--accent-cyan)" radius={[2, 2, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
         <div className="chart-clickable-hint">💡 Click the New (green) or Exited (red) bars to see subscriber details</div>
@@ -265,7 +265,7 @@ export default memo(function Tab02Movement({ monthly, insights, filters, setFilt
               <ReferenceLine y={0} stroke="var(--border-bright)" strokeWidth={2} />
               <Bar dataKey="net" name="Net Additions" radius={[3, 3, 0, 0]}>
                 {displayMonths.map((m, i) => (
-                  <Cell key={i} fill={m.net >= 0 ? '#22c55e' : '#f87171'} />
+                  <Cell key={i} fill={m.net >= 0 ? 'var(--accent-green)' : 'var(--accent-red)'} />
                 ))}
               </Bar>
             </BarChart>
@@ -282,8 +282,8 @@ export default memo(function Tab02Movement({ monthly, insights, filters, setFilt
               <XAxis dataKey="month" tick={{ fill: 'var(--text-muted)', fontSize: 10 }} interval="preserveStartEnd" />
               <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 10 }} unit="%" />
               <Tooltip content={<CustomTooltip />} />
-              <ReferenceLine y={0} stroke="#fbbf24" strokeDasharray="4 4" />
-              <Line type="monotone" dataKey="growthRate" name="Growth %" stroke="#fbbf24" strokeWidth={2} dot={false} />
+              <ReferenceLine y={0} stroke="var(--accent-gold)" strokeDasharray="4 4" />
+              <Line type="monotone" dataKey="growthRate" name="Growth %" stroke="var(--accent-gold)" strokeWidth={2} dot={false} />
             </LineChart>
           </ResponsiveContainer>
         </ChartCard>

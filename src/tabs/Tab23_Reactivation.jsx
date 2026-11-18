@@ -3,13 +3,13 @@ import { formatNumber } from '../dataEngine';
 import FAQSection from '../components/FAQSection';
 
 const PRIORITY_META = {
-  Hot:      { color: '#f87171', bg: 'rgba(248,113,113,0.15)', icon: '🔥', desc: 'High networth + positive P&L + recent exit — contact now',
+  Hot:      { color: 'var(--accent-red)', bg: 'color-mix(in srgb, var(--accent-red) 15%, transparent)', icon: '🔥', desc: 'High networth + positive P&L + recent exit — contact now',
     tooltip: 'Score of 6+ combining exit P&L (profitable exits score higher), net worth (bigger accounts score higher), a pricing-related exit reason, loyalty (cycles completed), and recency of exit — the best win-back bets.' },
-  Warm:     { color: '#fb923c', bg: 'rgba(251,146,60,0.15)',  icon: '♨️',  desc: 'Good potential — personalized outreach recommended',
+  Warm:     { color: 'var(--accent-orange)', bg: 'color-mix(in srgb, var(--accent-orange) 15%, transparent)',  icon: '♨️',  desc: 'Good potential — personalized outreach recommended',
     tooltip: 'Score of 4-5 on the same formula (exit P&L, net worth, exit reason, cycles completed, days since exit) — good potential, worth a personalized outreach.' },
-  Possible: { color: '#fbbf24', bg: 'rgba(251,191,36,0.15)', icon: '💡', desc: 'Worth a targeted campaign or offer',
+  Possible: { color: 'var(--accent-gold)', bg: 'color-mix(in srgb, var(--accent-gold) 15%, transparent)', icon: '💡', desc: 'Worth a targeted campaign or offer',
     tooltip: 'Score of 2-3 — some positive signals but a weaker case for reactivation; worth including in a broader win-back campaign.' },
-  Cold:     { color: '#64748b', bg: 'rgba(148,163,184,0.15)',  icon: '❄️',  desc: 'Low reactivation likelihood — low priority',
+  Cold:     { color: 'var(--text-neutral)', bg: 'color-mix(in srgb, var(--text-neutral) 15%, transparent)',  icon: '❄️',  desc: 'Low reactivation likelihood — low priority',
     tooltip: 'Score below 2, often from an exit tied to poor performance or losses — least likely to return, low priority for outreach.' },
 };
 
@@ -48,11 +48,11 @@ export default memo(function Tab23Reactivation({ reactivationPipeline }) {
         </div>
         <div title="Sum of each eligible investor's last Plan Amount — the subscription revenue that could be recovered if every one of them reactivated." style={{ background: 'var(--bg-card)', border: '1px solid #22c55e40', borderRadius: 12, padding: '1rem' }}>
           <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>Revenue Potential</div>
-          <div style={{ fontSize: '1.6rem', fontWeight: 700, color: '#22c55e' }}>₹{formatNumber(d.totalRevenuePotential || 0)}</div>
+          <div style={{ fontSize: '1.6rem', fontWeight: 700, color: 'var(--accent-green)' }}>₹{formatNumber(d.totalRevenuePotential || 0)}</div>
           <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>Based on last plan amounts</div>
         </div>
         {Object.entries(PRIORITY_META).map(([k, meta]) => (
-          <div key={k} title={meta.tooltip} style={{ background: meta.bg, border: `1px solid ${meta.color}40`, borderRadius: 12, padding: '1rem', cursor: 'pointer', outline: filter === k ? `2px solid ${meta.color}` : 'none' }}
+          <div key={k} title={meta.tooltip} style={{ background: meta.bg, border: `1px solid color-mix(in srgb, ${meta.color} 25%, transparent)`, borderRadius: 12, padding: '1rem', cursor: 'pointer', outline: filter === k ? `2px solid ${meta.color}` : 'none' }}
             onClick={() => setFilter(filter === k ? 'All' : k)}>
             <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>{meta.icon} {k}</div>
             <div style={{ fontSize: '1.8rem', fontWeight: 700, color: meta.color }}>{byPriority[k] || 0}</div>
@@ -63,7 +63,7 @@ export default memo(function Tab23Reactivation({ reactivationPipeline }) {
       {/* Priority guide */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 8 }}>
         {Object.entries(PRIORITY_META).map(([k, meta]) => (
-          <div key={k} style={{ background: meta.bg, border: `1px solid ${meta.color}20`, borderRadius: 8, padding: '0.7rem 1rem', display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+          <div key={k} style={{ background: meta.bg, border: `1px solid color-mix(in srgb, ${meta.color} 13%, transparent)`, borderRadius: 8, padding: '0.7rem 1rem', display: 'flex', alignItems: 'flex-start', gap: 8 }}>
             <span style={{ fontSize: '1rem' }}>{meta.icon}</span>
             <div>
               <div style={{ fontSize: 12, fontWeight: 600, color: meta.color }}>{k}</div>
@@ -106,9 +106,9 @@ export default memo(function Tab23Reactivation({ reactivationPipeline }) {
                     <td style={{ padding: '7px 10px', color: 'var(--text-muted)', fontSize: 11 }}>{r.broker}</td>
                     <td style={{ padding: '7px 10px', textAlign: 'right', color: 'var(--text-secondary)' }}>{r.cycle}</td>
                     <td style={{ padding: '7px 10px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>{r.exitDate}</td>
-                    <td style={{ padding: '7px 10px', textAlign: 'right', color: r.daysSinceExit <= 30 ? '#f87171' : 'var(--text-muted)' }}>{r.daysSinceExit}d</td>
+                    <td style={{ padding: '7px 10px', textAlign: 'right', color: r.daysSinceExit <= 30 ? 'var(--accent-red)' : 'var(--text-muted)' }}>{r.daysSinceExit}d</td>
                     <td style={{ padding: '7px 10px', color: 'var(--text-muted)', fontSize: 11 }}>{r.cancelReason}</td>
-                    <td style={{ padding: '7px 10px', textAlign: 'right', color: r.pnlPct >= 0 ? '#22c55e' : '#f87171', fontWeight: 600 }}>{r.pnlPct > 0 ? '+' : ''}{r.pnlPct}%</td>
+                    <td style={{ padding: '7px 10px', textAlign: 'right', color: r.pnlPct >= 0 ? 'var(--accent-green)' : 'var(--accent-red)', fontWeight: 600 }}>{r.pnlPct > 0 ? '+' : ''}{r.pnlPct}%</td>
                     <td style={{ padding: '7px 10px', textAlign: 'right', color: 'var(--text-secondary)' }}>₹{(r.planAmount || 0).toLocaleString('en-IN')}</td>
                   </tr>
                 );

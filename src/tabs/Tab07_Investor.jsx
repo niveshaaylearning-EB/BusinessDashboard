@@ -12,8 +12,8 @@ import { formatCurrency, formatNumber } from '../dataEngine';
 import TabDateFilter from '../components/TabDateFilter';
 import DrilldownModal, { useDrilldown } from '../components/DrilldownModal';
 
-const NW_COLORS = ['#475569', '#0ea5e9', '#22c55e', '#fbbf24', '#f97316'];
-const PNL_COLORS = ['#f87171', '#64748b', '#22c55e', '#fbbf24'];
+const NW_COLORS = ['var(--text-neutral)', 'var(--accent-cyan)', 'var(--accent-green)', 'var(--accent-gold)', 'var(--accent-orange)'];
+const PNL_COLORS = ['var(--accent-red)', 'var(--text-neutral)', 'var(--accent-green)', 'var(--accent-gold)'];
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
@@ -36,7 +36,7 @@ const PieLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, name })
   const y = cy + radius * Math.sin(-midAngle * RADIAN);
   if (percent < 0.04) return null;
   return (
-    <text x={x} y={y} fill="white" textAnchor="middle" dominantBaseline="central" fontSize={10}>
+    <text x={x} y={y} fill="var(--on-accent)" textAnchor="middle" dominantBaseline="central" fontSize={10}>
       {(percent * 100).toFixed(0)}%
     </text>
   );
@@ -213,7 +213,7 @@ function InvestorContent({ investorSegments, currentMaster, insights, filters, s
         : hniPct > 10
         ? `Moderate HNI share at ${hniPct}%. Targeted campaigns can deepen penetration in this segment.`
         : `HNI share is low at ${hniPct}%. Explore referral programs and premium product positioning.`,
-      color: hniPct > 20 ? '#22c55e' : hniPct > 10 ? '#fbbf24' : '#f87171',
+      color: hniPct > 20 ? 'var(--accent-green)' : hniPct > 10 ? 'var(--accent-gold)' : 'var(--accent-red)',
     });
 
     if (bestRenewalTier && worstRenewalTier && bestRenewalTier.label !== worstRenewalTier.label) {
@@ -222,7 +222,7 @@ function InvestorContent({ investorSegments, currentMaster, insights, filters, s
         category: 'Best Renewal Tier',
         title: `${bestRenewalTier.label} has best renewal rate (${bestRenewalTier.renewalRate}%)`,
         detail: `This tier renews most consistently — target similar profiles for acquisition to improve overall retention.`,
-        color: '#22c55e',
+        color: 'var(--accent-green)',
       });
 
       result.push({
@@ -230,7 +230,7 @@ function InvestorContent({ investorSegments, currentMaster, insights, filters, s
         category: 'Weakest Renewal Tier',
         title: `${worstRenewalTier.label} has lowest renewal rate (${worstRenewalTier.renewalRate}%)`,
         detail: `Lowest renewal tier — consider re-engagement campaigns, satisfaction surveys, or tiered pricing for this segment.`,
-        color: '#f87171',
+        color: 'var(--accent-red)',
       });
     }
 
@@ -243,7 +243,7 @@ function InvestorContent({ investorSegments, currentMaster, insights, filters, s
         : profitPct > 40
         ? `Roughly half the base is profitable. Market conditions and product mix explain variance — monitor closely.`
         : `Less than half of investors show positive PnL. Consider enhanced content or strategy guidance to improve outcomes.`,
-      color: profitPct > 60 ? '#22c55e' : profitPct > 40 ? '#fbbf24' : '#f87171',
+      color: profitPct > 60 ? 'var(--accent-green)' : profitPct > 40 ? 'var(--accent-gold)' : 'var(--accent-red)',
     });
 
     if (highestPlanTier) {
@@ -252,7 +252,7 @@ function InvestorContent({ investorSegments, currentMaster, insights, filters, s
         category: 'Highest Plan Value',
         title: `${highestPlanTier.label} buys highest avg plan (${formatCurrency(highestPlanTier.avgPlanAmount, true)})`,
         detail: `This tier's purchasing power translates to the highest plan values — prioritize premium product development for them.`,
-        color: '#fbbf24',
+        color: 'var(--accent-gold)',
       });
     }
 
@@ -262,7 +262,7 @@ function InvestorContent({ investorSegments, currentMaster, insights, filters, s
         category: 'Acquisition Quality',
         title: 'High-quality acquisition base: HNI share exceeds 20%',
         detail: 'Over 1 in 5 subscribers is HNI-classified. This indicates strong brand positioning in premium investor segments.',
-        color: '#22c55e',
+        color: 'var(--accent-green)',
       });
     }
 
@@ -272,7 +272,7 @@ function InvestorContent({ investorSegments, currentMaster, insights, filters, s
         category: 'Mass Market Tier',
         title: `"${massTier.label}" is the largest subscriber group (${massTier.count.toLocaleString('en-IN')})`,
         detail: `This tier forms your volume base. Retention and upsell strategies here have the broadest revenue impact.`,
-        color: '#22d3ee',
+        color: 'var(--accent-sky)',
       });
     }
 
@@ -343,7 +343,7 @@ function InvestorContent({ investorSegments, currentMaster, insights, filters, s
               <XAxis dataKey="label" tick={{ fill: 'var(--text-muted)', fontSize: 10 }} />
               <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 10 }} tickFormatter={v => formatCurrency(v, true)} />
               <Tooltip content={<CustomTooltip />} formatter={(v) => [formatCurrency(v), 'Avg Plan Amount']} />
-              <Bar dataKey="avgPlanAmount" name="Avg Plan" fill="#fbbf24" radius={[4, 4, 0, 0]}>
+              <Bar dataKey="avgPlanAmount" name="Avg Plan" fill="var(--accent-gold)" radius={[4, 4, 0, 0]}>
                 {networthData.map((_, i) => <Cell key={i} fill={NW_COLORS[i % NW_COLORS.length]} />)}
               </Bar>
             </BarChart>
@@ -359,7 +359,7 @@ function InvestorContent({ investorSegments, currentMaster, insights, filters, s
               <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 10 }} unit="%" domain={[0, 100]} />
               <Tooltip content={<CustomTooltip />} />
               <Bar dataKey="renewalRate" name="Renewal %" radius={[4, 4, 0, 0]}>
-                {networthData.map((p, i) => <Cell key={i} fill={p.renewalRate >= 40 ? '#22c55e' : p.renewalRate >= 20 ? '#fbbf24' : '#f87171'} />)}
+                {networthData.map((p, i) => <Cell key={i} fill={p.renewalRate >= 40 ? 'var(--accent-green)' : p.renewalRate >= 20 ? 'var(--accent-gold)' : 'var(--accent-red)'} />)}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
@@ -391,7 +391,7 @@ function InvestorContent({ investorSegments, currentMaster, insights, filters, s
               <XAxis dataKey="label" tick={{ fill: 'var(--text-muted)', fontSize: 10 }} />
               <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 10 }} tickFormatter={v => formatCurrency(v, true)} />
               <Tooltip content={<CustomTooltip />} formatter={(v) => [formatCurrency(v), 'Avg Networth']} />
-              <Bar dataKey="avgNetworth" name="Avg Networth" fill="#a78bfa" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="avgNetworth" name="Avg Networth" fill="var(--accent-purple)" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>

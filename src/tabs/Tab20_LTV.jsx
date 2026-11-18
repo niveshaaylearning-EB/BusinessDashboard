@@ -33,13 +33,13 @@ export default memo(function Tab20LTV({ ltvData }) {
   }).sort((a, b) => b[sortKey] - a[sortKey]);
 
   const kpis = [
-    { label: 'Total Investor LTV', value: `₹${formatNumber(d.totalLTV || 0)}`, color: '#00d4ff', sub: 'All historical spend across all investors',
+    { label: 'Total Investor LTV', value: `₹${formatNumber(d.totalLTV || 0)}`, color: 'var(--accent-cyan)', sub: 'All historical spend across all investors',
       tooltip: 'Sum of total historical spend — raw plan amounts, not monthly-equivalent — across every investor and every cycle/product they have ever held. This is actual realized revenue to date, not a projected or discounted lifetime value.' },
-    { label: 'Avg LTV per Investor', value: `₹${formatNumber(d.avgLTV || 0)}`, color: '#22c55e', sub: 'Mean spend per unique PAN',
+    { label: 'Avg LTV per Investor', value: `₹${formatNumber(d.avgLTV || 0)}`, color: 'var(--accent-green)', sub: 'Mean spend per unique PAN',
       tooltip: 'Total Investor LTV divided by the total number of unique investors (active and lapsed combined) — average historical spend per investor to date.' },
-    { label: 'Avg Active LTV', value: `₹${formatNumber(d.avgActiveLTV || 0)}`, color: '#fbbf24', sub: 'Mean spend — currently active only',
+    { label: 'Avg Active LTV', value: `₹${formatNumber(d.avgActiveLTV || 0)}`, color: 'var(--accent-gold)', sub: 'Mean spend — currently active only',
       tooltip: 'Average historical spend to date, computed only across investors who are currently active — shows what your active base has actually paid so far, excluding lapsed investors.' },
-    { label: 'Total Investors', value: formatNumber(d.totalInvestors || 0), color: '#a78bfa', sub: 'Unique PAN count in dataset',
+    { label: 'Total Investors', value: formatNumber(d.totalInvestors || 0), color: 'var(--accent-purple)', sub: 'Unique PAN count in dataset',
       tooltip: 'Count of unique investors (by PAN) found in the full historical dataset — includes both currently active and lapsed/cancelled investors.' },
   ];
 
@@ -55,7 +55,7 @@ export default memo(function Tab20LTV({ ltvData }) {
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
         {kpis.map(k => (
-          <div key={k.label} style={{ background: 'var(--bg-card)', border: `1px solid ${k.color}40`, borderRadius: 12, padding: '1.2rem' }}>
+          <div key={k.label} style={{ background: 'var(--bg-card)', border: `1px solid color-mix(in srgb, ${k.color} 25%, transparent)`, borderRadius: 12, padding: '1.2rem' }}>
             <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 5 }}>
               {k.label}
               {k.tooltip && <span title={k.tooltip} style={{ cursor: 'help', color: 'var(--text-muted)' }}>ⓘ</span>}
@@ -75,7 +75,7 @@ export default memo(function Tab20LTV({ ltvData }) {
               <XAxis dataKey="label" tick={{ fontSize: 10, fill: 'var(--text-muted)' }} />
               <YAxis tickFormatter={v => `₹${(v / 1000).toFixed(0)}K`} tick={<YAxisTick />} />
               <Tooltip content={<Tip />} />
-              <Bar dataKey="avgLTV" name="Avg LTV" fill="#fbbf24" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="avgLTV" name="Avg LTV" fill="var(--accent-gold)" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -114,16 +114,16 @@ export default memo(function Tab20LTV({ ltvData }) {
                   <td style={{ padding: '7px 10px', color: 'var(--text-muted)', fontFamily: 'monospace', fontSize: 11 }}>{r.pan}</td>
                   <td style={{ padding: '7px 10px' }}>
                     <span style={{ padding: '2px 8px', borderRadius: 20, fontSize: 10, fontWeight: 700,
-                      background: r.status === 'ACTIVE' ? 'rgba(34,197,94,0.15)' : 'rgba(248,113,113,0.15)',
-                      color: r.status === 'ACTIVE' ? '#22c55e' : '#f87171' }}>
+                      background: r.status === 'ACTIVE' ? 'color-mix(in srgb, var(--accent-green) 15%, transparent)' : 'color-mix(in srgb, var(--accent-red) 15%, transparent)',
+                      color: r.status === 'ACTIVE' ? 'var(--accent-green)' : 'var(--accent-red)' }}>
                       {r.status}
                     </span>
                   </td>
                   <td style={{ padding: '7px 10px', color: 'var(--text-secondary)' }}>{r.products}</td>
                   <td style={{ padding: '7px 10px', textAlign: 'right', color: 'var(--text-secondary)' }}>{r.cycles}</td>
-                  <td style={{ padding: '7px 10px', textAlign: 'right', color: '#fbbf24', fontWeight: 700 }}>₹{r.totalSpend.toLocaleString('en-IN')}</td>
+                  <td style={{ padding: '7px 10px', textAlign: 'right', color: 'var(--accent-gold)', fontWeight: 700 }}>₹{r.totalSpend.toLocaleString('en-IN')}</td>
                   <td style={{ padding: '7px 10px', textAlign: 'right', color: 'var(--text-secondary)' }}>{r.networth ? `₹${r.networth.toLocaleString('en-IN')}` : '—'}</td>
-                  <td style={{ padding: '7px 10px', textAlign: 'right', color: r.pnl >= 0 ? '#22c55e' : '#f87171', fontWeight: 600 }}>
+                  <td style={{ padding: '7px 10px', textAlign: 'right', color: r.pnl >= 0 ? 'var(--accent-green)' : 'var(--accent-red)', fontWeight: 600 }}>
                     {r.pnl !== 0 ? `${r.pnl >= 0 ? '+' : ''}₹${r.pnl.toLocaleString('en-IN')}` : '—'}
                   </td>
                 </tr>

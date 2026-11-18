@@ -38,19 +38,19 @@ export default memo(function Tab25RenewalCalendar({ renewalCalendar }) {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 10 }}>
         <div title="Active subscriptions (deduplicated by PAN) whose current cycle end date falls in the next 12 months — each one is an upcoming renewal decision." style={{ background: 'var(--bg-card)', border: '1px solid var(--border-bright)', borderRadius: 12, padding: '1rem' }}>
           <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>Renewals Due (next 12 mo)</div>
-          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#00d4ff' }}>{formatNumber(totalDue)}</div>
+          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--accent-cyan)' }}>{formatNumber(totalDue)}</div>
         </div>
         <div title="Sum of Plan Amount across all subscriptions expiring in the next 12 months — the total revenue at stake if none of them renew." style={{ background: 'var(--bg-card)', border: '1px solid #22c55e40', borderRadius: 12, padding: '1rem' }}>
           <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>Revenue at Renewal</div>
-          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#22c55e' }}>₹{formatNumber(totalRevenue)}</div>
+          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--accent-green)' }}>₹{formatNumber(totalRevenue)}</div>
         </div>
         <div title="Total renewals due divided by the number of upcoming months with at least one expiry — the typical monthly renewal workload." style={{ background: 'var(--bg-card)', border: '1px solid #fbbf2440', borderRadius: 12, padding: '1rem' }}>
           <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>Avg Monthly Renewals</div>
-          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#fbbf24' }}>{months.length > 0 ? Math.round(totalDue / months.length) : 0}</div>
+          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--accent-gold)' }}>{months.length > 0 ? Math.round(totalDue / months.length) : 0}</div>
         </div>
         <div title="The single month in the next 12 with the most expiring subscriptions — plan outreach capacity around this month." style={{ background: 'var(--bg-card)', border: '1px solid #a78bfa40', borderRadius: 12, padding: '1rem' }}>
           <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>Peak Month</div>
-          <div style={{ fontSize: '1.4rem', fontWeight: 700, color: '#a78bfa' }}>
+          <div style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--accent-purple)' }}>
             {months.length > 0 ? monthLabel(months.reduce((max, m) => m.count > max.count ? m : max, months[0]).month) : '—'}
           </div>
         </div>
@@ -68,8 +68,8 @@ export default memo(function Tab25RenewalCalendar({ renewalCalendar }) {
                 onClick={() => setSelected(isSelected ? null : m.month)}
                 style={{
                   borderRadius: 10, padding: '0.9rem', cursor: 'pointer',
-                  background: isSelected ? 'rgba(0,212,255,0.2)' : `rgba(0,212,255,${0.05 + pct * 0.35})`,
-                  border: `1px solid ${isSelected ? 'var(--accent-cyan)' : `rgba(0,212,255,${0.1 + pct * 0.4})`}`,
+                  background: isSelected ? 'color-mix(in srgb, var(--accent-cyan) 20%, transparent)' : `color-mix(in srgb, var(--accent-cyan) ${Math.round((0.05 + pct * 0.35) * 100)}%, transparent)`,
+                  border: `1px solid ${isSelected ? 'var(--accent-cyan)' : `color-mix(in srgb, var(--accent-cyan) ${Math.round((0.1 + pct * 0.4) * 100)}%, transparent)`}`,
                   transition: 'all 0.15s',
                 }}>
                 <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>{monthLabel(m.month)}</div>
@@ -111,7 +111,7 @@ export default memo(function Tab25RenewalCalendar({ renewalCalendar }) {
                     <td style={{ padding: '7px 10px', color: 'var(--text-secondary)' }}>{r.product}</td>
                     <td style={{ padding: '7px 10px', color: 'var(--text-muted)', fontSize: 11 }}>{r.broker}</td>
                     <td style={{ padding: '7px 10px', textAlign: 'right', color: 'var(--text-secondary)' }}>{r.cycle}</td>
-                    <td style={{ padding: '7px 10px', textAlign: 'right', color: '#22c55e', fontWeight: 600 }}>₹{r.planAmount.toLocaleString('en-IN')}</td>
+                    <td style={{ padding: '7px 10px', textAlign: 'right', color: 'var(--accent-green)', fontWeight: 600 }}>₹{r.planAmount.toLocaleString('en-IN')}</td>
                     <td style={{ padding: '7px 10px', color: 'var(--text-secondary)' }}>{r.expiryDate}</td>
                     <td style={{ padding: '7px 10px', textAlign: 'right', color: 'var(--text-secondary)' }}>{r.networth ? `₹${r.networth.toLocaleString('en-IN')}` : '—'}</td>
                   </tr>

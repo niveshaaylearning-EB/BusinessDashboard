@@ -12,7 +12,7 @@ import FAQSection from '../components/FAQSection';
 import { formatNumber, normalizeData } from '../dataEngine';
 import DrilldownModal, { useDrilldown } from '../components/DrilldownModal';
 
-const COLORS = ['#f87171','#fb923c','#fbbf24','#a78bfa','#00d4ff','#22c55e','#2dd4bf','#f472b6'];
+const COLORS = ['var(--accent-red)','var(--accent-orange)','var(--accent-gold)','var(--accent-purple)','var(--accent-cyan)','var(--accent-green)','var(--accent-teal)','var(--accent-pink)'];
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
@@ -159,7 +159,7 @@ export default memo(function Tab10Cancellation({ cancellationMetrics, currentMas
       category: 'Top Cancel Reason',
       title: `"${topReason?.reason}" is the #1 exit driver at ${topPct}%`,
       detail: `${(topReason?.count ?? 0).toLocaleString('en-IN')} of ${(total ?? 0).toLocaleString('en-IN')} cancellations are attributed to this single reason. This is your highest-priority retention fix.`,
-      color: topPct > 30 ? '#f87171' : '#fb923c',
+      color: topPct > 30 ? 'var(--accent-red)' : 'var(--accent-orange)',
     });
 
     const top3Pct = reasons.slice(0, 3).reduce((acc, r) => acc + (r.pct ?? 0), 0);
@@ -170,7 +170,7 @@ export default memo(function Tab10Cancellation({ cancellationMetrics, currentMas
       detail: top3Pct >= 70
         ? 'Strong Pareto concentration — fixing these three issues could recover the majority of churned subscribers.'
         : 'Cancellations are moderately distributed. Addressing top 3 will still yield significant impact.',
-      color: top3Pct >= 70 ? '#fbbf24' : '#22d3ee',
+      color: top3Pct >= 70 ? 'var(--accent-gold)' : 'var(--accent-sky)',
     });
 
     if (topPct > 40) {
@@ -179,7 +179,7 @@ export default memo(function Tab10Cancellation({ cancellationMetrics, currentMas
         category: 'Single Dominant Driver',
         title: `"${topReason?.reason}" covers over 40% — a fixable, high-confidence target`,
         detail: 'When one reason dominates this heavily, a focused product or service intervention has a measurable, near-certain impact on churn reduction.',
-        color: '#f87171',
+        color: 'var(--accent-red)',
       });
     }
 
@@ -189,7 +189,7 @@ export default memo(function Tab10Cancellation({ cancellationMetrics, currentMas
         category: 'Critical Concentration',
         title: `Over 60% of exits share one reason — very high confidence fix target`,
         detail: `"${topReason?.reason}" is not just the top reason — it is an overwhelming majority of your churn signal. Immediate intervention recommended.`,
-        color: '#f87171',
+        color: 'var(--accent-red)',
       });
     }
 
@@ -211,7 +211,7 @@ export default memo(function Tab10Cancellation({ cancellationMetrics, currentMas
           detail: accelerating
             ? `Recent 3-month average: ${recentAvg.toFixed(0)} exits/month vs ${priorAvg.toFixed(0)} prior. Churn is worsening — time-sensitive action needed.`
             : `Recent 3-month average: ${recentAvg.toFixed(0)} exits/month vs ${priorAvg.toFixed(0)} prior. Retention efforts appear to be working.`,
-          color: accelerating ? '#f87171' : '#22c55e',
+          color: accelerating ? 'var(--accent-red)' : 'var(--accent-green)',
         });
       }
     }
@@ -223,7 +223,7 @@ export default memo(function Tab10Cancellation({ cancellationMetrics, currentMas
         category: 'Peak Exit Month',
         title: `Highest cancellations recorded in ${peakMonth.month ?? peakMonth.label ?? 'unknown month'} (${(peakMonth.count ?? 0).toLocaleString('en-IN')} exits)`,
         detail: 'Investigate what happened in this period — market events, service disruptions, or product changes may explain the spike.',
-        color: '#fbbf24',
+        color: 'var(--accent-gold)',
       });
     }
 
@@ -236,7 +236,7 @@ export default memo(function Tab10Cancellation({ cancellationMetrics, currentMas
         : reasons.length >= 8
         ? 'Exit reasons are diverse — no single silver bullet. A multi-front retention strategy is required.'
         : 'Moderate diversity in exit reasons. Prioritise top 3 while keeping a broad retention approach.',
-      color: reasons.length <= 3 ? '#22c55e' : reasons.length >= 8 ? '#fb923c' : '#22d3ee',
+      color: reasons.length <= 3 ? 'var(--accent-green)' : reasons.length >= 8 ? 'var(--accent-orange)' : 'var(--accent-sky)',
     });
 
     return insights;
@@ -279,8 +279,8 @@ export default memo(function Tab10Cancellation({ cancellationMetrics, currentMas
             <YAxis yAxisId="right" orientation="right" tick={{ fill: 'var(--text-muted)', fontSize: 10 }} unit="%" domain={[0, 100]} />
             <Tooltip content={<CustomTooltip />} />
             <Legend wrapperStyle={{ fontSize: 11 }} />
-            <Bar yAxisId="left" dataKey="count" name="Count" fill="#f87171" radius={[3, 3, 0, 0]} />
-            <Line yAxisId="right" type="monotone" dataKey="cumPct" name="Cumulative %" stroke="#fbbf24" strokeWidth={2} dot={{ r: 3, fill: '#fbbf24' }} />
+            <Bar yAxisId="left" dataKey="count" name="Count" fill="var(--accent-red)" radius={[3, 3, 0, 0]} />
+            <Line yAxisId="right" type="monotone" dataKey="cumPct" name="Cumulative %" stroke="var(--accent-gold)" strokeWidth={2} dot={{ r: 3, fill: 'var(--accent-gold)' }} />
           </ComposedChart>
         </ResponsiveContainer>
       </ChartCard>
@@ -296,7 +296,7 @@ export default memo(function Tab10Cancellation({ cancellationMetrics, currentMas
                 <XAxis dataKey="month" tick={{ fill: 'var(--text-muted)', fontSize: 10 }} interval="preserveStartEnd" />
                 <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 10 }} />
                 <Tooltip content={<CustomTooltip />} />
-                <Bar dataKey="count" name="Exits" fill="#f87171" radius={[3, 3, 0, 0]} />
+                <Bar dataKey="count" name="Exits" fill="var(--accent-red)" radius={[3, 3, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </ChartCard>
@@ -342,7 +342,7 @@ export default memo(function Tab10Cancellation({ cancellationMetrics, currentMas
                   <td className={r.cumPct <= 80 ? 'td-bad' : 'td-num'}>{r.cumPct}%</td>
                   <td>
                     <div className="bar-cell">
-                      <div className="bar-fill" style={{ width: `${r.pct}%`, '--bar-color': r.pct > 20 ? '#f87171' : '#fb923c', background: `linear-gradient(90deg, ${r.pct > 20 ? '#f87171' : '#fb923c'}, transparent)`, maxWidth: 120 }} />
+                      <div className="bar-fill" style={{ width: `${r.pct}%`, '--bar-color': r.pct > 20 ? 'var(--accent-red)' : 'var(--accent-orange)', background: `linear-gradient(90deg, ${r.pct > 20 ? 'var(--accent-red)' : 'var(--accent-orange)'}, transparent)`, maxWidth: 120 }} />
                     </div>
                   </td>
                 </tr>

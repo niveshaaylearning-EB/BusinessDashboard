@@ -632,7 +632,7 @@ function FilterBar({ filterOptions, filters, setFilters, filtersOpen }) {
             style={{
               padding: '3px 8px', fontSize: 11, borderRadius: 4, cursor: 'pointer',
               border: activePreset === p.label ? '1px solid var(--accent-cyan)' : '1px solid var(--border-default)',
-              background: activePreset === p.label ? 'rgba(0,212,255,0.15)' : 'var(--bg-elevated)',
+              background: activePreset === p.label ? 'color-mix(in srgb, var(--accent-cyan) 15%, transparent)' : 'var(--bg-elevated)',
               color: activePreset === p.label ? 'var(--accent-cyan)' : 'var(--text-secondary)',
               fontWeight: activePreset === p.label ? 600 : 400,
             }}>
@@ -691,7 +691,7 @@ function UploadModal({ onClose, onDataLoaded }) {
   };
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(4,9,20,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+    <div style={{ position: 'fixed', inset: 0, background: 'var(--overlay)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
       <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-bright)', borderRadius: 'var(--radius-xl)', padding: '2rem', width: 420, maxWidth: '90vw' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
           <div style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--accent-cyan)' }}>📤 Update Dataset</div>
@@ -751,7 +751,7 @@ class TabErrorBoundary extends React.Component {
   render() {
     if (this.state.error) {
       return (
-        <div style={{ padding: '2rem', color: '#f87171', background: 'rgba(248,113,113,0.08)', borderRadius: 12, margin: '1rem', fontFamily: 'monospace', fontSize: 13 }}>
+        <div style={{ padding: '2rem', color: 'var(--accent-red)', background: 'color-mix(in srgb, var(--accent-red) 8%, transparent)', borderRadius: 12, margin: '1rem', fontFamily: 'monospace', fontSize: 13 }}>
           <div style={{ fontWeight: 700, marginBottom: 8 }}>Tab failed to render — open browser console (F12) for details</div>
           <div style={{ color: 'var(--text-muted)', wordBreak: 'break-all' }}>{String(this.state.error)}</div>
         </div>
@@ -779,7 +779,7 @@ export default function App() {
   const [filters, setFilters] = useState({});
   const [filtersOpen, setFiltersOpen] = useState(true);
   const [showUploadModal, setShowUploadModal] = useState(false);
-  const [theme, setTheme] = useState(() => localStorage.getItem('nia_theme') || 'dark');
+  const [theme, setTheme] = useState(() => localStorage.getItem('nia_theme') || 'light');
   const [restoreError, setRestoreError] = useState(null);
   const [retrying, setRetrying] = useState(false);
   // True from the moment login succeeds until restoreFromBackend() resolves —
@@ -1023,7 +1023,7 @@ export default function App() {
   />;
 }
 
-const ROLE_COLORS = { admin: '#f87171', operations: '#fbbf24', editor: '#34d399', viewer: '#64748b' };
+const ROLE_COLORS = { admin: 'var(--accent-red)', operations: 'var(--accent-gold)', editor: 'var(--accent-teal)', viewer: 'var(--text-neutral)' };
 const CAN_UPLOAD  = ['admin', 'operations', 'editor'];
 
 // ─── DATA FRESHNESS BANNER ────────────────────────────────────────────────────
@@ -1035,9 +1035,9 @@ function DataFreshnessBanner({ savedAt }) {
   return (
     <div style={{
       display: 'flex', alignItems: 'center', gap: 8, padding: '5px 16px', fontSize: 12,
-      background: stale ? 'rgba(248,113,113,0.08)' : 'rgba(251,191,36,0.08)',
-      borderBottom: `1px solid ${stale ? 'rgba(248,113,113,0.3)' : 'rgba(251,191,36,0.3)'}`,
-      color: stale ? '#f87171' : '#fbbf24',
+      background: stale ? 'color-mix(in srgb, var(--accent-red) 8%, transparent)' : 'color-mix(in srgb, var(--accent-gold) 8%, transparent)',
+      borderBottom: `1px solid ${stale ? 'color-mix(in srgb, var(--accent-red) 30%, transparent)' : 'color-mix(in srgb, var(--accent-gold) 30%, transparent)'}`,
+      color: stale ? 'var(--accent-red)' : 'var(--accent-gold)',
     }}>
       {stale ? '🔴' : '🟡'}
       <span>
@@ -1099,8 +1099,8 @@ function SyncWarningBanner({ authed, backendSynced, onSyncToBackend, onGoToLogin
   return (
     <div style={{
       display: 'flex', alignItems: 'center', gap: 10, padding: '6px 16px', fontSize: 12,
-      background: 'rgba(251,191,36,0.1)', borderBottom: '1px solid rgba(251,191,36,0.4)',
-      color: '#fbbf24',
+      background: 'color-mix(in srgb, var(--accent-gold) 10%, transparent)', borderBottom: '1px solid color-mix(in srgb, var(--accent-gold) 40%, transparent)',
+      color: 'var(--accent-gold)',
     }}>
       <span>⚠️</span>
       <span style={{ flex: 1 }}>
@@ -1111,8 +1111,8 @@ function SyncWarningBanner({ authed, backendSynced, onSyncToBackend, onGoToLogin
       {!authed && hasToken && (
         <button onClick={handleRetry} disabled={retrying} style={{
           padding: '3px 14px', fontSize: 11, borderRadius: 6, cursor: retrying ? 'default' : 'pointer',
-          background: 'rgba(251,191,36,0.2)', border: '1px solid #fbbf24',
-          color: '#fbbf24', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6,
+          background: 'color-mix(in srgb, var(--accent-gold) 20%, transparent)', border: '1px solid var(--accent-gold)',
+          color: 'var(--accent-gold)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6,
         }}>
           {retrying ? <><div className="spinner" style={{ width: 12, height: 12, borderWidth: 2 }} /> Reconnecting…</> : '🔄 Reconnect & Sync'}
         </button>
@@ -1122,8 +1122,8 @@ function SyncWarningBanner({ authed, backendSynced, onSyncToBackend, onGoToLogin
       {!authed && !hasToken && (
         <button onClick={onGoToLogin} style={{
           padding: '3px 14px', fontSize: 11, borderRadius: 6, cursor: 'pointer',
-          background: 'rgba(251,191,36,0.2)', border: '1px solid #fbbf24',
-          color: '#fbbf24', fontWeight: 600,
+          background: 'color-mix(in srgb, var(--accent-gold) 20%, transparent)', border: '1px solid var(--accent-gold)',
+          color: 'var(--accent-gold)', fontWeight: 600,
         }}>
           🔐 Log In to Sync
         </button>
@@ -1133,8 +1133,8 @@ function SyncWarningBanner({ authed, backendSynced, onSyncToBackend, onGoToLogin
       {authed && (
         <button onClick={handleSync} disabled={syncing} style={{
           padding: '3px 14px', fontSize: 11, borderRadius: 6, cursor: syncing ? 'default' : 'pointer',
-          background: 'rgba(251,191,36,0.2)', border: '1px solid #fbbf24',
-          color: '#fbbf24', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6,
+          background: 'color-mix(in srgb, var(--accent-gold) 20%, transparent)', border: '1px solid var(--accent-gold)',
+          color: 'var(--accent-gold)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6,
         }}>
           {syncing ? <><div className="spinner" style={{ width: 12, height: 12, borderWidth: 2 }} /> Syncing…</> : '☁️ Sync Now'}
         </button>
@@ -1167,9 +1167,9 @@ function AlertBanner({ kpis }) {
       {visible.map(a => (
         <div key={a.id} style={{
           display: 'flex', alignItems: 'center', gap: 8, padding: '5px 16px', fontSize: 12,
-          background: a.type === 'error' ? 'rgba(248,113,113,0.08)' : 'rgba(251,191,36,0.08)',
-          borderLeft: `3px solid ${a.type === 'error' ? '#f87171' : '#fbbf24'}`,
-          color: a.type === 'error' ? '#f87171' : '#fbbf24',
+          background: a.type === 'error' ? 'color-mix(in srgb, var(--accent-red) 8%, transparent)' : 'color-mix(in srgb, var(--accent-gold) 8%, transparent)',
+          borderLeft: `3px solid ${a.type === 'error' ? 'var(--accent-red)' : 'var(--accent-gold)'}`,
+          color: a.type === 'error' ? 'var(--accent-red)' : 'var(--accent-gold)',
         }}>
           <span>{a.type === 'error' ? '🔴' : '🟡'}</span>
           <span style={{ flex: 1 }}>{a.msg}</span>
@@ -1413,7 +1413,7 @@ function Dashboard({ rawData, fileName, savedAt, currentUser, activeTab, setActi
       <header className="app-header">
         <div className="header-brand">
           <div className="header-brand-icon">📊</div>
-          <div>
+          <div className="header-brand-title">
             <span className="header-brand-text">Equity Business Dashboard</span>
             <span className="header-brand-sep">·</span>
             <span className="header-brand-sub">Subscription Intelligence</span>
@@ -1424,48 +1424,49 @@ function Dashboard({ rawData, fileName, savedAt, currentUser, activeTab, setActi
           <div className="header-stat"><span>Subscribers</span><span className="hs-val">{formatNumber(kpis?.totalUniqueSubscribers || 0)}</span></div>
           <div className="header-stat"><span>Active</span><span className="hs-val">{formatNumber(kpis?.activeSubscribers || 0)}</span></div>
           <div className="header-stat"><span>Retention</span><span className="hs-val">{kpis?.retentionRate || 0}%</span></div>
-          <div className="header-stat">
+          <div className="header-stat header-stat-extra">
             <span>Dataset</span>
             <span className="hs-val" style={{ maxWidth: 140, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={fileName}>
               {fileName.replace(/\.[^.]+$/, '')}
             </span>
           </div>
           {savedAtLabel && (
-            <div className="header-stat"><span>Updated</span><span className="hs-val">{savedAtLabel}</span></div>
+            <div className="header-stat header-stat-extra"><span>Updated</span><span className="hs-val">{savedAtLabel}</span></div>
           )}
         </div>
 
         <div className="header-actions">
           <ThemeToggle theme={theme} setTheme={setTheme} />
-          <button className="btn-icon" onClick={() => setFiltersOpen(o => !o)}>
-            🔍 {filtersOpen ? 'Hide' : 'Show'} Filters
+          <button className="btn-icon" onClick={() => setFiltersOpen(o => !o)}
+            title={`${filtersOpen ? 'Hide' : 'Show'} filters`}>
+            🔍 <span className="btn-label">{filtersOpen ? 'Hide' : 'Show'} Filters</span>
           </button>
           {currentUser?.role === 'admin' && (
-            <button className="btn-icon" style={{ color: '#fbbf24', borderColor: '#fbbf24' }}
-              onClick={() => setShowAdminPanel(true)}>
-              ⚙️ Admin
+            <button className="btn-icon" style={{ color: 'var(--accent-gold)', borderColor: 'var(--accent-gold)' }}
+              onClick={() => setShowAdminPanel(true)} title="Admin panel — manage users">
+              ⚙️ <span className="btn-label">Admin</span>
             </button>
           )}
           {(!currentUser || CAN_UPLOAD.includes(currentUser.role)) && (
             <button className="btn-icon" style={{ color: 'var(--accent-cyan)', borderColor: 'var(--accent-cyan)' }}
-              onClick={() => setShowUploadModal(true)}>
-              📤 Update Data
+              onClick={() => setShowUploadModal(true)} title="Upload a new data file">
+              📤 <span className="btn-label">Update Data</span>
             </button>
           )}
-          <button className="btn-icon" style={{ color: '#34d399', borderColor: '#34d399' }}
+          <button className="btn-icon" style={{ color: 'var(--accent-teal)', borderColor: 'var(--accent-teal)' }}
             onClick={handleExport} title="Export filtered subscriber data as Excel">
-            ⬇️ Export
+            ⬇️ <span className="btn-label">Export</span>
           </button>
-          <button className="btn-icon" style={{ color: '#fbbf24', borderColor: '#fbbf24' }}
+          <button className="btn-icon" style={{ color: 'var(--accent-gold)', borderColor: 'var(--accent-gold)' }}
             onClick={handleExportRawBackup} title="Download a full backup of the raw uploaded data — keep this safe; re-uploading it fully restores the dataset">
-            💾 Backup
+            💾 <span className="btn-label">Backup</span>
           </button>
           {/* Profile display — NOT clickable, just shows who's signed in.
               Logout is a separate, clearly-labeled button below so nobody
               gets signed out from a stray click on their own name. */}
           <div className="btn-icon" style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'default' }}
             title={`${currentUser?.full_name || currentUser?.username} · ${currentUser?.role}`}>
-            👤 {currentUser?.username}
+            👤 <span className="btn-label">{currentUser?.username}</span>
             <span style={{
               fontSize: '0.65rem', fontWeight: 700, padding: '1px 6px',
               borderRadius: 10, background: 'var(--bg-inset-5)',
@@ -1478,7 +1479,7 @@ function Dashboard({ rawData, fileName, savedAt, currentUser, activeTab, setActi
           <button className="btn-icon" style={{ color: '#f87171', borderColor: '#f87171' }}
             onClick={() => { if (window.confirm('Log out of Equity Business Dashboard?')) onLogout(); }}
             title="Log out">
-            🚪 Logout
+            🚪 <span className="btn-label">Logout</span>
           </button>
         </div>
       </header>

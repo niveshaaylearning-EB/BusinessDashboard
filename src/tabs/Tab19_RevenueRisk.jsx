@@ -3,13 +3,13 @@ import { formatNumber } from '../dataEngine';
 import FAQSection from '../components/FAQSection';
 
 const BUCKET_META = {
-  critical: { label: '0 – 30 Days', color: '#f87171', bg: 'rgba(248,113,113,0.08)', icon: '🔴',
+  critical: { label: '0 – 30 Days', color: 'var(--accent-red)', bg: 'color-mix(in srgb, var(--accent-red) 8%, transparent)', icon: '🔴',
     tooltip: 'Active subscriptions whose current cycle ends within the next 30 days — the highest-urgency renewal outreach window (High churn risk). The ₹ figure is the full plan amount at stake, not a monthly-equivalent.' },
-  warning:  { label: '31 – 60 Days', color: '#fbbf24', bg: 'rgba(251,191,36,0.08)',   icon: '🟡',
+  warning:  { label: '31 – 60 Days', color: 'var(--accent-gold)', bg: 'color-mix(in srgb, var(--accent-gold) 8%, transparent)',   icon: '🟡',
     tooltip: 'Active subscriptions renewing in 31–60 days (Medium churn risk) — a second-priority outreach window before they lapse.' },
-  watch:    { label: '61 – 90 Days', color: '#fb923c', bg: 'rgba(251,146,60,0.08)',    icon: '🟠',
+  watch:    { label: '61 – 90 Days', color: 'var(--accent-orange)', bg: 'color-mix(in srgb, var(--accent-orange) 8%, transparent)',    icon: '🟠',
     tooltip: 'Active subscriptions renewing in 61–90 days (Low churn risk by the model, but worth an early heads-up) — a planning window to line up renewal outreach ahead of time.' },
-  safe:     { label: '90+ Days',     color: '#22c55e', bg: 'rgba(34,197,94,0.08)',      icon: '🟢',
+  safe:     { label: '90+ Days',     color: 'var(--accent-green)', bg: 'color-mix(in srgb, var(--accent-green) 8%, transparent)',      icon: '🟢',
     tooltip: 'Active subscriptions with more than 90 days left on their current cycle — not yet due for renewal outreach.' },
 };
 
@@ -40,16 +40,16 @@ export default memo(function Tab19RevenueRisk({ revenueAtRisk }) {
 
       {/* Summary KPIs */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
-        <div style={{ background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.3)', borderRadius: 12, padding: '1.2rem' }}>
+        <div style={{ background: 'color-mix(in srgb, var(--accent-red) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--accent-red) 30%, transparent)', borderRadius: 12, padding: '1.2rem' }}>
           <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 5 }}>
             Revenue at Risk (90 days)
             <span title="Sum of full plan amounts (not monthly-equivalent) for active subscriptions whose current cycle ends within the next 90 days — the renewal revenue that could be lost if these accounts don't renew. Subscriptions expiring beyond 90 days are excluded." style={{ cursor: 'help', color: 'var(--text-muted)' }}>ⓘ</span>
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#f87171' }}>₹{formatNumber(totalAtRisk)}</div>
+          <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--accent-red)' }}>₹{formatNumber(totalAtRisk)}</div>
           <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>{countAtRisk} unique investors</div>
         </div>
         {Object.entries(BUCKET_META).map(([key, meta]) => (
-          <div key={key} style={{ background: meta.bg, border: `1px solid ${meta.color}40`, borderRadius: 12, padding: '1.2rem', cursor: 'pointer', outline: bucket === key ? `2px solid ${meta.color}` : 'none' }}
+          <div key={key} style={{ background: meta.bg, border: `1px solid color-mix(in srgb, ${meta.color} 25%, transparent)`, borderRadius: 12, padding: '1.2rem', cursor: 'pointer', outline: bucket === key ? `2px solid ${meta.color}` : 'none' }}
             onClick={() => setBucket(key)}>
             <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 5 }}>
               {meta.icon} {meta.label}
@@ -87,13 +87,13 @@ export default memo(function Tab19RevenueRisk({ revenueAtRisk }) {
                   <td style={{ padding: '7px 10px', color: 'var(--text-secondary)' }}>{r.product}</td>
                   <td style={{ padding: '7px 10px', color: 'var(--text-muted)', fontSize: 11 }}>{r.broker}</td>
                   <td style={{ padding: '7px 10px', textAlign: 'right', color: 'var(--text-secondary)' }}>{r.cycle}</td>
-                  <td style={{ padding: '7px 10px', textAlign: 'right', color: '#22c55e', fontWeight: 600 }}>₹{(r.planAmount || 0).toLocaleString('en-IN')}</td>
+                  <td style={{ padding: '7px 10px', textAlign: 'right', color: 'var(--accent-green)', fontWeight: 600 }}>₹{(r.planAmount || 0).toLocaleString('en-IN')}</td>
                   <td style={{ padding: '7px 10px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>{r.expiryDate}</td>
-                  <td style={{ padding: '7px 10px', textAlign: 'right', color: r.daysLeft <= 30 ? '#f87171' : r.daysLeft <= 60 ? '#fbbf24' : 'var(--text-secondary)', fontWeight: 600 }}>{r.daysLeft}d</td>
+                  <td style={{ padding: '7px 10px', textAlign: 'right', color: r.daysLeft <= 30 ? 'var(--accent-red)' : r.daysLeft <= 60 ? 'var(--accent-gold)' : 'var(--text-secondary)', fontWeight: 600 }}>{r.daysLeft}d</td>
                   <td style={{ padding: '7px 10px' }}>
                     <span style={{ padding: '2px 8px', borderRadius: 20, fontSize: 10, fontWeight: 700,
-                      background: r.churnRisk === 'High' ? 'rgba(248,113,113,0.2)' : r.churnRisk === 'Medium' ? 'rgba(251,191,36,0.2)' : 'rgba(34,197,94,0.2)',
-                      color: r.churnRisk === 'High' ? '#f87171' : r.churnRisk === 'Medium' ? '#fbbf24' : '#22c55e' }}>
+                      background: r.churnRisk === 'High' ? 'color-mix(in srgb, var(--accent-red) 20%, transparent)' : r.churnRisk === 'Medium' ? 'color-mix(in srgb, var(--accent-gold) 20%, transparent)' : 'color-mix(in srgb, var(--accent-green) 20%, transparent)',
+                      color: r.churnRisk === 'High' ? 'var(--accent-red)' : r.churnRisk === 'Medium' ? 'var(--accent-gold)' : 'var(--accent-green)' }}>
                       {r.churnRisk}
                     </span>
                   </td>

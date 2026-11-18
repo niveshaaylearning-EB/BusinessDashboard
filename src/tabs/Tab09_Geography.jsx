@@ -30,7 +30,7 @@ const toRow = r => ({
   cycle:   r['Cycle Number'] || '—',
 });
 
-const COLORS = ['#00d4ff','#fbbf24','#22c55e','#a78bfa','#f87171','#fb923c','#2dd4bf','#f472b6','#818cf8','#86efac'];
+const COLORS = ['var(--accent-cyan)','var(--accent-gold)','var(--accent-green)','var(--accent-purple)','var(--accent-red)','var(--accent-orange)','var(--accent-teal)','var(--accent-pink)','var(--chart-9)','var(--chart-10)'];
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
@@ -70,7 +70,7 @@ export default memo(function Tab09Geography({ geoMetrics, insights, filters, set
       category: 'Geographic Leader',
       title: `${topState.state} leads with ${topShare}% of all subscribers`,
       detail: `${topState.total?.toLocaleString('en-IN')} total subscriptions — the dominant geography contributing ${topShare}% of the subscriber base.`,
-      color: '#22d3ee',
+      color: 'var(--accent-sky)',
     });
 
     const topNW = byNW[0];
@@ -79,7 +79,7 @@ export default memo(function Tab09Geography({ geoMetrics, insights, filters, set
       category: 'Wealth Hub',
       title: `${topNW.state} has the wealthiest subscriber base`,
       detail: `Average networth of ₹${topNW.avgNetworth?.toLocaleString('en-IN')} — highest across all states, indicating premium investor concentration.`,
-      color: '#a78bfa',
+      color: 'var(--accent-purple)',
     });
 
     if (byRenewal.length > 0) {
@@ -89,7 +89,7 @@ export default memo(function Tab09Geography({ geoMetrics, insights, filters, set
         category: 'Regional Retention',
         title: `${loyalState.state} is the most loyal region at ${loyalState.renewalRate}% renewal`,
         detail: `Highest renewal rate among states with 3+ subscribers — strong subscriber satisfaction and product-market fit in this region.`,
-        color: '#22c55e',
+        color: 'var(--accent-green)',
       });
 
       const churnState = byRenewal[byRenewal.length - 1];
@@ -98,7 +98,7 @@ export default memo(function Tab09Geography({ geoMetrics, insights, filters, set
         category: 'Churn Risk Region',
         title: `${churnState.state} has highest churn risk at ${churnState.renewalRate}% renewal`,
         detail: `Lowest renewal rate among qualified states — targeted retention campaigns or product repositioning may improve outcomes here.`,
-        color: '#f87171',
+        color: 'var(--accent-red)',
       });
     }
 
@@ -110,7 +110,7 @@ export default memo(function Tab09Geography({ geoMetrics, insights, filters, set
       category: 'Geographic Concentration',
       title: `Top 3 states control ${top3Share}% of all subscriptions`,
       detail: `${top3.map(s => s.state).join(', ')} together account for ${top3Total.toLocaleString('en-IN')} of ${totalSubs.toLocaleString('en-IN')} total subscribers.`,
-      color: top3Share > 60 ? '#f87171' : '#fbbf24',
+      color: top3Share > 60 ? 'var(--accent-red)' : 'var(--accent-gold)',
     });
 
     const medianIdx = Math.floor(byTotal.length / 2);
@@ -122,7 +122,7 @@ export default memo(function Tab09Geography({ geoMetrics, insights, filters, set
         category: 'Emerging Region',
         title: `${emergingState.state} is a high-potential emerging market`,
         detail: `Despite lower subscriber volume (${emergingState.total?.toLocaleString('en-IN')} subs), it has a ${emergingState.renewalRate ?? 0}% renewal rate — strong loyalty signal from a growing region.`,
-        color: '#fb923c',
+        color: 'var(--accent-orange)',
       });
     }
 
@@ -133,7 +133,7 @@ export default memo(function Tab09Geography({ geoMetrics, insights, filters, set
         category: 'Highest Active Rate',
         title: `${topActive.state} has best active rate at ${topActive.activeRate}%`,
         detail: `${topActive.activeRate}% of subscribers from ${topActive.state} are currently active — the strongest engagement rate across all geographies.`,
-        color: '#22c55e',
+        color: 'var(--accent-green)',
       });
     }
 
@@ -142,7 +142,7 @@ export default memo(function Tab09Geography({ geoMetrics, insights, filters, set
       category: 'Coverage',
       title: `Subscribers span ${geoMetrics.length} states across India`,
       detail: `Geographic footprint covers ${geoMetrics.length} states with ${totalSubs.toLocaleString('en-IN')} total subscriptions — broad national reach.`,
-      color: '#22d3ee',
+      color: 'var(--accent-sky)',
     });
 
     return insights;
@@ -204,8 +204,8 @@ export default memo(function Tab09Geography({ geoMetrics, insights, filters, set
               <YAxis dataKey="state" type="category" width={145} tick={<YAxisTick maxChars={25} fontSize={10} />} />
               <Tooltip content={<CustomTooltip />} />
               <Legend wrapperStyle={{ fontSize: 11 }} />
-              <Bar dataKey="active" name="Active" stackId="a" fill="#22c55e" />
-              <Bar dataKey="exited" name="Exited" stackId="a" fill="#f87171" />
+              <Bar dataKey="active" name="Active" stackId="a" fill="var(--accent-green)" />
+              <Bar dataKey="exited" name="Exited" stackId="a" fill="var(--accent-red)" />
             </BarChart>
           </ResponsiveContainer>
           <div className="chart-clickable-hint">Click a bar to see subscribers for that state</div>
@@ -261,7 +261,7 @@ export default memo(function Tab09Geography({ geoMetrics, insights, filters, set
               <YAxis dataKey="state" type="category" width={145} tick={<YAxisTick maxChars={25} fontSize={10} />} />
               <Tooltip content={<CustomTooltip />} />
               <Bar dataKey="renewalRate" name="Renewal %" radius={[0, 4, 4, 0]}>
-                {topByRenewal.map((s, i) => <Cell key={i} fill={s.renewalRate >= 40 ? '#22c55e' : s.renewalRate >= 20 ? '#fbbf24' : '#f87171'} />)}
+                {topByRenewal.map((s, i) => <Cell key={i} fill={s.renewalRate >= 40 ? 'var(--accent-green)' : s.renewalRate >= 20 ? 'var(--accent-gold)' : 'var(--accent-red)'} />)}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
@@ -287,7 +287,7 @@ export default memo(function Tab09Geography({ geoMetrics, insights, filters, set
               <XAxis type="number" tick={{ fill: 'var(--text-muted)', fontSize: 10 }} unit="%" />
               <YAxis dataKey="state" type="category" width={145} tick={<YAxisTick maxChars={25} fontSize={10} />} />
               <Tooltip content={<CustomTooltip />} />
-              <Bar dataKey="networthShare" name="NW Share %" fill="#fbbf24" radius={[0, 4, 4, 0]} />
+              <Bar dataKey="networthShare" name="NW Share %" fill="var(--accent-gold)" radius={[0, 4, 4, 0]} />
             </BarChart>
           </ResponsiveContainer>
           <div className="chart-clickable-hint">Click a bar to see subscribers for that state</div>

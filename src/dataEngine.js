@@ -1233,33 +1233,33 @@ export function generateInsights(currentMaster, monthlyMovement, productMetrics,
   if (productMetrics.length > 0) {
     const top = productMetrics[0];
     const pct = totalActive > 0 ? (top.active / totalActive * 100).toFixed(0) : 0;
-    insights.push({ icon: '🚀', category: 'Growth Leader', color: '#00d4ff',
+    insights.push({ icon: '🚀', category: 'Growth Leader', color: 'var(--accent-cyan)',
       title: `${top.product} is the flagship with ${top.active.toLocaleString()} active subscribers (${pct}% of active base)`,
       detail: `Renewal rate: ${top.renewalRate}% | Avg plan: ₹${top.avgPlanAmount.toLocaleString()} | Avg networth: ₹${formatCurrency(top.avgNetworth, true)}` });
   }
 
   const byRetention = [...productMetrics].sort((a, b) => b.renewalRate - a.renewalRate);
   if (byRetention[0]) {
-    insights.push({ icon: '🔒', category: 'Retention Champion', color: '#22c55e',
+    insights.push({ icon: '🔒', category: 'Retention Champion', color: 'var(--accent-green)',
       title: `${byRetention[0].product} achieves highest renewal rate at ${byRetention[0].renewalRate}%`,
       detail: `${byRetention[0].active} currently active | Avg networth: ₹${byRetention[0].avgNetworth.toLocaleString()}` });
   }
 
   const byNW = [...productMetrics].sort((a, b) => b.avgNetworth - a.avgNetworth);
   if (byNW[0]) {
-    insights.push({ icon: '💰', category: 'HNI Magnet', color: '#fbbf24',
+    insights.push({ icon: '💰', category: 'HNI Magnet', color: 'var(--accent-gold)',
       title: `${byNW[0].product} attracts the highest net-worth investors`,
       detail: `Avg networth: ${formatCurrency(byNW[0].avgNetworth, true)} | Avg PnL: ${formatCurrency(byNW[0].avgPnL, true)}` });
   }
 
   if (brokerMetrics.length > 0) {
     const byBrokerNW = [...brokerMetrics].sort((a, b) => b.avgNetworth - a.avgNetworth)[0];
-    insights.push({ icon: '🤝', category: 'Top Distributor', color: '#8b5cf6',
+    insights.push({ icon: '🤝', category: 'Top Distributor', color: 'var(--accent-purple)',
       title: `${byBrokerNW.broker} brings the highest-quality investor base`,
       detail: `Avg networth: ${formatCurrency(byBrokerNW.avgNetworth, true)} | Renewal: ${byBrokerNW.renewalRate}% | ${byBrokerNW.total} subscribers` });
     const byVolume = [...brokerMetrics].sort((a, b) => b.total - a.total)[0];
     if (byVolume.broker !== byBrokerNW.broker) {
-      insights.push({ icon: '📈', category: 'Volume Leader', color: '#14b8a6',
+      insights.push({ icon: '📈', category: 'Volume Leader', color: 'var(--accent-teal)',
         title: `${byVolume.broker} drives the highest subscription volume`,
         detail: `${byVolume.total} total | Active rate: ${byVolume.total > 0 ? (byVolume.active / byVolume.total * 100).toFixed(0) : 0}%` });
     }
@@ -1268,12 +1268,12 @@ export function generateInsights(currentMaster, monthlyMovement, productMetrics,
   if (geoMetrics.length > 0) {
     const topState = geoMetrics[0];
     const pct = totalActive > 0 ? (topState.active / totalActive * 100).toFixed(0) : 0;
-    insights.push({ icon: '🗺️', category: 'Geographic Concentration', color: '#f97316',
+    insights.push({ icon: '🗺️', category: 'Geographic Concentration', color: 'var(--accent-orange)',
       title: `${topState.state} contributes ${pct}% of active subscribers and ${topState.networthShare}% of total networth`,
       detail: `${topState.active.toLocaleString()} active | Avg networth: ${formatCurrency(topState.avgNetworth, true)}` });
     const highRet = [...geoMetrics].filter(s => s.active >= 5).sort((a, b) => b.renewalRate - a.renewalRate)[0];
     if (highRet && highRet.state !== topState.state) {
-      insights.push({ icon: '🏆', category: 'Regional Retention', color: '#22c55e',
+      insights.push({ icon: '🏆', category: 'Regional Retention', color: 'var(--accent-green)',
         title: `${highRet.state} has the highest retention rate at ${highRet.renewalRate}%`,
         detail: `${highRet.active} active subscribers — potential model for other regions` });
     }
@@ -1286,26 +1286,26 @@ export function generateInsights(currentMaster, monthlyMovement, productMetrics,
   }
   const multiProdUsers = Array.from(panMap.values()).filter(c => c > 1).length;
   const multiPct = uniquePANs > 0 ? (multiProdUsers / uniquePANs * 100).toFixed(0) : 0;
-  insights.push({ icon: '📊', category: 'Cross-Sell Opportunity', color: '#00d4ff',
+  insights.push({ icon: '📊', category: 'Cross-Sell Opportunity', color: 'var(--accent-cyan)',
     title: `${multiPct}% of investors hold multiple smallcase subscriptions`,
     detail: `${multiProdUsers.toLocaleString()} multi-product users out of ${uniquePANs.toLocaleString()} total investors` });
 
   const retRate = totalActive > 0 ? (totalActive / currentMaster.length * 100).toFixed(1) : 0;
-  insights.push({ icon: '💎', category: 'Platform Health', color: '#fbbf24',
+  insights.push({ icon: '💎', category: 'Platform Health', color: 'var(--accent-gold)',
     title: `Platform manages ${formatCurrency(totalNW, true)} in total active subscriber networth`,
     detail: `${retRate}% active rate | ${uniquePANs.toLocaleString()} unique investors` });
 
   const withDiscount = activeSubs.filter(r => (Number(r['Offer Discount']) || 0) > 0);
   const discPct = totalActive > 0 ? (withDiscount.length / totalActive * 100).toFixed(0) : 0;
   const avgDisc = Math.round(avg(withDiscount.map(r => Number(r['Offer Discount']) || 0)));
-  insights.push({ icon: '🎯', category: 'Pricing Intelligence', color: '#f97316',
+  insights.push({ icon: '🎯', category: 'Pricing Intelligence', color: 'var(--accent-orange)',
     title: `${discPct}% of active subscriptions are discount-driven with avg ₹${avgDisc.toLocaleString()} off`,
     detail: `Review pricing strategy for discount-dependent cohorts to improve unit economics` });
 
   if (monthlyMovement.length >= 3) {
     const recent = monthlyMovement.slice(-3);
     const avgNet = avg(recent.map(m => m.net));
-    insights.push({ icon: '📉', category: 'Growth Momentum', color: avgNet > 0 ? '#22c55e' : '#f87171',
+    insights.push({ icon: '📉', category: 'Growth Momentum', color: avgNet > 0 ? 'var(--accent-green)' : 'var(--accent-red)',
       title: `3-month avg net additions: ${avgNet > 0 ? '+' : ''}${Math.round(avgNet)} subscribers/month`,
       detail: `Growth momentum is ${avgNet > 0 ? 'positive' : 'negative'} — ${avgNet > 0 ? 'accelerate acquisition' : 'urgent retention focus needed'}` });
   }
@@ -1315,7 +1315,7 @@ export function generateInsights(currentMaster, monthlyMovement, productMetrics,
   // Worst product by renewal rate
   const worstRetention = [...productMetrics].filter(p => p.total >= 10).sort((a, b) => a.renewalRate - b.renewalRate)[0];
   if (worstRetention && byRetention[0] && worstRetention.product !== byRetention[0].product) {
-    insights.push({ icon: '⚠️', category: 'Retention Laggard', color: '#f87171',
+    insights.push({ icon: '⚠️', category: 'Retention Laggard', color: 'var(--accent-red)',
       title: `${worstRetention.product} has the lowest renewal rate at ${worstRetention.renewalRate}%`,
       detail: `${worstRetention.active} active | ${worstRetention.total} total — investigate product-market fit or pricing` });
   }
@@ -1324,7 +1324,7 @@ export function generateInsights(currentMaster, monthlyMovement, productMetrics,
   if (brokerMetrics.length >= 2) {
     const worstBroker = [...brokerMetrics].filter(b => b.total >= 10).sort((a, b) => a.renewalRate - b.renewalRate)[0];
     if (worstBroker) {
-      insights.push({ icon: '🤝', category: 'Distributor Laggard', color: '#f87171',
+      insights.push({ icon: '🤝', category: 'Distributor Laggard', color: 'var(--accent-red)',
         title: `${worstBroker.broker} has the lowest renewal rate at ${worstBroker.renewalRate}% among distributors`,
         detail: `${worstBroker.total} subscribers | Active rate: ${worstBroker.total > 0 ? (worstBroker.active / worstBroker.total * 100).toFixed(0) : 0}% — partner quality review recommended` });
     }
@@ -1334,7 +1334,7 @@ export function generateInsights(currentMaster, monthlyMovement, productMetrics,
   if (geoMetrics.length >= 2) {
     const worstState = [...geoMetrics].filter(s => s.active >= 5).sort((a, b) => a.renewalRate - b.renewalRate)[0];
     if (worstState) {
-      insights.push({ icon: '🗺️', category: 'Regional Laggard', color: '#f87171',
+      insights.push({ icon: '🗺️', category: 'Regional Laggard', color: 'var(--accent-red)',
         title: `${worstState.state} has the lowest retention rate at ${worstState.renewalRate}%`,
         detail: `${worstState.active} active subscribers — targeted re-engagement campaigns recommended` });
     }
@@ -1349,7 +1349,7 @@ export function generateInsights(currentMaster, monthlyMovement, productMetrics,
     }
     if (streak >= 3) {
       const totalLoss = monthlyMovement.slice(-streak).reduce((a, m) => a + m.net, 0);
-      insights.push({ icon: '🔴', category: 'Decline Alert', color: '#f87171',
+      insights.push({ icon: '🔴', category: 'Decline Alert', color: 'var(--accent-red)',
         title: `${streak} consecutive months of net subscriber decline`,
         detail: `Net loss of ${Math.abs(totalLoss).toLocaleString()} subscriptions over last ${streak} months — immediate intervention required` });
     }
@@ -1360,7 +1360,7 @@ export function generateInsights(currentMaster, monthlyMovement, productMetrics,
     const recent3Avg = avg(monthlyMovement.slice(-3).map(m => m.new));
     const historicalAvg = avg(monthlyMovement.map(m => m.new));
     if (historicalAvg > 0 && recent3Avg < historicalAvg * 0.6) {
-      insights.push({ icon: '📉', category: 'Acquisition Slowdown', color: '#f87171',
+      insights.push({ icon: '📉', category: 'Acquisition Slowdown', color: 'var(--accent-red)',
         title: `New subscription intake dropped ${((1 - recent3Avg / historicalAvg) * 100).toFixed(0)}% below historical average`,
         detail: `Recent 3-month avg: ${Math.round(recent3Avg)}/month vs all-time avg: ${Math.round(historicalAvg)}/month — review acquisition channels` });
     }
@@ -1370,7 +1370,7 @@ export function generateInsights(currentMaster, monthlyMovement, productMetrics,
   if (productMetrics.length >= 2 && totalActive > 0) {
     const topShare = productMetrics[0].active / totalActive * 100;
     if (topShare > 60) {
-      insights.push({ icon: '⚡', category: 'Concentration Risk', color: '#fbbf24',
+      insights.push({ icon: '⚡', category: 'Concentration Risk', color: 'var(--accent-gold)',
         title: `${productMetrics[0].product} holds ${topShare.toFixed(0)}% of active base — dangerous concentration`,
         detail: `Over-reliance on one product creates platform vulnerability — diversify subscriber distribution` });
     }
@@ -1381,7 +1381,7 @@ export function generateInsights(currentMaster, monthlyMovement, productMetrics,
     const recent6 = monthlyMovement.slice(-6);
     const worstExit = [...recent6].sort((a, b) => b.exited - a.exited)[0];
     if (worstExit && worstExit.new > 0 && worstExit.exited > worstExit.new * 2.5) {
-      insights.push({ icon: '🚨', category: 'Exit Spike', color: '#f87171',
+      insights.push({ icon: '🚨', category: 'Exit Spike', color: 'var(--accent-red)',
         title: `${worstExit.month} saw exits (${worstExit.exited.toLocaleString()}) outpace new subs by ${(worstExit.exited / worstExit.new).toFixed(1)}×`,
         detail: `Churn rate: ${worstExit.churnRate}% — investigate trigger events around that period` });
     }

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { api } from '../api';
 
-const ROLE_COLORS = { admin: '#f87171', operations: '#fbbf24', editor: '#34d399', viewer: '#64748b' };
+const ROLE_COLORS = { admin: 'var(--accent-red)', operations: 'var(--accent-gold)', editor: 'var(--accent-teal)', viewer: 'var(--text-neutral)' };
 const ROLE_OPTIONS = ['admin', 'operations', 'editor', 'viewer'];
 
 function RoleBadge({ role }) {
@@ -17,7 +17,7 @@ function RoleBadge({ role }) {
 }
 
 function Spinner() {
-  return <div style={{ width: 14, height: 14, border: '2px solid rgba(255,255,255,0.2)', borderTopColor: '#22d3ee', borderRadius: '50%', display: 'inline-block', animation: 'spin 0.7s linear infinite' }} />;
+  return <div style={{ width: 14, height: 14, border: '2px solid color-mix(in srgb, var(--text-primary) 20%, transparent)', borderTopColor: 'var(--accent-sky)', borderRadius: '50%', display: 'inline-block', animation: 'spin 0.7s linear infinite' }} />;
 }
 
 export default function AdminPanel({ currentUser, onClose }) {
@@ -84,7 +84,7 @@ export default function AdminPanel({ currentUser, onClose }) {
 
   const s = {
     overlay: {
-      position: 'fixed', inset: 0, background: 'rgba(2,6,23,0.92)',
+      position: 'fixed', inset: 0, background: 'var(--overlay)',
       display: 'flex', alignItems: 'stretch', justifyContent: 'flex-end',
       zIndex: 2000,
     },
@@ -111,16 +111,16 @@ export default function AdminPanel({ currentUser, onClose }) {
       borderBottom: '1px solid var(--border-default)', whiteSpace: 'nowrap',
     },
     td: {
-      padding: '10px 10px', borderBottom: '1px solid rgba(255,255,255,0.04)',
+      padding: '10px 10px', borderBottom: '1px solid color-mix(in srgb, var(--text-primary) 4%, transparent)',
       color: 'var(--text-primary)', verticalAlign: 'middle',
     },
     btnPrimary: {
-      background: 'var(--accent-cyan)', color: '#000', border: 'none',
+      background: 'var(--accent-cyan)', color: 'var(--on-accent)', border: 'none',
       borderRadius: 6, padding: '5px 12px', fontSize: 12, fontWeight: 600,
       cursor: 'pointer', whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: 5,
     },
     btnDanger: {
-      background: 'rgba(248,113,113,0.15)', color: '#f87171', border: '1px solid rgba(248,113,113,0.3)',
+      background: 'color-mix(in srgb, var(--accent-red) 15%, transparent)', color: 'var(--accent-red)', border: '1px solid color-mix(in srgb, var(--accent-red) 30%, transparent)',
       borderRadius: 6, padding: '5px 12px', fontSize: 12, fontWeight: 600,
       cursor: 'pointer', whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: 5,
     },
@@ -155,8 +155,8 @@ export default function AdminPanel({ currentUser, onClose }) {
       {label}
       {count > 0 && (
         <span style={{
-          background: id === 'pending' ? 'rgba(251,191,36,0.2)' : 'rgba(34,211,238,0.15)',
-          color: id === 'pending' ? '#fbbf24' : 'var(--accent-cyan)',
+          background: id === 'pending' ? 'color-mix(in srgb, var(--accent-gold) 20%, transparent)' : 'color-mix(in srgb, var(--accent-sky) 15%, transparent)',
+          color: id === 'pending' ? 'var(--accent-gold)' : 'var(--accent-cyan)',
           borderRadius: 10, padding: '1px 7px', fontSize: 11, fontWeight: 700,
         }}>{count}</span>
       )}
@@ -189,7 +189,7 @@ export default function AdminPanel({ currentUser, onClose }) {
 
         {/* Create User Form */}
         {showCreate && (
-          <div style={{ padding: '1rem 1.5rem', borderBottom: '1px solid var(--border-default)', background: 'rgba(34,211,238,0.03)', flexShrink: 0 }}>
+          <div style={{ padding: '1rem 1.5rem', borderBottom: '1px solid var(--border-default)', background: 'color-mix(in srgb, var(--accent-sky) 3%, transparent)', flexShrink: 0 }}>
             <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 4, color: 'var(--accent-cyan)' }}>Add New User</div>
             <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 12 }}>
               Just enter an email — they'll sign in with a one-time code sent to it. No password needed.
@@ -213,8 +213,8 @@ export default function AdminPanel({ currentUser, onClose }) {
                   </select>
                 </div>
               </div>
-              {createErr     && <div style={{ color: '#f87171', fontSize: 12, marginBottom: 8 }}>⚠️ {createErr}</div>}
-              {createSuccess && <div style={{ color: '#34d399', fontSize: 12, marginBottom: 8 }}>✓ {createSuccess}</div>}
+              {createErr     && <div style={{ color: 'var(--accent-red)', fontSize: 12, marginBottom: 8 }}>⚠️ {createErr}</div>}
+              {createSuccess && <div style={{ color: 'var(--accent-teal)', fontSize: 12, marginBottom: 8 }}>✓ {createSuccess}</div>}
               <button type="submit" style={s.btnPrimary} disabled={createBusy}>
                 {createBusy ? <><Spinner /> Adding...</> : '+ Add User'}
               </button>
@@ -232,9 +232,9 @@ export default function AdminPanel({ currentUser, onClose }) {
         {/* Body */}
         <div style={s.body}>
           {err && (
-            <div style={{ background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.3)', borderRadius: 8, padding: '10px 14px', color: '#f87171', fontSize: 13, marginBottom: 12 }}>
+            <div style={{ background: 'color-mix(in srgb, var(--accent-red) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--accent-red) 30%, transparent)', borderRadius: 8, padding: '10px 14px', color: 'var(--accent-red)', fontSize: 13, marginBottom: 12 }}>
               ⚠️ {err}
-              <button onClick={() => setErr('')} style={{ background: 'none', border: 'none', color: '#f87171', cursor: 'pointer', marginLeft: 8, fontSize: 14 }}>✕</button>
+              <button onClick={() => setErr('')} style={{ background: 'none', border: 'none', color: 'var(--accent-red)', cursor: 'pointer', marginLeft: 8, fontSize: 14 }}>✕</button>
             </div>
           )}
 
@@ -285,7 +285,7 @@ export default function AdminPanel({ currentUser, onClose }) {
                       {u.created_at ? new Date(u.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'}
                     </td>
                     <td style={{ ...s.td, fontSize: 12, color: 'var(--text-muted)' }}>
-                      {u.last_login ? new Date(u.last_login).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : <span style={{ color: 'rgba(251,191,36,0.8)', fontSize: 11 }}>Never</span>}
+                      {u.last_login ? new Date(u.last_login).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : <span style={{ color: 'color-mix(in srgb, var(--accent-gold) 80%, transparent)', fontSize: 11 }}>Never</span>}
                     </td>
                     <td style={s.td}>
                       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>

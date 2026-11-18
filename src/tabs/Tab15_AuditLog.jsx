@@ -4,19 +4,19 @@ import ChartCard from '../components/ChartCard';
 import FAQSection from '../components/FAQSection';
 
 const ACTION_COLORS = {
-  login:            '#22c55e',
-  logout:           '#64748b',
-  login_failed:     '#f87171',
-  account_locked:   '#f87171',
-  register:         '#00d4ff',
-  password_changed: '#fbbf24',
-  password_reset:   '#fbbf24',
-  user_created:     '#34d399',
-  user_updated:     '#fbbf24',
-  user_deleted:     '#f87171',
-  user_deactivated: '#f87171',
-  data_upload:      '#a78bfa',
-  data_access:      '#38bdf8',
+  login:            'var(--accent-green)',
+  logout:           'var(--text-neutral)',
+  login_failed:     'var(--accent-red)',
+  account_locked:   'var(--accent-red)',
+  register:         'var(--accent-cyan)',
+  password_changed: 'var(--accent-gold)',
+  password_reset:   'var(--accent-gold)',
+  user_created:     'var(--accent-teal)',
+  user_updated:     'var(--accent-gold)',
+  user_deleted:     'var(--accent-red)',
+  user_deactivated: 'var(--accent-red)',
+  data_upload:      'var(--accent-purple)',
+  data_access:      'var(--accent-sky)',
 };
 
 const ACTION_LABELS = {
@@ -149,7 +149,7 @@ export default memo(function Tab15AuditLog({ currentUser, refreshUser }) {
             style={{
               padding: '4px 12px', fontSize: 11, borderRadius: 20, cursor: 'pointer',
               border: `1px solid ${actionFilter === a ? (ACTION_COLORS[a] || 'var(--accent-cyan)') : 'var(--border-default)'}`,
-              background: actionFilter === a ? `${ACTION_COLORS[a] || 'var(--accent-cyan)'}22` : 'var(--bg-elevated)',
+              background: actionFilter === a ? `color-mix(in srgb, ${ACTION_COLORS[a] || 'var(--accent-cyan)'} 13%, transparent)` : 'var(--bg-elevated)',
               color: actionFilter === a ? (ACTION_COLORS[a] || 'var(--accent-cyan)') : 'var(--text-secondary)',
               fontWeight: actionFilter === a ? 600 : 400,
               textTransform: a === 'all' ? 'capitalize' : 'none',
@@ -207,8 +207,8 @@ export default memo(function Tab15AuditLog({ currentUser, refreshUser }) {
                       <td>
                         <span style={{
                           fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 10,
-                          background: `${ACTION_COLORS[log.action] || '#64748b'}22`,
-                          color: ACTION_COLORS[log.action] || '#64748b',
+                          background: `color-mix(in srgb, ${ACTION_COLORS[log.action] || 'var(--text-neutral)'} 13%, transparent)`,
+                          color: ACTION_COLORS[log.action] || 'var(--text-neutral)',
                           whiteSpace: 'nowrap',
                         }}>
                           {ACTION_LABELS[log.action] || log.action}

@@ -70,7 +70,7 @@ export default function TabDateFilter({ dateFrom, dateTo, onChange, label = 'Per
             style={{
               padding: '3px 10px', fontSize: 11, borderRadius: 12, cursor: 'pointer',
               border: `1px solid ${isActive ? 'var(--accent-cyan)' : 'var(--border-dim)'}`,
-              background: isActive ? 'rgba(0,212,255,0.12)' : 'transparent',
+              background: isActive ? 'color-mix(in srgb, var(--accent-cyan) 12%, transparent)' : 'transparent',
               color: isActive ? 'var(--accent-cyan)' : 'var(--text-secondary)',
               fontWeight: isActive ? 600 : 400,
             }}>

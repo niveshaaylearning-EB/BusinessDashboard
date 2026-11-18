@@ -3,7 +3,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import ChartCard from '../components/ChartCard';
 import { formatNumber } from '../dataEngine';
 
-const COLORS = ['#00d4ff', '#fbbf24', '#22c55e', '#a78bfa', '#f87171', '#fb923c', '#2dd4bf', '#f472b6'];
+const COLORS = ['var(--accent-cyan)', 'var(--accent-gold)', 'var(--accent-green)', 'var(--accent-purple)', 'var(--accent-red)', 'var(--accent-orange)', 'var(--accent-teal)', 'var(--accent-pink)'];
 
 const Tip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
@@ -46,20 +46,20 @@ export default memo(function Tab26OfferROI({ offerCodeROI }) {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12 }}>
         <div title="Count of distinct offer codes used at first subscription (excluding 'No Code'), based on each PAN's earliest cycle-1 record." style={{ background: 'var(--bg-card)', border: '1px solid var(--accent-cyan)40', borderRadius: 12, padding: '1rem' }}>
           <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>Unique Offer Codes</div>
-          <div style={{ fontSize: '1.6rem', fontWeight: 700, color: '#00d4ff' }}>{withCode.length}</div>
+          <div style={{ fontSize: '1.6rem', fontWeight: 700, color: 'var(--accent-cyan)' }}>{withCode.length}</div>
         </div>
         <div title="Sum of Offer Discount given to every investor who signed up using a code — the total ₹ spent acquiring investors through discounts." style={{ background: 'var(--bg-card)', border: '1px solid #f8717140', borderRadius: 12, padding: '1rem' }}>
           <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>Total Discount Cost</div>
-          <div style={{ fontSize: '1.6rem', fontWeight: 700, color: '#f87171' }}>₹{formatNumber(totalDiscountCost)}</div>
+          <div style={{ fontSize: '1.6rem', fontWeight: 700, color: 'var(--accent-red)' }}>₹{formatNumber(totalDiscountCost)}</div>
         </div>
         <div title="Share of all first-time subscribers (coded and non-coded) who reached cycle 2 or beyond — the blended renewal rate across every acquisition channel." style={{ background: 'var(--bg-card)', border: '1px solid #22c55e40', borderRadius: 12, padding: '1rem' }}>
           <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>Overall Renewal (All)</div>
-          <div style={{ fontSize: '1.6rem', fontWeight: 700, color: '#22c55e' }}>{totalAcquired > 0 ? (totalRenewed / totalAcquired * 100).toFixed(1) : 0}%</div>
+          <div style={{ fontSize: '1.6rem', fontWeight: 700, color: 'var(--accent-green)' }}>{totalAcquired > 0 ? (totalRenewed / totalAcquired * 100).toFixed(1) : 0}%</div>
         </div>
         {noCode && (
           <div title="Renewal rate of investors who subscribed without any offer code — the benchmark used to judge whether each code's renewal rate over- or under-performs." style={{ background: 'var(--bg-card)', border: '1px solid #fbbf2440', borderRadius: 12, padding: '1rem' }}>
             <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>Baseline (No Code)</div>
-            <div style={{ fontSize: '1.6rem', fontWeight: 700, color: '#fbbf24' }}>{baselineRenewal}%</div>
+            <div style={{ fontSize: '1.6rem', fontWeight: 700, color: 'var(--accent-gold)' }}>{baselineRenewal}%</div>
             <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>{noCode.acquired} investors</div>
           </div>
         )}
@@ -76,11 +76,11 @@ export default memo(function Tab26OfferROI({ offerCodeROI }) {
               <Tooltip content={<Tip />} />
               {baselineRenewal > 0 && (
                 <Bar dataKey="renewalRate" name="Renewal %" radius={[4, 4, 0, 0]}>
-                  {top8.map((d, i) => <Cell key={i} fill={d.renewalRate >= baselineRenewal ? '#22c55e' : '#f87171'} />)}
+                  {top8.map((d, i) => <Cell key={i} fill={d.renewalRate >= baselineRenewal ? 'var(--accent-green)' : 'var(--accent-red)'} />)}
                 </Bar>
               )}
               {!baselineRenewal && (
-                <Bar dataKey="renewalRate" name="Renewal %" fill="#00d4ff" radius={[4, 4, 0, 0]}>
+                <Bar dataKey="renewalRate" name="Renewal %" fill="var(--accent-cyan)" radius={[4, 4, 0, 0]}>
                   {top8.map((d, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
                 </Bar>
               )}
@@ -88,8 +88,8 @@ export default memo(function Tab26OfferROI({ offerCodeROI }) {
           </ResponsiveContainer>
           {baselineRenewal > 0 && (
             <div style={{ fontSize: 11, color: 'var(--text-muted)', textAlign: 'center', marginTop: 4 }}>
-              <span style={{ color: '#22c55e' }}>Green</span> = above no-code baseline ({baselineRenewal}%) &nbsp;
-              <span style={{ color: '#f87171' }}>Red</span> = below baseline
+              <span style={{ color: 'var(--accent-green)' }}>Green</span> = above no-code baseline ({baselineRenewal}%) &nbsp;
+              <span style={{ color: 'var(--accent-red)' }}>Red</span> = below baseline
             </div>
           )}
         </ChartCard>
@@ -102,8 +102,8 @@ export default memo(function Tab26OfferROI({ offerCodeROI }) {
               <XAxis dataKey="code" tick={{ fontSize: 9, fill: 'var(--text-muted)' }} />
               <YAxis tick={{ fontSize: 10, fill: 'var(--text-muted)' }} />
               <Tooltip content={<Tip />} />
-              <Bar dataKey="acquired" name="Acquired" fill="#00d4ff" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="renewed" name="Renewed" fill="#22c55e" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="acquired" name="Acquired" fill="var(--accent-cyan)" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="renewed" name="Renewed" fill="var(--accent-green)" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -137,15 +137,15 @@ export default memo(function Tab26OfferROI({ offerCodeROI }) {
                   <tr key={r.code} style={{ borderBottom: '1px solid var(--border-default)', background: i % 2 === 0 ? 'transparent' : 'var(--bg-elevated)' }}>
                     <td style={{ padding: '7px 10px', color: r.code === 'No Code' ? 'var(--text-muted)' : 'var(--text-primary)', fontWeight: 600 }}>{r.code}</td>
                     <td style={{ padding: '7px 10px', textAlign: 'right', color: 'var(--text-secondary)' }}>{r.acquired}</td>
-                    <td style={{ padding: '7px 10px', textAlign: 'right', color: '#22c55e' }}>{r.renewed}</td>
-                    <td style={{ padding: '7px 10px', textAlign: 'right', color: diff === null ? 'var(--text-secondary)' : diff >= 0 ? '#22c55e' : '#f87171', fontWeight: 600 }}>{r.renewalRate}%</td>
-                    <td style={{ padding: '7px 10px', textAlign: 'right', color: diff === null ? 'var(--text-muted)' : diff > 0 ? '#22c55e' : diff < 0 ? '#f87171' : 'var(--text-muted)', fontWeight: 600 }}>
+                    <td style={{ padding: '7px 10px', textAlign: 'right', color: 'var(--accent-green)' }}>{r.renewed}</td>
+                    <td style={{ padding: '7px 10px', textAlign: 'right', color: diff === null ? 'var(--text-secondary)' : diff >= 0 ? 'var(--accent-green)' : 'var(--accent-red)', fontWeight: 600 }}>{r.renewalRate}%</td>
+                    <td style={{ padding: '7px 10px', textAlign: 'right', color: diff === null ? 'var(--text-muted)' : diff > 0 ? 'var(--accent-green)' : diff < 0 ? 'var(--accent-red)' : 'var(--text-muted)', fontWeight: 600 }}>
                       {diff === null ? '—' : `${diff >= 0 ? '+' : ''}${diff.toFixed(1)}%`}
                     </td>
-                    <td style={{ padding: '7px 10px', textAlign: 'right', color: '#fbbf24' }}>{r.avgDiscount > 0 ? `₹${r.avgDiscount.toLocaleString('en-IN')}` : '—'}</td>
-                    <td style={{ padding: '7px 10px', textAlign: 'right', color: '#f87171' }}>{r.totalDiscountCost > 0 ? `₹${r.totalDiscountCost.toLocaleString('en-IN')}` : '—'}</td>
+                    <td style={{ padding: '7px 10px', textAlign: 'right', color: 'var(--accent-gold)' }}>{r.avgDiscount > 0 ? `₹${r.avgDiscount.toLocaleString('en-IN')}` : '—'}</td>
+                    <td style={{ padding: '7px 10px', textAlign: 'right', color: 'var(--accent-red)' }}>{r.totalDiscountCost > 0 ? `₹${r.totalDiscountCost.toLocaleString('en-IN')}` : '—'}</td>
                     <td style={{ padding: '7px 10px', textAlign: 'right', color: 'var(--text-secondary)' }}>{r.avgNetworth ? `₹${r.avgNetworth.toLocaleString('en-IN')}` : '—'}</td>
-                    <td style={{ padding: '7px 10px', textAlign: 'right', color: (r.avgPnL ?? 0) >= 0 ? '#22c55e' : '#f87171' }}>{r.avgPnL != null && r.avgPnL !== 0 ? `${r.avgPnL >= 0 ? '+' : ''}₹${r.avgPnL.toLocaleString('en-IN')}` : '—'}</td>
+                    <td style={{ padding: '7px 10px', textAlign: 'right', color: (r.avgPnL ?? 0) >= 0 ? 'var(--accent-green)' : 'var(--accent-red)' }}>{r.avgPnL != null && r.avgPnL !== 0 ? `${r.avgPnL >= 0 ? '+' : ''}₹${r.avgPnL.toLocaleString('en-IN')}` : '—'}</td>
                   </tr>
                 );
               })}

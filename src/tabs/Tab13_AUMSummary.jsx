@@ -112,7 +112,7 @@ function AUMContent({ summaryData, monthly, currentMaster, filters, setFilters }
           category: 'AUM',
           title: `Peak AUM — ${peakRow.monthFull}`,
           detail: `Highest recorded AUM at ₹${Number(peakRow.aumCrores).toFixed(2)} Cr`,
-          color: '#fbbf24',
+          color: 'var(--accent-gold)',
         });
       }
     }
@@ -130,7 +130,7 @@ function AUMContent({ summaryData, monthly, currentMaster, filters, setFilters }
           category: 'AUM Trend',
           title: `AUM ${isUp ? 'Up' : 'Down'} ${Math.abs(growthPct)}% over 3 months`,
           detail: `${prev3.monthFull} ₹${prev3AUM.toFixed(2)} Cr → ${latest.monthFull} ₹${latestAUM.toFixed(2)} Cr`,
-          color: isUp ? '#22c55e' : '#f87171',
+          color: isUp ? 'var(--accent-green)' : 'var(--accent-red)',
         });
       }
     }
@@ -143,7 +143,7 @@ function AUMContent({ summaryData, monthly, currentMaster, filters, setFilters }
         category: 'Acquisition',
         title: `Best Acquisition Month — ${peakNewSubs.monthFull}`,
         detail: `${Number(peakNewSubs.newSubscriptions).toLocaleString('en-IN')} new subscriptions in that month`,
-        color: '#22c55e',
+        color: 'var(--accent-green)',
       });
     }
 
@@ -156,7 +156,7 @@ function AUMContent({ summaryData, monthly, currentMaster, filters, setFilters }
         category: 'Acquisition',
         title: `Avg ${Math.round(avgNewSubs).toLocaleString('en-IN')} new subscriptions / month`,
         detail: `Across ${sorted.length} months of data`,
-        color: '#22d3ee',
+        color: 'var(--accent-sky)',
       });
     }
 
@@ -168,7 +168,7 @@ function AUMContent({ summaryData, monthly, currentMaster, filters, setFilters }
         category: 'Active Base',
         title: `Peak Active Subscriptions — ${peakActive.monthFull}`,
         detail: `${Number(peakActive.totalActiveSubscriptions).toLocaleString('en-IN')} active subscriptions`,
-        color: '#22d3ee',
+        color: 'var(--accent-sky)',
       });
     }
 
@@ -188,7 +188,7 @@ function AUMContent({ summaryData, monthly, currentMaster, filters, setFilters }
           category: 'Momentum',
           title: 'Consistent AUM Growth — last 3 months',
           detail: 'AUM has increased every month for the last 3 months — positive momentum',
-          color: '#22c55e',
+          color: 'var(--accent-green)',
         });
       } else if (allNegative) {
         insights.push({
@@ -196,7 +196,7 @@ function AUMContent({ summaryData, monthly, currentMaster, filters, setFilters }
           category: 'Concern',
           title: 'AUM Declining — last 3 consecutive months',
           detail: 'AUM has fallen every month for the last 3 months — review subscriber exits',
-          color: '#f87171',
+          color: 'var(--accent-red)',
         });
       }
     }
@@ -209,7 +209,7 @@ function AUMContent({ summaryData, monthly, currentMaster, filters, setFilters }
         category: 'Investors',
         title: `${latestInvestors.toLocaleString('en-IN')} total investors as of ${latest.monthFull}`,
         detail: 'Unique investor PANs with active subscriptions in latest month',
-        color: '#a78bfa',
+        color: 'var(--accent-purple)',
       });
     }
 
@@ -305,7 +305,7 @@ function AUMContent({ summaryData, monthly, currentMaster, filters, setFilters }
                     <XAxis dataKey="label" tick={{ fill: 'var(--text-muted)', fontSize: 10 }} interval="preserveStartEnd" />
                     <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 10 }} />
                     <Tooltip content={<CustomTooltip />} />
-                    <Line type="monotone" dataKey="aumCrores" name="AUM (Cr)" stroke="#fbbf24" strokeWidth={2} dot={false} />
+                    <Line type="monotone" dataKey="aumCrores" name="AUM (Cr)" stroke="var(--accent-gold)" strokeWidth={2} dot={false} />
                   </LineChart>
                 </ResponsiveContainer>
               </ChartCard>
@@ -318,8 +318,8 @@ function AUMContent({ summaryData, monthly, currentMaster, filters, setFilters }
                   <XAxis dataKey="label" tick={{ fill: 'var(--text-muted)', fontSize: 10 }} interval="preserveStartEnd" />
                   <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 10 }} />
                   <Tooltip content={<CustomTooltip />} />
-                  <Line type="monotone" dataKey="totalActiveSubscriptions" name="Active Subs" stroke="#00d4ff" strokeWidth={2} dot={false} />
-                  <Line type="monotone" dataKey="totalInvestors" name="Investors" stroke="#22c55e" strokeWidth={2} dot={false} />
+                  <Line type="monotone" dataKey="totalActiveSubscriptions" name="Active Subs" stroke="var(--accent-cyan)" strokeWidth={2} dot={false} />
+                  <Line type="monotone" dataKey="totalInvestors" name="Investors" stroke="var(--accent-green)" strokeWidth={2} dot={false} />
                 </LineChart>
               </ResponsiveContainer>
             </ChartCard>
@@ -352,8 +352,8 @@ function AUMContent({ summaryData, monthly, currentMaster, filters, setFilters }
                   <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 10 }} />
                   <Tooltip content={<CustomTooltip />} />
                   <Legend wrapperStyle={{ fontSize: 11 }} />
-                  <Bar dataKey="newSubscriptions" name="New Subscriptions" fill="#00d4ff" radius={[3,3,0,0]} />
-                  <Bar dataKey="newSignups" name="New Signups" fill="#22c55e" radius={[3,3,0,0]} />
+                  <Bar dataKey="newSubscriptions" name="New Subscriptions" fill="var(--accent-cyan)" radius={[3,3,0,0]} />
+                  <Bar dataKey="newSignups" name="New Signups" fill="var(--accent-green)" radius={[3,3,0,0]} />
                 </BarChart>
               </ResponsiveContainer>
               <div className="chart-clickable-hint">💡 Click any bar/point to see details</div>
@@ -368,9 +368,9 @@ function AUMContent({ summaryData, monthly, currentMaster, filters, setFilters }
                   <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 10 }} />
                   <Tooltip content={<CustomTooltip />} />
                   <Legend wrapperStyle={{ fontSize: 11 }} />
-                  <Line type="monotone" dataKey="totalSignups" name="Total Signups" stroke="#fbbf24" strokeWidth={2} dot={false} />
-                  <Line type="monotone" dataKey="totalSubscriptionCycles" name="Total Cycles" stroke="#8b5cf6" strokeWidth={2} dot={false} />
-                  <Line type="monotone" dataKey="completedCycles" name="Completed Cycles" stroke="#f87171" strokeWidth={2} dot={false} />
+                  <Line type="monotone" dataKey="totalSignups" name="Total Signups" stroke="var(--accent-gold)" strokeWidth={2} dot={false} />
+                  <Line type="monotone" dataKey="totalSubscriptionCycles" name="Total Cycles" stroke="var(--accent-purple)" strokeWidth={2} dot={false} />
+                  <Line type="monotone" dataKey="completedCycles" name="Completed Cycles" stroke="var(--accent-red)" strokeWidth={2} dot={false} />
                 </LineChart>
               </ResponsiveContainer>
             </ChartCard>
@@ -429,8 +429,8 @@ function AUMContent({ summaryData, monthly, currentMaster, filters, setFilters }
                     <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 10 }} />
                     <Tooltip content={<CustomTooltip />} />
                     <Legend wrapperStyle={{ fontSize: 11 }} />
-                    <Bar dataKey="new"    name="New Subs"  fill="#22c55e" radius={[3,3,0,0]} />
-                    <Bar dataKey="exited" name="Exited"    fill="#f87171" radius={[3,3,0,0]} />
+                    <Bar dataKey="new"    name="New Subs"  fill="var(--accent-green)" radius={[3,3,0,0]} />
+                    <Bar dataKey="exited" name="Exited"    fill="var(--accent-red)" radius={[3,3,0,0]} />
                   </BarChart>
                 </ResponsiveContainer>
                 <div className="chart-clickable-hint">💡 Click any bar/point to see details</div>
@@ -463,7 +463,7 @@ function AUMContent({ summaryData, monthly, currentMaster, filters, setFilters }
                     <ReferenceLine y={0} stroke="var(--border-bright)" strokeWidth={1.5} />
                     <Bar dataKey="net" name="Net Growth" radius={[3,3,0,0]}>
                       {last18.map((entry, idx) => (
-                        <Cell key={idx} fill={entry.net >= 0 ? '#22c55e' : '#f87171'} />
+                        <Cell key={idx} fill={entry.net >= 0 ? 'var(--accent-green)' : 'var(--accent-red)'} />
                       ))}
                     </Bar>
                   </BarChart>
@@ -483,7 +483,7 @@ function AUMContent({ summaryData, monthly, currentMaster, filters, setFilters }
                     <YAxis yAxisId="right" orientation="right" tick={{ fill: 'var(--text-muted)', fontSize: 10 }} />
                     <Tooltip content={<CustomTooltip />} />
                     <Legend wrapperStyle={{ fontSize: 11 }} />
-                    <Line yAxisId="left"  type="monotone" dataKey="closing" name="Active Subs" stroke="#00d4ff" strokeWidth={2} dot={false} />
+                    <Line yAxisId="left"  type="monotone" dataKey="closing" name="Active Subs" stroke="var(--accent-cyan)" strokeWidth={2} dot={false} />
                     <Bar  yAxisId="right" dataKey="exited" name="Exits"      fill="#f8717155" radius={[3,3,0,0]} />
                   </ComposedChart>
                 </ResponsiveContainer>

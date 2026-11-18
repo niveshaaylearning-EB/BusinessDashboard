@@ -11,7 +11,7 @@ import { formatNumber, normalizeData } from '../dataEngine';
 import TabDateFilter from '../components/TabDateFilter';
 import DrilldownModal, { useDrilldown } from '../components/DrilldownModal';
 
-const COLORS = ['#00d4ff','#fbbf24','#22c55e','#a78bfa','#f87171','#fb923c','#2dd4bf','#f472b6','#818cf8','#86efac'];
+const COLORS = ['var(--accent-cyan)','var(--accent-gold)','var(--accent-green)','var(--accent-purple)','var(--accent-red)','var(--accent-orange)','var(--accent-teal)','var(--accent-pink)','var(--chart-9)','var(--chart-10)'];
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
@@ -46,7 +46,7 @@ function SankeyMigration({ flows }) {
               <div style={{
                 height: '100%',
                 width: `${Math.max(pct, 2)}%`,
-                background: `linear-gradient(90deg, ${COLORS[i % COLORS.length]}, ${COLORS[i % COLORS.length]}66)`,
+                background: `linear-gradient(90deg, ${COLORS[i % COLORS.length]}, color-mix(in srgb, ${COLORS[i % COLORS.length]} 40%, transparent))`,
                 borderRadius: 4,
                 display: 'flex', alignItems: 'center', paddingLeft: 8,
                 transition: 'width 0.5s ease',
@@ -110,7 +110,7 @@ export default memo(function Tab11Migration({ migrationData, currentMaster, rawD
         : multiPct > 15
         ? 'Moderate cross-sell success. There is meaningful room to grow multi-product adoption through targeted recommendations.'
         : `Low multi-product rate. ${singleCount.toLocaleString('en-IN')} single-product investors represent a large untapped upsell opportunity.`,
-      color: multiPct > 30 ? '#22c55e' : multiPct > 15 ? '#fbbf24' : '#f87171',
+      color: multiPct > 30 ? 'var(--accent-green)' : multiPct > 15 ? 'var(--accent-gold)' : 'var(--accent-red)',
     });
 
     if (multiPct > 30) {
@@ -119,7 +119,7 @@ export default memo(function Tab11Migration({ migrationData, currentMaster, rawD
         category: 'Cross-Sell Signal',
         title: 'Multi-product rate exceeds 30% — strong cross-sell momentum detected',
         detail: 'With over 30% of your base holding multiple products, the business has clear evidence that bundling strategies and upgrade journeys are working. Lean into this.',
-        color: '#22c55e',
+        color: 'var(--accent-green)',
       });
     }
 
@@ -130,7 +130,7 @@ export default memo(function Tab11Migration({ migrationData, currentMaster, rawD
         category: 'Entry Product',
         title: `"${topEntry.product}" is the most common first subscription (${topEntry.count.toLocaleString('en-IN')} new investors)`,
         detail: 'This is your acquisition gateway. Optimise onboarding, early engagement, and cross-sell prompts specifically for this product to maximise lifetime value from the start.',
-        color: '#22d3ee',
+        color: 'var(--accent-sky)',
       });
     }
 
@@ -141,7 +141,7 @@ export default memo(function Tab11Migration({ migrationData, currentMaster, rawD
         category: 'Top Destination Product',
         title: `"${topExit.product}" attracts the most migrations (${topExit.count.toLocaleString('en-IN')} arrivals)`,
         detail: 'This product is the most common upgrade or migration destination. Study what drives investors here — pricing, features, or brand trust — and replicate that pull across other products.',
-        color: '#a78bfa',
+        color: 'var(--accent-purple)',
       });
     }
 
@@ -151,7 +151,7 @@ export default memo(function Tab11Migration({ migrationData, currentMaster, rawD
         category: 'Gateway Product',
         title: `"${topEntry.product}" is both the top entry and top destination — a true gateway product`,
         detail: 'This product sits at the hub of your migration network. Investors both start here and return here. It plays a central role in subscriber journey design and should be treated as a flagship.',
-        color: '#fbbf24',
+        color: 'var(--accent-gold)',
       });
     }
 
@@ -163,7 +163,7 @@ export default memo(function Tab11Migration({ migrationData, currentMaster, rawD
         category: 'Top Migration Path',
         title: `Most common journey: "${topFlow.from}" → "${topFlow.to}" (${topFlow.count.toLocaleString('en-IN')} users)`,
         detail: 'This is the dominant upgrade or cross-sell path in your subscriber base. Consider building an explicit recommendation or in-product nudge along this route to increase its frequency.',
-        color: '#22d3ee',
+        color: 'var(--accent-sky)',
       });
     }
 
@@ -179,7 +179,7 @@ export default memo(function Tab11Migration({ migrationData, currentMaster, rawD
         : uniquePaths > 0
         ? 'Concentrated migration patterns. Investors follow predictable paths — makes cross-sell targeting straightforward.'
         : 'No migration flows detected. All subscribers appear to be single-product users with no cross-product movement.',
-      color: uniquePaths >= 10 ? '#a78bfa' : uniquePaths >= 4 ? '#22d3ee' : uniquePaths > 0 ? '#22c55e' : '#f87171',
+      color: uniquePaths >= 10 ? 'var(--accent-purple)' : uniquePaths >= 4 ? 'var(--accent-sky)' : uniquePaths > 0 ? 'var(--accent-green)' : 'var(--accent-red)',
     });
 
     return insights;
@@ -233,13 +233,13 @@ export default memo(function Tab11Migration({ migrationData, currentMaster, rawD
                   const y = cy + r * Math.sin(-midAngle * RADIAN);
                   if (percent < 0.04) return null;
                   return (
-                    <text x={x} y={y} fill="white" textAnchor="middle" dominantBaseline="central" fontSize={10}>
+                    <text x={x} y={y} fill="var(--on-accent)" textAnchor="middle" dominantBaseline="central" fontSize={10}>
                       {(percent * 100).toFixed(0)}%
                     </text>
                   );
                 }}>
-                <Cell fill="#00d4ff" />
-                <Cell fill="#a78bfa" />
+                <Cell fill="var(--accent-cyan)" />
+                <Cell fill="var(--accent-purple)" />
               </Pie>
               <Tooltip formatter={(v, n) => [v.toLocaleString() + ' investors', n]} />
               <Legend wrapperStyle={{ fontSize: 11 }} />

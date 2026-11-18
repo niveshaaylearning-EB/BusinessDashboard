@@ -18,7 +18,7 @@ export default memo(function Tab12Insights({ insights = [], kpis, products, brok
     allInsights.push({
       icon: '📈',
       category: 'Portfolio Performance',
-      color: '#22c55e',
+      color: 'var(--accent-green)',
       title: `${sortedByPnL[0]?.product} generates the best portfolio returns for investors`,
       detail: `Avg PnL: ₹${sortedByPnL[0]?.avgPnL?.toLocaleString()} vs ${sortedByPnL[sortedByPnL.length-1]?.product} at ₹${sortedByPnL[sortedByPnL.length-1]?.avgPnL?.toLocaleString()}`,
     });
@@ -34,7 +34,7 @@ export default memo(function Tab12Insights({ insights = [], kpis, products, brok
     allInsights.push({
       icon: '🎯',
       category: 'Acquisition Trend',
-      color: acqChange >= 0 ? '#22c55e' : '#f87171',
+      color: acqChange >= 0 ? 'var(--accent-green)' : 'var(--accent-red)',
       title: `New subscription acquisition ${acqChange >= 0 ? 'accelerated' : 'decelerated'} by ${Math.abs(acqChange)}% in the last quarter`,
       detail: `Recent 3-month avg: ${Math.round(recentNewAvg)} new/month vs prior 3-month: ${Math.round(prevNewAvg)} new/month`,
     });
@@ -46,7 +46,7 @@ export default memo(function Tab12Insights({ insights = [], kpis, products, brok
     allInsights.push({
       icon: '💡',
       category: 'Win-Back Opportunity',
-      color: '#fbbf24',
+      color: 'var(--accent-gold)',
       title: `Recovering 20% of exited subscribers could generate ₹${formatCurrency(recoveryPotential * 0.2, true)} in incremental revenue`,
       detail: `${kpis.exitedSubscribers.toLocaleString()} exited users × ₹${kpis.avgPlanAmount.toLocaleString()} avg plan × 20% win-back scenario`,
     });
@@ -58,7 +58,7 @@ export default memo(function Tab12Insights({ insights = [], kpis, products, brok
     allInsights.push({
       icon: '⚖️',
       category: 'Affordability Index',
-      color: '#a78bfa',
+      color: 'var(--accent-purple)',
       title: `Average plan is ${planToNWRatio}% of median investor networth`,
       detail: `Avg plan: ₹${kpis.avgPlanAmount?.toLocaleString()} · Median networth: ₹${kpis.medianNetworth?.toLocaleString()}`,
     });
@@ -77,7 +77,7 @@ export default memo(function Tab12Insights({ insights = [], kpis, products, brok
       allInsights.push({
         icon: delta >= 0 ? '📈' : '📉',
         category: 'Renewal Conversion Trend',
-        color: delta >= 0 ? '#22c55e' : '#f87171',
+        color: delta >= 0 ? 'var(--accent-green)' : 'var(--accent-red)',
         title: `Renewal conversion rate ${delta >= 0 ? 'improved' : 'declined'} by ${Math.abs(delta)}pp over the last quarter`,
         detail: `Recent 3-month avg: ${recentRate.toFixed(1)}% vs prior 3-month: ${prevRate.toFixed(1)}% — ${delta < 0 ? 'review renewal drivers urgently' : 'sustain current approach'}`,
       });
@@ -92,7 +92,7 @@ export default memo(function Tab12Insights({ insights = [], kpis, products, brok
       allInsights.push({
         icon: '🚨',
         category: 'High Churn Pattern',
-        color: '#f87171',
+        color: 'var(--accent-red)',
         title: `${highChurnMonths.length} months recorded churn rate above 5% — worst was ${worst.month} at ${worst.churnRate}%`,
         detail: `Systemic exit pressure detected. Review subscriber experience, pricing, and product quality in those periods`,
       });
@@ -107,7 +107,7 @@ export default memo(function Tab12Insights({ insights = [], kpis, products, brok
       allInsights.push({
         icon: '⚠️',
         category: 'Renewal Conversion Gap',
-        color: '#fbbf24',
+        color: 'var(--accent-gold)',
         title: `${lowConvMonths.length} months had renewal conversion below 50% — worst was ${worst.month} at ${worst.eligibleRenewalRate}%`,
         detail: `${worst.eligible?.toLocaleString()} eligible, only ${worst.renewedEligible?.toLocaleString()} renewed. Proactive pre-expiry outreach could close this gap`,
       });
@@ -124,7 +124,7 @@ export default memo(function Tab12Insights({ insights = [], kpis, products, brok
       allInsights.push({
         icon: '🔴',
         category: 'Subscriber Base Shrinking',
-        color: '#f87171',
+        color: 'var(--accent-red)',
         title: `Net subscriber base has declined in ${recentLoss.length} of the last 6 months (total: ${totalDrop.toLocaleString()})`,
         detail: `Exits are consistently outpacing new subscriptions — acquisition and retention must be addressed simultaneously`,
       });
@@ -161,7 +161,7 @@ export default memo(function Tab12Insights({ insights = [], kpis, products, brok
         {allInsights.map((ins, i) => (
           <div key={i} style={{
             background: 'var(--bg-card)',
-            border: `1px solid ${ins.color || 'var(--border-default)'}22`,
+            border: `1px solid color-mix(in srgb, ${ins.color || 'var(--border-default)'} 13%, transparent)`,
             borderLeft: `3px solid ${ins.color || 'var(--accent-cyan)'}`,
             borderRadius: 'var(--radius-lg)',
             padding: '1rem 1.25rem',
@@ -186,8 +186,8 @@ export default memo(function Tab12Insights({ insights = [], kpis, products, brok
             </div>
             <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid var(--border-dim)', display: 'flex', gap: 6 }}>
               <span style={{
-                background: `${ins.color || 'var(--accent-cyan)'}22`,
-                border: `1px solid ${ins.color || 'var(--accent-cyan)'}33`,
+                background: `color-mix(in srgb, ${ins.color || 'var(--accent-cyan)'} 13%, transparent)`,
+                border: `1px solid color-mix(in srgb, ${ins.color || 'var(--accent-cyan)'} 20%, transparent)`,
                 borderRadius: 20, padding: '2px 8px', fontSize: '0.68rem',
                 color: ins.color || 'var(--accent-cyan)',
               }}>{ins.category}</span>
@@ -208,7 +208,7 @@ export default memo(function Tab12Insights({ insights = [], kpis, products, brok
             const color = catInsights[0]?.color || 'var(--accent-cyan)';
             return (
               <div key={cat} style={{
-                background: `${color}11`, border: `1px solid ${color}22`,
+                background: `color-mix(in srgb, ${color} 7%, transparent)`, border: `1px solid color-mix(in srgb, ${color} 13%, transparent)`,
                 borderRadius: 8, padding: '0.75rem 1rem',
                 display: 'flex', alignItems: 'center', gap: 10,
               }}>

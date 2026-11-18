@@ -13,7 +13,7 @@ import { formatCurrency, formatNumber } from '../dataEngine';
 import TabDateFilter from '../components/TabDateFilter';
 import DrilldownModal, { useDrilldown } from '../components/DrilldownModal';
 
-const COLORS = ['#00d4ff','#fbbf24','#22c55e','#a78bfa','#f87171','#fb923c','#2dd4bf','#f472b6','#818cf8','#86efac'];
+const COLORS = ['var(--accent-cyan)','var(--accent-gold)','var(--accent-green)','var(--accent-purple)','var(--accent-red)','var(--accent-orange)','var(--accent-teal)','var(--accent-pink)','var(--chart-9)','var(--chart-10)'];
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
@@ -93,7 +93,7 @@ function BrokerContent({ brokerMetrics, attributionMetrics, insights, filters, s
       category: 'Volume Leader',
       title: `${topByVol.broker} leads with ${topShare}% market share`,
       detail: `${topByVol.total?.toLocaleString('en-IN')} total subscriptions out of ${totalSubs.toLocaleString('en-IN')} — the single largest distribution channel.`,
-      color: '#22d3ee',
+      color: 'var(--accent-sky)',
     });
 
     const topByActive = byActive[0];
@@ -102,7 +102,7 @@ function BrokerContent({ brokerMetrics, attributionMetrics, insights, filters, s
       category: 'Active Subscribers',
       title: `${topByActive.broker} drives the most active subs`,
       detail: `${topByActive.active?.toLocaleString('en-IN')} active subscribers — highest active base across all broker channels.`,
-      color: '#22c55e',
+      color: 'var(--accent-green)',
     });
 
     if (byRenewal.length > 0) {
@@ -112,7 +112,7 @@ function BrokerContent({ brokerMetrics, attributionMetrics, insights, filters, s
         category: 'Renewal Champion',
         title: `${bestRenewal.broker} has best renewal rate at ${bestRenewal.renewalRate}%`,
         detail: `Highest renewal rate among brokers with 3+ subscribers — indicating strong subscriber quality and satisfaction.`,
-        color: '#22c55e',
+        color: 'var(--accent-green)',
       });
 
       const worstRenewal = byRenewal[byRenewal.length - 1];
@@ -121,7 +121,7 @@ function BrokerContent({ brokerMetrics, attributionMetrics, insights, filters, s
         category: 'Churn Risk',
         title: `${worstRenewal.broker} has lowest renewal rate at ${worstRenewal.renewalRate}%`,
         detail: `Highest churn among qualified brokers — consider reviewing subscriber fit or onboarding quality for this channel.`,
-        color: '#f87171',
+        color: 'var(--accent-red)',
       });
     }
 
@@ -131,7 +131,7 @@ function BrokerContent({ brokerMetrics, attributionMetrics, insights, filters, s
       category: 'Wealth Quality',
       title: `${topNW.broker} brings highest avg networth subscribers`,
       detail: `Average subscriber networth of ₹${topNW.avgNetworth?.toLocaleString('en-IN')} — premium investor segment from this channel.`,
-      color: '#a78bfa',
+      color: 'var(--accent-purple)',
     });
 
     const concentrationRisk = topShare > 40;
@@ -144,7 +144,7 @@ function BrokerContent({ brokerMetrics, attributionMetrics, insights, filters, s
       detail: concentrationRisk
         ? `Over 40% reliance on a single broker creates pipeline risk — diversifying channels is advised.`
         : `No single broker dominates — distribution network is well diversified across partners.`,
-      color: concentrationRisk ? '#f87171' : '#22c55e',
+      color: concentrationRisk ? 'var(--accent-red)' : 'var(--accent-green)',
     });
 
     const top3 = byTotal.slice(0, 3);
@@ -155,7 +155,7 @@ function BrokerContent({ brokerMetrics, attributionMetrics, insights, filters, s
       category: 'Top 3 Concentration',
       title: `Top 3 brokers account for ${top3Share}% of all subscriptions`,
       detail: `${top3.map(b => b.broker).join(', ')} collectively drive ${top3Total.toLocaleString('en-IN')} out of ${totalSubs.toLocaleString('en-IN')} total subs.`,
-      color: '#fbbf24',
+      color: 'var(--accent-gold)',
     });
 
     if (byActiveRate.length > 0) {
@@ -165,7 +165,7 @@ function BrokerContent({ brokerMetrics, attributionMetrics, insights, filters, s
         category: 'Active Rate Leader',
         title: `${topActive.broker} has highest active rate at ${topActive.activeRate}%`,
         detail: `${topActive.activeRate}% of subscribers acquired through this broker are still active — best engagement efficiency across the network.`,
-        color: '#fb923c',
+        color: 'var(--accent-orange)',
       });
     }
 
@@ -222,8 +222,8 @@ function BrokerContent({ brokerMetrics, attributionMetrics, insights, filters, s
               <YAxis dataKey="broker" type="category" width={105} tick={<YAxisTick maxChars={13} fontSize={9} />} />
               <Tooltip content={<CustomTooltip />} />
               <Legend wrapperStyle={{ fontSize: 11 }} />
-              <Bar dataKey="active" name="Active" stackId="a" fill="#22c55e" />
-              <Bar dataKey="exited" name="Exited" stackId="a" fill="#f87171" />
+              <Bar dataKey="active" name="Active" stackId="a" fill="var(--accent-green)" />
+              <Bar dataKey="exited" name="Exited" stackId="a" fill="var(--accent-red)" />
             </BarChart>
           </ResponsiveContainer>
           <div className="chart-clickable-hint">💡 Click any bar to see subscriber details</div>
@@ -267,7 +267,7 @@ function BrokerContent({ brokerMetrics, attributionMetrics, insights, filters, s
               <YAxis dataKey="broker" type="category" width={105} tick={<YAxisTick maxChars={13} fontSize={9} />} />
               <Tooltip content={<CustomTooltip />} />
               <Bar dataKey="renewalRate" name="Renewal %" radius={[0, 4, 4, 0]}>
-                {topByRenewal.map((p, i) => <Cell key={i} fill={p.renewalRate >= 40 ? '#22c55e' : p.renewalRate >= 20 ? '#fbbf24' : '#f87171'} />)}
+                {topByRenewal.map((p, i) => <Cell key={i} fill={p.renewalRate >= 40 ? 'var(--accent-green)' : p.renewalRate >= 20 ? 'var(--accent-gold)' : 'var(--accent-red)'} />)}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
@@ -285,8 +285,8 @@ function BrokerContent({ brokerMetrics, attributionMetrics, insights, filters, s
                 <YAxis dataKey="source" type="category" width={100} tick={<YAxisTick maxChars={12} fontSize={9} />} />
                 <Tooltip content={<CustomTooltip />} />
                 <Legend wrapperStyle={{ fontSize: 11 }} />
-                <Bar dataKey="active" name="Active" fill="#22c55e" />
-                <Bar dataKey="total" name="Total" fill="#00d4ff" />
+                <Bar dataKey="active" name="Active" fill="var(--accent-green)" />
+                <Bar dataKey="total" name="Total" fill="var(--accent-cyan)" />
               </BarChart>
             </ResponsiveContainer>
           </ChartCard>

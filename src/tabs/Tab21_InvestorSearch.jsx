@@ -4,9 +4,9 @@ import FAQSection from '../components/FAQSection';
 
 const STATUS_COLOR = (s) => {
   const u = String(s).toUpperCase();
-  if (u.includes('SUBSCRIBED') && !u.includes('UN')) return { bg: 'rgba(34,197,94,0.15)', color: '#22c55e' };
-  if (u.includes('GRACE')) return { bg: 'rgba(251,191,36,0.15)', color: '#fbbf24' };
-  return { bg: 'rgba(248,113,113,0.15)', color: '#f87171' };
+  if (u.includes('SUBSCRIBED') && !u.includes('UN')) return { bg: 'color-mix(in srgb, var(--accent-green) 15%, transparent)', color: 'var(--accent-green)' };
+  if (u.includes('GRACE')) return { bg: 'color-mix(in srgb, var(--accent-gold) 15%, transparent)', color: 'var(--accent-gold)' };
+  return { bg: 'color-mix(in srgb, var(--accent-red) 15%, transparent)', color: 'var(--accent-red)' };
 };
 
 export default memo(function Tab21InvestorSearch({ rawData }) {
@@ -55,7 +55,7 @@ export default memo(function Tab21InvestorSearch({ rawData }) {
         <>
           {/* Identity Card */}
           <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-bright)', borderRadius: 14, padding: '1.5rem', display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '1.5rem', alignItems: 'center' }}>
-            <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'linear-gradient(135deg,#00d4ff,#a78bfa)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.8rem', fontWeight: 700, color: '#fff' }}>
+            <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'linear-gradient(135deg,var(--accent-cyan),var(--accent-purple))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.8rem', fontWeight: 700, color: 'var(--on-accent)' }}>
               {(result.name || '?')[0].toUpperCase()}
             </div>
             <div>
@@ -69,7 +69,7 @@ export default memo(function Tab21InvestorSearch({ rawData }) {
               </div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 10 }}>
                 {result.products.map(p => (
-                  <span key={p} style={{ padding: '2px 10px', background: 'rgba(0,212,255,0.12)', color: '#00d4ff', borderRadius: 20, fontSize: 11, fontWeight: 600 }}>{p}</span>
+                  <span key={p} style={{ padding: '2px 10px', background: 'color-mix(in srgb, var(--accent-cyan) 12%, transparent)', color: 'var(--accent-cyan)', borderRadius: 20, fontSize: 11, fontWeight: 600 }}>{p}</span>
                 ))}
               </div>
             </div>
@@ -78,15 +78,15 @@ export default memo(function Tab21InvestorSearch({ rawData }) {
           {/* Financial Summary */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 10 }}>
             {[
-              { label: 'Total Spend', value: `₹${result.totalSpend.toLocaleString('en-IN')}`, color: '#fbbf24',
+              { label: 'Total Spend', value: `₹${result.totalSpend.toLocaleString('en-IN')}`, color: 'var(--accent-gold)',
                 tooltip: 'Sum of plan amounts paid across every cycle and product this investor has ever subscribed to — full historical revenue contribution, not a monthly-equivalent figure.' },
-              { label: 'Networth', value: result.networth ? `₹${result.networth.toLocaleString('en-IN')}` : '—', color: '#00d4ff',
+              { label: 'Networth', value: result.networth ? `₹${result.networth.toLocaleString('en-IN')}` : '—', color: 'var(--accent-cyan)',
                 tooltip: "Self-reported net worth from the investor's most recent subscription record." },
-              { label: 'P&L', value: result.pnl !== 0 ? `${result.pnl >= 0 ? '+' : ''}₹${result.pnl.toLocaleString('en-IN')}` : '—', color: result.pnl >= 0 ? '#22c55e' : '#f87171',
+              { label: 'P&L', value: result.pnl !== 0 ? `${result.pnl >= 0 ? '+' : ''}₹${result.pnl.toLocaleString('en-IN')}` : '—', color: result.pnl >= 0 ? 'var(--accent-green)' : 'var(--accent-red)',
                 tooltip: "Reported portfolio profit/loss from the investor's most recent subscription record — independent of subscription revenue paid." },
-              { label: 'Max Renewal Cycle', value: `Cycle ${result.maxCycle}`, color: '#a78bfa',
+              { label: 'Max Renewal Cycle', value: `Cycle ${result.maxCycle}`, color: 'var(--accent-purple)',
                 tooltip: "Highest cycle number reached across all of this investor's subscriptions. Cycle 1 means they've never renewed; higher numbers mean more renewals." },
-              { label: 'Products Subscribed', value: result.products.length, color: '#fb923c',
+              { label: 'Products Subscribed', value: result.products.length, color: 'var(--accent-orange)',
                 tooltip: 'Count of distinct products (smallcases) this investor has subscribed to across their full history.' },
               { label: 'First Subscription', value: result.firstSubDate, color: 'var(--text-secondary)',
                 tooltip: 'Earliest subscription start date on record for this investor, across any product.' },
@@ -121,16 +121,16 @@ export default memo(function Tab21InvestorSearch({ rawData }) {
                     return (
                       <tr key={i} style={{ borderBottom: '1px solid var(--border-default)', background: i % 2 === 0 ? 'transparent' : 'var(--bg-elevated)' }}>
                         <td style={{ padding: '7px 10px', color: 'var(--text-primary)', fontWeight: 500, whiteSpace: 'nowrap' }}>{t.product}</td>
-                        <td style={{ padding: '7px 10px', color: '#a78bfa', fontWeight: 600 }}>C{t.cycle}</td>
+                        <td style={{ padding: '7px 10px', color: 'var(--accent-purple)', fontWeight: 600 }}>C{t.cycle}</td>
                         <td style={{ padding: '7px 10px' }}>
                           <span style={{ padding: '2px 8px', borderRadius: 20, fontSize: 10, fontWeight: 700, background: sc.bg, color: sc.color }}>{t.status}</span>
                         </td>
                         <td style={{ padding: '7px 10px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>{t.startDate}</td>
                         <td style={{ padding: '7px 10px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>{t.endDate}</td>
-                        <td style={{ padding: '7px 10px', color: '#22c55e', fontWeight: 600 }}>₹{t.planAmount.toLocaleString('en-IN')}</td>
-                        <td style={{ padding: '7px 10px', color: t.discount > 0 ? '#fbbf24' : 'var(--text-muted)' }}>{t.discount > 0 ? `₹${t.discount.toLocaleString('en-IN')}` : '—'}</td>
+                        <td style={{ padding: '7px 10px', color: 'var(--accent-green)', fontWeight: 600 }}>₹{t.planAmount.toLocaleString('en-IN')}</td>
+                        <td style={{ padding: '7px 10px', color: t.discount > 0 ? 'var(--accent-gold)' : 'var(--text-muted)' }}>{t.discount > 0 ? `₹${t.discount.toLocaleString('en-IN')}` : '—'}</td>
                         <td style={{ padding: '7px 10px', color: 'var(--text-muted)', fontSize: 11 }}>{t.offerCode !== '—' ? t.offerCode : '—'}</td>
-                        <td style={{ padding: '7px 10px', color: t.cancelReason !== '—' ? '#f87171' : 'var(--text-muted)', fontSize: 11 }}>{t.cancelReason}</td>
+                        <td style={{ padding: '7px 10px', color: t.cancelReason !== '—' ? 'var(--accent-red)' : 'var(--text-muted)', fontSize: 11 }}>{t.cancelReason}</td>
                       </tr>
                     );
                   })}

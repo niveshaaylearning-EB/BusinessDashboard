@@ -17,11 +17,11 @@ import {
 import DrilldownModal, { useDrilldown } from '../components/DrilldownModal';
 
 // ─── CONSTANTS ────────────────────────────────────────────────────────────────
-const A_COLOR  = '#00d4ff';  // cyan  — Period A
-const B_COLOR  = '#f97316';  // orange — Period B
-const UP_CLR   = '#22c55e';
-const DOWN_CLR = '#f87171';
-const NEUT_CLR = '#64748b';
+const A_COLOR  = 'var(--accent-cyan)';  // cyan  — Period A
+const B_COLOR  = 'var(--accent-orange)';  // orange — Period B
+const UP_CLR   = 'var(--accent-green)';
+const DOWN_CLR = 'var(--accent-red)';
+const NEUT_CLR = 'var(--text-neutral)';
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 const toInput  = (d) => (d instanceof Date ? d.toISOString().slice(0, 10) : '');
@@ -43,7 +43,7 @@ function Delta({ a, b, invertBetter }) {
   return (
     <span style={{
       fontSize: 11, fontWeight: 700, padding: '2px 9px', borderRadius: 20,
-      background: `${color}1a`, color,
+      background: `color-mix(in srgb, ${color} 10%, transparent)`, color,
     }}>
       {dir === 'neutral' ? '─' : isUp ? '▲' : '▼'} {pct !== null ? `${Math.abs(pct)}%` : 'N/A'}
     </span>
@@ -257,7 +257,7 @@ export default memo(function Tab16Comparison({ rawData, filters, setFilters }) {
         category: 'Net Growth',
         title: `${b.netGrowth >= a.netGrowth ? aLabel : bLabel} had better net growth by ${diff.toLocaleString('en-IN')}`,
         detail: `${aLabel}: ${a.netGrowth >= 0 ? '+' : ''}${a.netGrowth.toLocaleString('en-IN')}  |  ${bLabel}: ${b.netGrowth >= 0 ? '+' : ''}${b.netGrowth.toLocaleString('en-IN')}`,
-        color: b.netGrowth >= a.netGrowth ? '#22c55e' : '#f87171',
+        color: b.netGrowth >= a.netGrowth ? 'var(--accent-green)' : 'var(--accent-red)',
       });
     }
 
@@ -274,7 +274,7 @@ export default memo(function Tab16Comparison({ rawData, filters, setFilters }) {
         category: 'Acquisition',
         title: `${winner} acquired more new subscribers${diffPct !== null ? ` (+${diffPct}%)` : ''}`,
         detail: `${aLabel}: ${a.newSubs.toLocaleString('en-IN')}  |  ${bLabel}: ${b.newSubs.toLocaleString('en-IN')}`,
-        color: '#22c55e',
+        color: 'var(--accent-green)',
       });
     }
 
@@ -288,7 +288,7 @@ export default memo(function Tab16Comparison({ rawData, filters, setFilters }) {
         category: 'Exits',
         title: `${winner} had fewer exits by ${diff.toLocaleString('en-IN')}`,
         detail: `${aLabel}: ${a.exits.toLocaleString('en-IN')} exits  |  ${bLabel}: ${b.exits.toLocaleString('en-IN')} exits`,
-        color: aLess ? '#22c55e' : '#f87171',
+        color: aLess ? 'var(--accent-green)' : 'var(--accent-red)',
       });
     }
 
@@ -302,7 +302,7 @@ export default memo(function Tab16Comparison({ rawData, filters, setFilters }) {
         category: 'Active Base',
         title: `${winner} ended with a stronger active base`,
         detail: `${aLabel}: ${a.activeSubscribers.toLocaleString('en-IN')}  |  ${bLabel}: ${b.activeSubscribers.toLocaleString('en-IN')}  (diff: ${diff.toLocaleString('en-IN')})`,
-        color: '#22d3ee',
+        color: 'var(--accent-sky)',
       });
     }
 
@@ -316,7 +316,7 @@ export default memo(function Tab16Comparison({ rawData, filters, setFilters }) {
           category: 'Mixed Signal',
           title: `${aLabel} acquired more, but ${bLabel} retained better`,
           detail: `${aLabel} won on acquisition (+${(a.newSubs - b.newSubs).toLocaleString('en-IN')} subs), ${bLabel} won on retention (${(a.exits - b.exits).toLocaleString('en-IN')} fewer exits)`,
-          color: '#fbbf24',
+          color: 'var(--accent-gold)',
         });
       }
     }
@@ -331,7 +331,7 @@ export default memo(function Tab16Comparison({ rawData, filters, setFilters }) {
         category: 'Unique New Investors',
         title: `${winner} brought in more unique new investors (+${diff.toLocaleString('en-IN')})`,
         detail: `Unique Cycle-1 PANs — ${aLabel}: ${a.uniqueNewSubs.toLocaleString('en-IN')}  |  ${bLabel}: ${b.uniqueNewSubs.toLocaleString('en-IN')}`,
-        color: '#22c55e',
+        color: 'var(--accent-green)',
       });
     }
 
@@ -345,7 +345,7 @@ export default memo(function Tab16Comparison({ rawData, filters, setFilters }) {
         category: 'Unique Unsubscribers',
         title: `${winner} had fewer unique investors exit (${diff.toLocaleString('en-IN')} fewer)`,
         detail: `Distinct exiting PANs — ${aLabel}: ${a.uniqueExits.toLocaleString('en-IN')}  |  ${bLabel}: ${b.uniqueExits.toLocaleString('en-IN')}`,
-        color: aLess ? '#22c55e' : '#f87171',
+        color: aLess ? 'var(--accent-green)' : 'var(--accent-red)',
       });
     }
 
@@ -357,7 +357,7 @@ export default memo(function Tab16Comparison({ rawData, filters, setFilters }) {
         category: 'Net Unique Growth',
         title: `${bBetter ? aLabel : bLabel} had better net unique investor growth`,
         detail: `Unique new minus unique exits — ${aLabel}: ${a.netUnique >= 0 ? '+' : ''}${a.netUnique.toLocaleString('en-IN')}  |  ${bLabel}: ${b.netUnique >= 0 ? '+' : ''}${b.netUnique.toLocaleString('en-IN')}`,
-        color: bBetter ? '#22c55e' : '#f87171',
+        color: bBetter ? 'var(--accent-green)' : 'var(--accent-red)',
       });
     }
 
@@ -370,7 +370,7 @@ export default memo(function Tab16Comparison({ rawData, filters, setFilters }) {
         category: 'Top Product',
         title: `Top products differed between periods`,
         detail: `${aLabel} leader: "${pA.product}" (${pA.active?.toLocaleString('en-IN')})  |  ${bLabel} leader: "${pB.product}" (${pB.active?.toLocaleString('en-IN')})`,
-        color: '#a78bfa',
+        color: 'var(--accent-purple)',
       });
     } else if (pA && pB && pA.product === pB.product) {
       insights.push({
@@ -378,7 +378,7 @@ export default memo(function Tab16Comparison({ rawData, filters, setFilters }) {
         category: 'Top Product',
         title: `"${pA.product}" led both periods`,
         detail: `${aLabel}: ${pA.active?.toLocaleString('en-IN')} active  |  ${bLabel}: ${pB.active?.toLocaleString('en-IN')} active`,
-        color: '#a78bfa',
+        color: 'var(--accent-purple)',
       });
     }
 
@@ -391,7 +391,7 @@ export default memo(function Tab16Comparison({ rawData, filters, setFilters }) {
         category: 'Retention',
         title: `${winner} had higher retention rate`,
         detail: `${aLabel}: ${a.retentionRate}%  |  ${bLabel}: ${b.retentionRate}%`,
-        color: bHigher ? '#22c55e' : '#fb923c',
+        color: bHigher ? 'var(--accent-green)' : 'var(--accent-orange)',
       });
     }
 
@@ -547,7 +547,7 @@ export default memo(function Tab16Comparison({ rawData, filters, setFilters }) {
         {/* Period pickers */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: '1rem', alignItems: 'start' }}>
           {/* Period A */}
-          <div style={{ background: `${A_COLOR}0d`, border: `1px solid ${A_COLOR}44`, borderRadius: 10, padding: '1rem' }}>
+          <div style={{ background: `color-mix(in srgb, ${A_COLOR} 5%, transparent)`, border: `1px solid color-mix(in srgb, ${A_COLOR} 27%, transparent)`, borderRadius: 10, padding: '1rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
               <div style={{ width: 10, height: 10, borderRadius: '50%', background: A_COLOR }} />
               <input value={aLabel} onChange={e => setALabel(e.target.value)}
@@ -590,7 +590,7 @@ export default memo(function Tab16Comparison({ rawData, filters, setFilters }) {
           </div>
 
           {/* Period B */}
-          <div style={{ background: `${B_COLOR}0d`, border: `1px solid ${B_COLOR}44`, borderRadius: 10, padding: '1rem' }}>
+          <div style={{ background: `color-mix(in srgb, ${B_COLOR} 5%, transparent)`, border: `1px solid color-mix(in srgb, ${B_COLOR} 27%, transparent)`, borderRadius: 10, padding: '1rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
               <div style={{ width: 10, height: 10, borderRadius: '50%', background: B_COLOR }} />
               <input value={bLabel} onChange={e => setBLabel(e.target.value)}
@@ -674,7 +674,7 @@ export default memo(function Tab16Comparison({ rawData, filters, setFilters }) {
                 style={{
                   padding: '6px 14px', fontSize: 12, borderRadius: 8, cursor: 'pointer',
                   border: `1px solid ${activeSection === s.id ? 'var(--accent-cyan)' : 'var(--border-default)'}`,
-                  background: activeSection === s.id ? 'rgba(0,212,255,0.12)' : 'var(--bg-elevated)',
+                  background: activeSection === s.id ? 'color-mix(in srgb, var(--accent-cyan) 12%, transparent)' : 'var(--bg-elevated)',
                   color: activeSection === s.id ? 'var(--accent-cyan)' : 'var(--text-secondary)',
                   fontWeight: activeSection === s.id ? 600 : 400,
                 }}>
@@ -729,7 +729,7 @@ export default memo(function Tab16Comparison({ rawData, filters, setFilters }) {
                         const vb = result.b.metrics[row.key];
                         const isNetRow = row.key === 'netGrowth' || row.key === 'netUnique';
                         rows.push(
-                          <tr key={row.key} style={isNetRow ? { background: 'rgba(0,212,255,0.04)', fontWeight: 700 } : {}}>
+                          <tr key={row.key} style={isNetRow ? { background: 'color-mix(in srgb, var(--accent-cyan) 4%, transparent)', fontWeight: 700 } : {}}>
                             <td className="td-name" style={{ fontSize: 12, fontWeight: isNetRow ? 700 : 400, paddingLeft: row.group ? 20 : 12 }}>
                               {isNetRow ? '⟹ ' : ''}{row.label}
                             </td>
@@ -930,7 +930,7 @@ export default memo(function Tab16Comparison({ rawData, filters, setFilters }) {
                               <td className="td-name" style={{ fontSize: 11 }}>{p.product}</td>
                               <td className="td-good">{p.active?.toLocaleString()}</td>
                               <td style={{ textAlign: 'right', fontSize: 12 }}>{p.renewalRate}%</td>
-                              <td style={{ textAlign: 'right', fontSize: 12, color: p.churnRate > 30 ? '#f87171' : 'inherit' }}>{p.churnRate}%</td>
+                              <td style={{ textAlign: 'right', fontSize: 12, color: p.churnRate > 30 ? 'var(--accent-red)' : 'inherit' }}>{p.churnRate}%</td>
                             </tr>
                           ))}
                         </tbody>
@@ -1091,7 +1091,7 @@ export default memo(function Tab16Comparison({ rawData, filters, setFilters }) {
                               <td style={{ color: 'var(--text-muted)', fontSize: 11 }}>{i + 1}</td>
                               <td className="td-name" style={{ fontSize: 11 }}>{g.state}</td>
                               <td className="td-good">{g.active?.toLocaleString()}</td>
-                              <td style={{ textAlign: 'right', fontSize: 12, color: g.churnRate > 30 ? '#f87171' : 'inherit' }}>{g.churnRate}%</td>
+                              <td style={{ textAlign: 'right', fontSize: 12, color: g.churnRate > 30 ? 'var(--accent-red)' : 'inherit' }}>{g.churnRate}%</td>
                               <td style={{ textAlign: 'right', fontSize: 12 }}>{g.networthShare}%</td>
                             </tr>
                           ))}
